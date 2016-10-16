@@ -1,3 +1,31 @@
+<#
+.Synopsis
+	Get version assets from the sever
+	
+.Parameter assetType
+	Asset type.  To see valid values (Get-V1Meta).keys | sort
+
+.Parameter ID
+	optional ID to specify to get just one item
+
+.Parameter filter
+	optional filter for limiting results
+
+.Parameter token
+	security token
+
+.Parameter baseUri
+	baseUri for the REST server
+
+.Outputs
+	Asset objects of the given type
+
+.Example
+    Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+    $scopes = Get-V1Asset -assetType "Scope" -properties "Name"
+
+    Get all scopes, just the Name field
+#>
 function Get-V1Asset
 {
 [CmdletBinding()]

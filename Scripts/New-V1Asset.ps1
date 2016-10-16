@@ -7,7 +7,6 @@ param(
 [Parameter(Mandatory,ValueFromPipeline)]
 [hashtable] $asset,
 [hashtable] $defaultvalues = @{},
-[switch] $annotated,
 [switch] $full,
 [Parameter(Mandatory)]    
 [string] $baseUri
@@ -23,8 +22,6 @@ param(
     {
         throw "Asset of type $($assetType) requires missing attributes: $($missingRequired -join ", ")"
     }
-
-    # TODO for relations, check if not string, call value.id
      
     if ( $full )
     {

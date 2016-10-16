@@ -92,14 +92,14 @@ foreach ( $i in (1..5))
 
 $ongoingStories = @()
 $storyDefaults = @{Scope=$scope.id}
-foreach ( $i in (1..5)) 
+foreach ( $i in (1..10)) 
 {
     $ongoingStories += Save-V1Asset (New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="ongoingStory$i"})
 } 
 
 $ongoingChangeSets = @()
 $storyDefaults = @{PrimaryWorkitems=($ongoingStories | Select id)}
-foreach ( $i in (1..5)) 
+foreach ( $i in (1..10)) 
 {
     $ongoingChangeSets += Save-V1Asset (New-V1Asset "ChangeSet" -defaultvalues $storyDefaults -asset @{Name="ChangeSet$i"})
 } 
@@ -124,35 +124,11 @@ if ( -not $epicTypeFeature  )
     $epicTypeFeature = Save-V1Asset (New-V1Asset -assetType "Epic" -asset @{Name="PSTestFeature";Scope=$scope.id;Category=$featureCategory.id} -defaultvalues $defaultEpicProps)
 }
 
-function Set-V1Value
-{
-param( 
-[Parameter(Mandatory,ValueFromPipeline)]
-$asset, 
-$name, 
-$value )
-
-process
-{
-    Set-StrictMode -Version Latest
-
-    if ( -not (Get-Member -Input $asset -name $name ))
-    {
-        Add-Member -InputObject $asset -MemberType NoteProperty -Name $name -Value $value
-    }
-    else
-    {
-        $asset.$name = $value
-    }
-    return $asset
-}
-}
 
 $ongoingStories | Select-Object -First 5 | Set-V1Value -Name Super -Value $epicTypeEpic.id | Save-V1Asset 
 
 
 $ongoingStories | Select-Object -Skip 5 | Set-V1Value -Name Super -Value $epicTypeFeature.id | Save-V1Asset 
-
 
 
 }

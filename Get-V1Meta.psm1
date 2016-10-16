@@ -1,4 +1,21 @@
-﻿$script:meta = $null
+<#
+.Synopsis
+	Get VersionOne meta data about assets
+	
+.Parameter baseUri
+	baseUri for the server
+
+.Parameter Force
+	force reload from the server
+
+.Link
+    https://community.versionone.com/VersionOne_Connect/Developer_Library/Getting_Started/Platform_Concepts/Endpoints/rest-1.v1%2F%2FData
+
+.Outputs
+	HashTable of Asset names to data about them
+
+#>
+$script:meta = $null
 
 function Get-V1Meta
 {
@@ -12,7 +29,7 @@ param(
 
     if ( $script:meta -and -not $Force )
     {
-        Write-Information "Found existing meta"
+        Write-Verbose "Meta already loaded"
         return $script:meta;
     }
 

@@ -42,7 +42,7 @@ param(
         $xml = "<Asset>`n"
         $addedKeys = @()
 
-        foreach ( $m in $asset | Get-Member -MemberType Properties | Where name -NotIn ("AssetType","id") )
+        foreach ( $m in $asset | Get-Member -MemberType Properties )
         {
             $name = $m.name
             $addedKeys += $name
@@ -50,6 +50,11 @@ param(
             if ( -not ( $assetMeta.ContainsKey($name)))
             {
                 throw "Attribute name of $name not found on asset of type $($asset.AssetType)"
+            }
+            
+            if ($assetMeta.$name.IsReadOnly)
+            {
+                continue;
             }
 
             if ( $assetMeta.$name.AttributeType -eq "Relation" )

@@ -20,7 +20,15 @@ $asset,
     if ( ($asset | Get-Member -Name "id") -and $asset.id)
     {
         # updating
-        $uri += "/$($asset.id)"
+        $id = $asset.id -split ":"
+        if ( $id.Count -gt 1 )
+        {
+            $uri += "/$($id[1])"
+        }
+        else
+        {
+            $uri += "/$($id[0])"
+        }
     }
 
     if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
