@@ -23,9 +23,6 @@ param(
 	[parameter(Position=2,Mandatory=$true)][string]$password
 )
 
-#TODO: The whole thing should be a module and we should only make public functions that require it
-#TODO: Endpoints should be configurable
-
 #$metaFile = [IO.Path]::GetTempFileName()
 
 $metaFile="meta.xml"
@@ -61,14 +58,10 @@ function Get-SingleAsset {
 	$result
 }
 
-function Invoke-Meta {
-    if(Test-Path $metaFile) { return }
-    $metaUrl = Get-MetaUrl
-	Invoke-WebRequest (Get-MetaUrl) -OutFile $metaFile
-}
-
 function Get-MetaObject {
-    Invoke-Meta
+    if(-not (Test-Path $metaFile)) {
+        Invoke-WebRequest (Get-MetaUrl) -OutFile $metaFile
+    }    
 	[xml](Get-Content $metaFile)
 }
 
@@ -81,21 +74,32 @@ function Get-AuthorizationHeader {
 }
 
 function Get-V1Metamodel {
-    $client = [pscustomobject] @{}    
+    $metaModel = [pscustomobject] @{}    
     (Get-MetaObject).Meta.Assettype |
     % { 
 		# TODO: avoid abstracts?
         $assetToken = $_.Token
 		$assetObject = [pscustomobject] @{ Token = $assetToken}
+		$metaModel | Add-Member @{ $assetToken= $assetObject}
                 
         # attribute definition for the current asset
 		($_).AttributeDefinition |
         % {			
-			$assetObject | Add-Member @{$_.Name = $_.Name }
-        }		
-		$client | Add-Member @{ $assetToken= $assetObject}		
+			$assetObject | Add-Member @{$_.Name = $_.Name } -Force
+			#$_.attributeType
+			#$_.isreadonly
+			#$_.isrequired
+			#$_.ismultivalue
+        }
+		
+		# operations:
+		if($_.Operation -eq $null) {return}
+		$assetObject | Add-Member @{Operation = [pscustomobject] @{} } -Force		
+		$_.Operation | % {
+			$assetObject.Operation | Add-Member @{ $_.Name = $_.Name }		
+		}
     }
-    $client
+    $metaModel
 }
 Set-Alias vmeta Get-V1MetaModel
 
@@ -107,9 +111,9 @@ function Start-V1Query {
 	$queryObject = [pscustomobject] @{ 
 		Token = $asset.Token;
 		ID = $id;
-		SelectedFields = $null;
-		WhereCondition = $null;
-        Executed = $false
+		SelectExpression = $null;
+		WhereExpression = $null;
+        Executed = $false		
 	}
 	
 	$queryObject
@@ -121,22 +125,40 @@ function Invoke-V1Select {
     [Parameter(ValueFromPipeline=$true)]$queryObject, 
     [Parameter(Mandatory=$true,Position=0)][string[]]$fields)
     
-    if($queryObject.SelectedFields -ne $null) { return $queryObject }    
-    $queryObject.SelectedFields = [string]::Join(",",$fields)
+    if($queryObject.SelectExpression -ne $null) { return $queryObject }    
+    $queryObject.SelectExpression = [string]::Join(",",$fields)
     $queryObject
 
 }
 Set-Alias vselect Invoke-V1Select
 
-function ParseExpression {
+$tokensTable = @{ 
+    'And' = ';';
+	'Or' = '|';
+	'Ieq' = '=';
+	'Ine' = '!=';
+	'Ilt'= '<';
+    'Ile'= '<=';
+	'Igt'= '>';
+	'Ige'= '>='
+}
+
+function ParsePSExpression {
     param($expression)
-    #logical operators 
-    #   -and -or 
-    #   ';' '|'
+    $psTokens = $null
+    $parseErrors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($expression, [ref]$psTokens, [ref]$parseErrors)
     
-    #comparison-operator 
-    #   -eq -ne -lt -le -gt -ge
-    #   '=' | '!=' | '<' | '<=' | '>' | '>='
+    $tokens = @()
+    $previousToken = $null
+    $psTokens | % {        
+        if($_.Kind -eq 'Dot' -and $previousToken -eq 'Identifier') {$tokens += '.'}
+        elseif(($_.Kind -eq 'Identifier') -or ($_.Kind -eq 'StringLiteral')){ $tokens += $_.Text }
+        elseif($tokensTable.ContainsKey([string]$_.Kind)){ $tokens+=($tokensTable[[string]$_.Kind]) }
+        $previousToken = $_.Kind
+    }
+    $restExpression = [string]::Join("",$tokens)
+	$restExpression
 }
 
 function Invoke-V1Where {    
@@ -144,8 +166,9 @@ function Invoke-V1Where {
     [Parameter(ValueFromPipeline=$true)]$queryObject, 
     [Parameter(Mandatory=$true,Position=0)]$filter)
     
-    $expresion = $filter.Ast.EndBlock.Extent.Text
-    $queryObject
+    $psExpression = $filter.Ast.EndBlock.Extent.Text
+	$queryObject.WhereExpression = ParsePSExpression $psExpression
+	$queryObject
 }
 Set-Alias vwhere Invoke-V1Where
 
@@ -160,10 +183,16 @@ function Get-RequestUrl {
     
     $chainSymbol = "?"
     
-    if($queryObject.SelectedFields -ne $null) {
-        $url += "$($chainSymbol)sel=$($queryObject.SelectedFields)"
+    if($queryObject.SelectExpression -ne $null) {
+        $url += "$($chainSymbol)sel=$($queryObject.SelectExpression)"
         $chainSymbol = "&"
-    }    
+    }
+	
+	if($queryObject.WhereExpression -ne $null) {
+		$url += "$($chainSymbol)where=$($queryObject.WhereExpression)"
+        $chainSymbol = "&"	
+	}
+	#Write-Host $url
     $url
 }
 
