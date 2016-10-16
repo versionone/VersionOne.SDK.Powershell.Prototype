@@ -3,7 +3,9 @@ function ConvertTo-V1Json
 [CmdletBinding()]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
-[object] $asset
+[object] $asset,
+[Parameter(Mandatory)]
+[string] $baseUri  
 )
     Set-StrictMode -Version Latest
     
@@ -12,12 +14,7 @@ param(
         throw "Must supply object with AssetType property"
     }
 
-    $meta = Get-V1Meta
-    if ( -not ($meta.ContainsKey($asset.AssetType)))
-    {
-        throw "Asset type of $($asset.AssetType) not found in meta"
-    }
-    $assetMeta = $meta[$asset.AssetType]
+    $assetMeta =  Get-V1AssetType -assetType $asset.AssetType -baseUri $baseUri
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )

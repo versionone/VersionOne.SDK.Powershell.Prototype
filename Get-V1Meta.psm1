@@ -4,7 +4,8 @@ function Get-V1Meta
 {
 [CmdletBinding()]
 param(
-[string] $baseUri = "localhost/VersionOne.Web",
+[Parameter(Mandatory)]    
+[string] $baseUri,
 [switch] $Force
 )
     Set-StrictMode -Version Latest
@@ -18,8 +19,9 @@ param(
     $metaJson = Invoke-RestMethod -Uri "http://$baseUri/meta.v1" -Headers @{Accept="application/json"}
 
     $script:meta = @{}
+    $activityName = "Processing meta (once per PowerShell session)"
 
-    Write-Progress -Activity "Processing meta" -PercentComplete 0 
+    Write-Progress -Activity $activityName -PercentComplete 0 
     $i = 0
     $properties = $metaJson.AssetTypes | Get-Member -MemberType Properties
     if ( $properties )
@@ -29,9 +31,8 @@ param(
         $properties | ForEach-Object {
 
             $name = $_.name
-            # $metaJson.AssetTypes.$name.Token
 
-            Write-Progress -Activity "Processing meta" -PercentComplete (100*($i++)/$total) -CurrentOperation $name
+            Write-Progress -Activity $activityName -PercentComplete (100*($i++)/$total) -CurrentOperation $name
 
             $metum = @{}
 
@@ -49,10 +50,12 @@ param(
             $meta[$name] = $metum
         }
 
-        Write-Progress -Activity "Processing meta" -Completed 
+        Write-Progress -Activity $activityName -Completed 
 
     }
 
     return $script:meta
 
 }
+
+Export-ModuleMember -Function "*-*"

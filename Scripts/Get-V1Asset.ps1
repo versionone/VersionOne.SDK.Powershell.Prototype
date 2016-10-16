@@ -14,15 +14,26 @@ param(
 
     Write-Verbose( "BaseUri: $baseUri AssetType: $assetType Properties: $properties ID: $ID" )
 
-    $uri = "http://$baseUri/rest-1.v1/Data/$assetType" -join $ID, "/"
+    $uri = "http://$baseUri/rest-1.v1/Data/$assetType"
+    if ( $ID )
+    {
+        $uri += "/$ID"
+    }
     if ( $properties )
     {
         $uri += "?sel=$($properties -join ",")"
     }
 
-    (Invoke-RestMethod -Uri $uri -ContentType "application/json"  `
+    $result = (Invoke-RestMethod -Uri $uri -ContentType "application/json"  `
             -Method GET `
-            -headers @{Authorization="Bearer $token";Accept="application/json";}).Assets | 
-        ConvertFrom-V1Json
+            -headers @{Authorization="Bearer $token";Accept="application/json";})
+    if ( $result | Get-Member -Name "Assets" )
+    {
+        $result.Assets | ConvertFrom-V1Json
+    }
+    else
+    {
+        $result | ConvertFrom-V1Json
+    }
 
 }

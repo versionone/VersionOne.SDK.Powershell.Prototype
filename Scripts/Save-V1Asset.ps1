@@ -6,7 +6,8 @@ param(
 $asset,
 [Parameter(Mandatory)]
 [string] $token,
-[string] $baseUri = "localhost/VersionOne.Web"  
+[Parameter(Mandatory)]
+[string] $baseUri  
 )
     Set-StrictMode -Version Latest
 
@@ -16,18 +17,32 @@ $asset,
     }
 
     $uri = "http://$baseUri/rest-1.v1/Data/$($asset.AssetType)"
+    if ( ($asset | Get-Member -Name "id") -and $asset.id)
+    {
+        # updating
+        $uri += "/$($asset.id)"
+    }
+
     if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
     {
-        (Invoke-RestMethod -Uri $uri `
-                    -Body (ConvertTo-V1Json $asset) `
-                    -ContentType "application/json"  `
+        $body = (ConvertTo-V1Xml $asset -baseUri $baseUri)
+        try 
+        {
+            $result = (Invoke-RestMethod -Uri $uri `
+                    -Body $body `
+                    -ContentType "application/xml"  `
                     -Method POST `
-                    -headers @{Authorization="Bearer $token";Accept="application/json";})  |
-                    ConvertFrom-V1Json 
+                    -headers @{Authorization="Bearer $token";Accept="application/json";})
+        }
+        catch
+        { 
+            throw "Exception Saving asset of type $($asset.AssetType) with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
+        }
+        $result | ConvertFrom-V1Json
     }
     else
     {
-        Write-Verbose(ConvertTo-V1Json $asset)
+        Write-Verbose(ConvertTo-V1Xml $asset -baseUri $baseUri)
     }
 
 }

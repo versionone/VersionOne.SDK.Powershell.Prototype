@@ -10,7 +10,12 @@ function getValue($attributeType, $assetValue)
             } 
             elseif ( $assetValue -is "Array")
             {
-                return $assetValue #TODO ??
+                $ret = @()
+                foreach ( $v in $assetValue )
+                {
+                    $ret += $v.idref
+                }
+                return $ret
             }
             else
             {
