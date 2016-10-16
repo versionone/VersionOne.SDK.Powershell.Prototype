@@ -5,7 +5,8 @@ param(
 [Parameter(Mandatory,ValueFromPipeline)]
 [object] $asset
 )
-
+    Set-StrictMode -Version Latest
+    
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
     {
         throw "Must supply object with AssetType property"
@@ -55,6 +56,11 @@ param(
             }
             $v1Object.Attributes[$name]=@{Name=$attrName;value=$asset.$name;act=$act}
         } 
+        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $v1Object.Attributes.Keys }
+        if ( $missingRequired )
+        {
+            throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+        }
     }
     ConvertTo-Json $v1Object -Depth 100
 }

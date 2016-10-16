@@ -1,6 +1,6 @@
 ﻿$script:meta = $null
 
-function Get-V1Meta
+function Get-V1MetaFromXml
 {
 [CmdletBinding()]
 param(

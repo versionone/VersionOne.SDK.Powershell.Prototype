@@ -29,7 +29,7 @@ param(
         $properties | ForEach-Object {
 
             $name = $_.name
-            $metaJson.AssetTypes.$name.Token
+            # $metaJson.AssetTypes.$name.Token
 
             Write-Progress -Activity "Processing meta" -PercentComplete (100*($i++)/$total) -CurrentOperation $name
 
@@ -43,7 +43,8 @@ param(
                 {
                     $simpleName = ($simpleName -split '\.')[1]
                 }
-                $metum[$simpleName] = $metaJson.AssetTypes.$name.Attributes.$attrName | Select Name,IsReadOnly,IsRequired,IsMultivalue,IsCustom,AttributeType
+                $metum[$simpleName] = $metaJson.AssetTypes.$name.Attributes.$attrName | Select Name,IsReadOnly,IsRequired,IsMultivalue,IsCustom,AttributeType,
+                                @{n="RelatedNameRef";e={if ( $_.AttributeType -eq "Relation"){$_.RelatedAsset.nameref}else{$null}}}
             }
             $meta[$name] = $metum
         }
@@ -51,7 +52,6 @@ param(
         Write-Progress -Activity "Processing meta" -Completed 
 
     }
-
 
     return $script:meta
 

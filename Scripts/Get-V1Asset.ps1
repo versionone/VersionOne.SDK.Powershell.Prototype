@@ -6,7 +6,8 @@ param(
 [string] $assetType,
 [int] $ID,
 [string[]] $properties,
-[string] $token="1.bxDPFh/9y3x9MAOt469q2SnGDqo=",
+[Parameter(Mandatory)]
+[string] $token,
 [string] $baseUri = "localhost/VersionOne.Web"
 )
     Set-StrictMode -Version Latest

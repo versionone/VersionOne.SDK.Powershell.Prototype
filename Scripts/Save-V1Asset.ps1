@@ -4,7 +4,8 @@ function Save-V1Asset
 param(
 [Parameter(Mandatory,ValueFromPipeline)]  
 $asset,
-[string] $token="1.bxDPFh/9y3x9MAOt469q2SnGDqo=",
+[Parameter(Mandatory)]
+[string] $token,
 [string] $baseUri = "localhost/VersionOne.Web"  
 )
     Set-StrictMode -Version Latest
@@ -15,7 +16,7 @@ $asset,
     }
 
     $uri = "http://$baseUri/rest-1.v1/Data/$($asset.AssetType)"
-    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset"))
+    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
     {
         (Invoke-RestMethod -Uri $uri `
                     -Body (ConvertTo-V1Json $asset) `
@@ -26,7 +27,7 @@ $asset,
     }
     else
     {
-        $null
+        Write-Verbose(ConvertTo-V1Json $asset)
     }
 
 }
