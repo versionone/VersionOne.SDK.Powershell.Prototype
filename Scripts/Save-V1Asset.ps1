@@ -3,12 +3,11 @@ function Save-V1Asset
 [CmdletBinding(SupportsShouldProcess)]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]  
-$asset,
-[Parameter(Mandatory)]
-[string] $token,
-[Parameter(Mandatory)]
-[string] $baseUri  
+$asset  
 )
+
+process
+{
     Set-StrictMode -Version Latest
 
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
@@ -16,7 +15,7 @@ $asset,
         throw "Must supply object with AssetType property"
     }
 
-    $uri = "http://$baseUri/rest-1.v1/Data/$($asset.AssetType)"
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$($asset.AssetType)"
     if ( ($asset | Get-Member -Name "id") -and $asset.id)
     {
         # updating
@@ -33,14 +32,14 @@ $asset,
 
     if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
     {
-        $body = (ConvertTo-V1Xml $asset -baseUri $baseUri)
+        $body = (ConvertTo-V1Xml $asset)
         try 
         {
-            $result = (Invoke-RestMethod -Uri $uri `
+            $result = Invoke-RestMethod -Uri $uri `
                     -Body $body `
                     -ContentType "application/xml"  `
                     -Method POST `
-                    -headers @{Authorization="Bearer $token";Accept="application/json";})
+                    -headers (@{Accept="application/json";}+$script:authorizationHeader)
         }
         catch
         { 
@@ -50,7 +49,9 @@ $asset,
     }
     else
     {
-        Write-Verbose(ConvertTo-V1Xml $asset -baseUri $baseUri)
+        Write-Verbose(ConvertTo-V1Xml $asset)
     }
+
+}
 
 }

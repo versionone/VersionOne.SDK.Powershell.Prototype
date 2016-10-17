@@ -1,8 +1,11 @@
 ﻿try
 {
 
-ipmo (Join-path $PSScriptRoot V1.psm1) -Force
 cls
+
+Set-StrictMode -Version Latest
+
+ipmo (Join-path $PSScriptRoot V1.psm1) -Force
 
 $error.Clear()
 $ErrorActionPreference = "Stop"
@@ -45,8 +48,8 @@ $initiativeCategory = $epicCategories | Where-Object name -eq 'Initiative'
 
 Write-Progress -Activity $activityName -Status "Adding new schemes, scopes, workitems"
 
-$testScheme = "PSValveScheme3"
-$testScope = "PSValveScope"
+$testScheme = "PSValveSchemeMon1"
+$testScope = "PSValveScopeMon1"
 
 # constants
 $OID_NULL = 'NULL'
@@ -77,16 +80,16 @@ if ( -not $scope )
 
 $doneStories = @()
 $storyDefaults = @{Scope=$scope.id;Status=$DONE_STORY_STATUS}
-foreach ( $i in (1..5)) 
+foreach ( $i in (1..10)) 
 {
-    $doneStories += Save-V1Asset (New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="DoneStory$i"})
+    $doneStories += New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="DoneStory$i"} | Save-V1Asset
 } 
 
 $doneChangeSets = @()
 $storyDefaults = @{PrimaryWorkitems=($doneStories | Select id)}
-foreach ( $i in (1..5)) 
+foreach ( $i in (1..10)) 
 {
-    $doneChangeSets += Save-V1Asset (New-V1Asset "ChangeSet" -defaultvalues $storyDefaults -asset @{Name="DoneChangeSet$i"})
+    $doneChangeSets += New-V1Asset "ChangeSet" -defaultvalues $storyDefaults -asset @{Name="DoneChangeSet$i"} | Save-V1Asset 
 } 
 
 
@@ -94,14 +97,14 @@ $ongoingStories = @()
 $storyDefaults = @{Scope=$scope.id}
 foreach ( $i in (1..10)) 
 {
-    $ongoingStories += Save-V1Asset (New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="ongoingStory$i"})
+    $ongoingStories += New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="ongoingStory$i"} | Save-V1Asset
 } 
 
 $ongoingChangeSets = @()
 $storyDefaults = @{PrimaryWorkitems=($ongoingStories | Select id)}
 foreach ( $i in (1..10)) 
 {
-    $ongoingChangeSets += Save-V1Asset (New-V1Asset "ChangeSet" -defaultvalues $storyDefaults -asset @{Name="ChangeSet$i"})
+    $ongoingChangeSets += New-V1Asset "ChangeSet" -defaultvalues $storyDefaults -asset @{Name="ChangeSet$i"}  | Save-V1Asset
 } 
 
 #--------------------------------------------------------------------------------------------
@@ -115,13 +118,13 @@ $defaultEpicProps = @{Description="Added via PS"}
 $epicTypeEpic = $epics | Where-Object name -eq "PSTestEpic"
 if ( -not $epicTypeEpic  )
 {
-    $epicTypeEpic = Save-V1Asset (New-V1Asset -assetType "Epic" -asset @{Name="PSTestEpic";Scope=$scope.id;Category=$epicCategory.id} -defaultvalues $defaultEpicProps)
+    $epicTypeEpic = New-V1Asset -assetType "Epic" -asset @{Name="PSTestEpic";Scope=$scope.id;Category=$epicCategory.id} -defaultvalues $defaultEpicProps | Save-V1Asset 
 }
 
 $epicTypeFeature = $epics | Where-Object name -eq "PSTestFeature"
 if ( -not $epicTypeFeature  )
 {
-    $epicTypeFeature = Save-V1Asset (New-V1Asset -assetType "Epic" -asset @{Name="PSTestFeature";Scope=$scope.id;Category=$featureCategory.id} -defaultvalues $defaultEpicProps)
+    $epicTypeFeature = New-V1Asset -assetType "Epic" -asset @{Name="PSTestFeature";Scope=$scope.id;Category=$featureCategory.id} -defaultvalues $defaultEpicProps | Save-V1Asset 
 }
 
 
@@ -129,6 +132,87 @@ $ongoingStories | Select-Object -First 5 | Set-V1Value -Name Super -Value $epicT
 
 
 $ongoingStories | Select-Object -Skip 5 | Set-V1Value -Name Super -Value $epicTypeFeature.id | Save-V1Asset 
+
+
+$epicTypeSubFeature = $epics | Where-Object name -eq "PSSubFeature"
+if ( -not $epicTypeSubFeature  )
+{
+    $epicTypeSubFeature = New-V1Asset -assetType "Epic" -asset @{Name="PSSubFeature";Scope=$scope.id;Category=$epicCategory.id} -defaultvalues $defaultEpicProps| Save-V1Asset 
+}
+
+$epicTypeInitative = $epics | Where-Object name -eq "PSTestFeature"
+if ( -not $epicTypeInitative  )
+{
+    $epicTypeInitative = New-V1Asset -assetType "Epic" -asset @{Name="PSTestFeature";Scope=$scope.id;Category=$featureCategory.id} -defaultvalues $defaultEpicProps | Save-V1Asset 
+}
+
+
+$doneStories | Select-Object -First 5 | Set-V1Value -Name Super -Value $epicTypeSubFeature.id | Save-V1Asset 
+
+
+$doneStories | Select-Object -Skip 5 | Set-V1Value -Name Super -Value $epicTypeInitative.id | Save-V1Asset 
+
+
+#--------------------------------------------------------------------------------------------*/
+#----------------------------------- FULLY MATURED BUNDLE -----------------------------------*/
+#--------------------------------------------------------------------------------------------*/
+Write-Progress -Activity $activityName -Status "Associating fully matured bundles"
+$MATURED_BUNDLE_PACKAGE = 'Matured Bundle Package'
+
+$defaultBundleValues = @{PackageRevision=1;IsCustomLabel=$false}
+
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSBundle1";PackageReference=$MATURED_BUNDLE_PACKAGE;Phase=$developmentPhase;ChangeSets=$doneChangeSets[0..3]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSBundle1";PackageReference=$MATURED_BUNDLE_PACKAGE;Phase=$testingPhase;ChangeSets=$doneChangeSets[0..3]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSBundle1";PackageReference=$MATURED_BUNDLE_PACKAGE;Phase=$productionPhase;ChangeSets=$doneChangeSets[0..3]} -defaultvalues $defaultBundleValues | Save-V1Asset
+
+#--------------------------------------------------------------------------------------------*/
+#----------------------------------- MIXED BUNDLE -----------------------------------*/
+#--------------------------------------------------------------------------------------------*/
+Write-Progress -Activity $activityName -Status "Associating mixed bundles"
+$MIXED_WI_STATUS_PACKAGE = 'Matured Bundle Package'
+
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSBundle1";PackageReference=$MIXED_WI_STATUS_PACKAGE;Phase=$developmentPhase;ChangeSets=$doneChangeSets+$ongoingChangeSets[0..1]} -defaultvalues $defaultBundleValues | Save-V1Asset
+
+#--------------------------------------------------------------------------------------------*/
+#----------------------------------- ROGUE  -----------------------------------*/
+#--------------------------------------------------------------------------------------------*/
+Write-Progress -Activity $activityName -Status "Rogue Package"
+$ROGUE_PACKAGE = 'Rogue Package'
+
+$storyDefaults = @{Scope=$scope.id}
+$rogueStories = (1..10) | ForEach-Object { New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="DoneStory$($_)"}} | Save-V1Asset
+$rogueChangeSets = (1..10) | ForEach-Object { New-V1Asset "ChangeSet" -asset @{Name="ChangeSet$_"}}  | Save-V1Asset
+
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$ROGUE_PACKAGE;Phase=$developmentPhase;ChangeSets=$doneChangeSets[0..3]+$ongoingChangeSets[0]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$ROGUE_PACKAGE;Phase=$testingPhase;ChangeSets=$doneChangeSets[0..3]+$ongoingChangeSets[0..2]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$ROGUE_PACKAGE;Phase=$productionPhase;ChangeSets=$doneChangeSets[3..4]+$ongoingChangeSets[3]} -defaultvalues $defaultBundleValues | Save-V1Asset
+
+#--------------------------------------------------------------------------------------------
+#----------------------------------- SHARED COMMIT BUNDLE -----------------------------------
+#--------------------------------------------------------------------------------------------
+Write-Progress -Activity $activityName -Status "Shared Commit Package"
+
+$SHARED_COMMIT_PACKAGE = 'Shared Commit Package';
+
+$sharedStories = (1..3) | ForEach-Object { New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="PSSharedCommitStory$($_)"}} | Save-V1Asset
+$sharedChangeSets = (1..3) | ForEach-Object { New-V1Asset "ChangeSet" -asset @{Name="PSSharedCommitChangeSet$_";PrimaryWorkItems=$sharedStories}}  | Save-V1Asset
+
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$SHARED_COMMIT_PACKAGE;Phase=$developmentPhase;ChangeSets=$sharedChangeSets} -defaultvalues $defaultBundleValues | Save-V1Asset
+
+
+#--------------------------------------------------------------------------------------------
+#----------------------------------- SPREAD COMMIT BUNDLE -----------------------------------
+#--------------------------------------------------------------------------------------------
+Write-Progress -Activity $activityName -Status "Spread Commit Package"
+
+$SPREAD_COMMIT_PACKAGE = 'Shared Commit Package';
+
+$spreadStories = (1..6) | ForEach-Object { New-V1Asset "Story" -defaultvalues $storyDefaults -asset @{Name="PSSharedCommitStory$($_)"}} | Save-V1Asset
+$spreadChangeSets = (1..6) | ForEach-Object { New-V1Asset "ChangeSet" -asset @{Name="PSSharedCommitChangeSet$_";PrimaryWorkItems=$spreadStories[0]}}  | Save-V1Asset
+
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$SPREAD_COMMIT_PACKAGE;Phase=$developmentPhase;ChangeSets=$spreadChangeSets[0..1]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$SPREAD_COMMIT_PACKAGE;Phase=$testingPhase;ChangeSets=$spreadChangeSets[2..3]} -defaultvalues $defaultBundleValues | Save-V1Asset
+$null = New-V1Asset-assetType Bundle -asset @{Name="PSRogueBundle1";PackageReference=$SPREAD_COMMIT_PACKAGE;Phase=$productionPhase;ChangeSets=$spreadChangeSets[4..5]} -defaultvalues $defaultBundleValues | Save-V1Asset
 
 
 }

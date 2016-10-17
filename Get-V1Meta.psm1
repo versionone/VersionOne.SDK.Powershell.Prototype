@@ -1,9 +1,30 @@
+$script:meta = $null
+$script:sortedKeys = $null
+
+if ( -not (Get-Command PrevTabExpansionV1 -ErrorAction Ignore))
+{
+    Rename-Item Function:\TabExpansion PrevTabExpansionV1
+}
+
+function TabExpansion( $line, $lastword )
+{
+    if ( $script:sortedKeys -and ($line -like '*-V1*-assett* *' -or $line -like "Get-V1Asset* *" ))
+    {
+        if ( $lastword )
+        {
+            return $script:sortedKeys | Where-Object {$_ -like "$lastword*" }
+        }
+        else
+        {
+            return $script:sortedKeys
+        }        
+    }
+    PrevTabExpansionV1 $line $lastWord 
+}
+
 <#
 .Synopsis
 	Get VersionOne meta data about assets
-	
-.Parameter baseUri
-	baseUri for the server
 
 .Parameter Force
 	force reload from the server
@@ -11,18 +32,16 @@
 .Link
     https://community.versionone.com/VersionOne_Connect/Developer_Library/Getting_Started/Platform_Concepts/Endpoints/rest-1.v1%2F%2FData
 
+    REST API documentation
+
 .Outputs
 	HashTable of Asset names to data about them
 
 #>
-$script:meta = $null
-
 function Get-V1Meta
 {
 [CmdletBinding()]
 param(
-[Parameter(Mandatory)]    
-[string] $baseUri,
 [switch] $Force
 )
     Set-StrictMode -Version Latest
@@ -33,12 +52,13 @@ param(
         return $script:meta;
     }
 
-    $metaJson = Invoke-RestMethod -Uri "http://$baseUri/meta.v1" -Headers @{Accept="application/json"}
-
-    $script:meta = @{}
     $activityName = "Processing meta (once per PowerShell session)"
 
-    Write-Progress -Activity $activityName -PercentComplete 0 
+    Write-Progress -Activity $activityName -PercentComplete 0 -CurrentOperation "Getting meta from server..." 
+
+    $metaJson = Invoke-RestMethod -Uri "http://$(Get-V1BaseUri)/meta.v1" -Headers @{Accept="application/json"}
+
+    $script:meta = @{}
     $i = 0
     $properties = $metaJson.AssetTypes | Get-Member -MemberType Properties
     if ( $properties )
@@ -70,9 +90,10 @@ param(
         Write-Progress -Activity $activityName -Completed 
 
     }
+    $script:sortedKeys = $script:meta.Keys | sort
 
     return $script:meta
 
 }
 
-Export-ModuleMember -Function "*-*"
+Export-ModuleMember -Function "*"

@@ -6,14 +6,16 @@ param(
 [string] $assetType,
 [Parameter(Mandatory,ValueFromPipeline)]
 [hashtable] $asset,
-[hashtable] $defaultvalues = @{},
-[switch] $full,
-[Parameter(Mandatory)]    
-[string] $baseUri
+[ValidateNotNull()]
+[hashtable] $defaultValues = @{},
+[switch] $full
 )
+
+process
+{
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1AssetType -assetType $assetType -baseUri $baseUri
+    $assetMeta = Get-V1AssetType -assetType $assetType
 
     $ret = @{AssetType=$assetType}+$asset+$defaultValues
     
@@ -32,3 +34,4 @@ param(
     return [PSCustomObject]$ret
 }
 
+}

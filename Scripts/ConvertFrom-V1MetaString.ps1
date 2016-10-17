@@ -3,22 +3,22 @@
 [CmdletBinding()]
 param(
 [Parameter(Mandatory)]
-[string] $assetTypeName,
+[string] $assetType,
 [Parameter(Mandatory)]
 [string] $attributeName,
 [string] $attributeValue
 )
     $meta = Get-V1Meta
 
-    $assetType = $meta[$assetTypeName]
-    if ( $assetType )
+    $assetMeta = $meta[$assetType]
+    if ( $assetMeta )
     {
         if ( $attributeValue -eq $null )
         {
             return null;
         }
 
-        $attrDef = $assetType.AssetType.AttributeDefinition | Where-Object name -eq $attributeName;
+        $attrDef = $assetMeta.AssetType.AttributeDefinition | Where-Object name -eq $attributeName;
 
         if ( $attrDef )
         {
@@ -46,11 +46,11 @@ param(
         }
         else
         {
-            throw "AssetType '$assetTypeName' does not have attribute of '$attributeName'"
+            throw "AssetType '$assetType' does not have attribute of '$attributeName'"
         }
     }
     else
     {
-        throw "AssetType of name '$assetTypeName' not found in meta"
+        throw "AssetType of name '$assetType' not found in meta"
     }
 }

@@ -6,25 +6,36 @@
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
 
 .Parameter ID
-	optional ID to specify to get just one item
+	optional ID to specify to get just one item, can be <type>:num, or just the number
+
+.Parameter properties
+	optional list of properties to return, otherwise it returns default set
 
 .Parameter filter
 	optional filter for limiting results
 
-.Parameter token
-	security token
-
-.Parameter baseUri
-	baseUri for the REST server
-
 .Outputs
 	Asset objects of the given type
+
+.Notes 
+    https://community.versionone.com/VersionOne_Connect/Developer_Library/Learn_the_API/Data_API/Queries/select
+
+    REST API select help    
+
+    https://community.versionone.com/VersionOne_Connect/Developer_Library/Learn_the_API/Data_API/Queries/filter
+
+    REST API filter help
 
 .Example
     Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
     $scopes = Get-V1Asset -assetType "Scope" -properties "Name"
 
     Get all scopes, just the Name field
+
+.Example
+    Get-V1Asset -assetType ChangeSet -id 4434
+
+    Get a changeset with id of 4434    
 #>
 function Get-V1Asset
 {
@@ -32,19 +43,26 @@ function Get-V1Asset
 param(
 [Parameter(Mandatory)]
 [string] $assetType,
-[int] $ID,
+$ID,
 [string[]] $properties,
-[Parameter(Mandatory)]
-[string] $token,
-[string] $baseUri = "localhost/VersionOne.Web"
+[string] $filter
 )
     Set-StrictMode -Version Latest
 
-    Write-Verbose( "BaseUri: $baseUri AssetType: $assetType Properties: $properties ID: $ID" )
+    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Properties: $properties ID: $ID" )
 
-    $uri = "http://$baseUri/rest-1.v1/Data/$assetType"
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType"
     if ( $ID )
     {
+        if ( $ID -is "string" -and $ID -like "*:*" )
+        {
+            $parts = ($ID -split ":")
+            if ( $parts[0] -ne $assetType )
+            {
+                throw "AssetType of $assetType does not match type in ID of $($parts[0])"
+            }
+            $ID = $parts[1]
+        }
         $uri += "/$ID"
     }
     if ( $properties )
@@ -52,9 +70,16 @@ param(
         $uri += "?sel=$($properties -join ",")"
     }
 
-    $result = (Invoke-RestMethod -Uri $uri -ContentType "application/json"  `
+    $result = Invoke-RestMethod -Uri $uri -ContentType "application/json"  `
             -Method GET `
-            -headers @{Authorization="Bearer $token";Accept="application/json";})
+            -headers (@{Accept="application/json";}+$script:authorizationHeader)
+
+    if ( $filter )
+    {
+        #TODO
+        Write-Warning "Filters not yet implmented"
+    }   
+
     if ( $result | Get-Member -Name "Assets" )
     {
         $result.Assets | ConvertFrom-V1Json

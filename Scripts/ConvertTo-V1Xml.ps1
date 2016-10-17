@@ -15,10 +15,11 @@ function ConvertTo-V1Xml
 [CmdletBinding()]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
-[object] $asset,
-[Parameter(Mandatory)]
-[string] $baseUri  
+[object] $asset  
 )
+
+process
+{
     Set-StrictMode -Version Latest
     
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
@@ -26,7 +27,7 @@ param(
         throw "Must supply object with AssetType property"
     }
 
-    $assetMeta =  Get-V1AssetType -assetType $asset.AssetType -baseUri $baseUri
+    $assetMeta =  Get-V1AssetType -assetType $asset.AssetType
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )
@@ -97,3 +98,4 @@ param(
     $xml
 }
 
+}

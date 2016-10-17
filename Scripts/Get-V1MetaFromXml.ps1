@@ -4,7 +4,6 @@ function Get-V1MetaFromXml
 {
 [CmdletBinding()]
 param(
-[string] $baseUri = "localhost/VersionOne.Web"
 )
     Set-StrictMode -Version Latest
 
@@ -14,8 +13,8 @@ param(
         return $script:meta;
     }
 
-    $metaXml = [xml](Invoke-WebRequest -Uri "http://$baseUri/meta.v1")
-    $metaJson = Invoke-RestMethod -Uri "http://$baseUri/meta.v1" -Headers @{Accept="application/json"}
+    $metaXml = [xml](Invoke-WebRequest -Uri "http://$(Get-V1BaseUri)/meta.v1")
+    $metaJson = Invoke-RestMethod -Uri "http://$(Get-V1BaseUri)/meta.v1" -Headers @{Accept="application/json"}
 
     function getBase( $o )
     { 

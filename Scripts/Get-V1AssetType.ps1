@@ -4,12 +4,11 @@ param(
 [Parameter(Mandatory)]    
 [string] $assetType, 
 [switch] $dontThrowIfNotExists, 
-[switch] $alsoReadOnly,
-[string] $baseUri )
+[switch] $alsoReadOnly)
 
     Set-StrictMode -Version Latest
 
-    $meta = Get-V1Meta $baseUri
+    $meta = Get-V1Meta
     $ret = $meta[$assetType]
     if (-not $ret -and -not $dontThrowIfNotExists)  
     {
