@@ -42,17 +42,3 @@ $assetXml
     }
     return [PSCustomObject]$ret
 }
-
-
-<#
-#$admin = Invoke-RestMethod 'http://localhost/versionone.web/rest-1.v1/Data/Member/20' -H @{Authorization = 'Bearer 1.S204ONwj0diJNR5DThJ6h1BkbfU=';Accept='application/json'}
-
-# ?sel=attr1,attr2
-
-$attrs = "" # "?sel=Name"
-$admin = Invoke-RestMethod "http://localhost/versionone.web/rest-1.v1/Data/Member/20$attrs" -H @{Authorization = 'Bearer 1.S204ONwj0diJNR5DThJ6h1BkbfU=';Accept='application/xml'}
-
-$o = [PSCustomObject](ConvertFrom-V1Json $admin)
-$o
-
-#> 

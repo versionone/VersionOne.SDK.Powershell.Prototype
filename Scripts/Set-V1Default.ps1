@@ -5,12 +5,13 @@ if ( $env:V1_API_TOKEN)
 }
 else
 {
-    $script:authorizationHeader = @{}
+    $script:authorizationHeader = $null
 }
 if ( $script:authorizationHeader -or $script:baseUri )
 {
-    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI and `$env:V1_API_TOKEN.  Call Set-V1Default to change them."
+    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI ($env:V1_BASE_URI) and `$env:V1_API_TOKEN ($env:V1_API_TOKEN).  Call Set-V1Default to change them."
 }
+$script:credential = $null
 
 function Set-V1Default
 {
@@ -18,9 +19,7 @@ param(
 [Parameter(Mandatory)]
 [string] $baseUri,
 [Parameter(Mandatory,ParameterSetName="User")]
-[string] $user,
-[Parameter(Mandatory,ParameterSetName="User")]
-[securestring] $password,
+[PSCredential] $credential,
 [Parameter(Mandatory,ParameterSetName="Token")]
 [string] $token)
 
@@ -34,7 +33,7 @@ param(
     }
     else 
     {
-        $script:authorizationHeader = @{AUTHORIZATION="Basic "+$([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${username}:$password" )))}    
+        $script:credential = $credential    
     }
 }
 

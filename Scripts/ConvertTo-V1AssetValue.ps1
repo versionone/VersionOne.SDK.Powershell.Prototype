@@ -1,7 +1,6 @@
 function ConvertTo-V1AssetValue
 {
 param(    
-[Parameter(Mandatory)]
 $value, 
 [Parameter(Mandatory)]
 $attributeMeta )

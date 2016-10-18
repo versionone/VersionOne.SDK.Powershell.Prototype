@@ -35,11 +35,10 @@ process
         $body = (ConvertTo-V1Xml $asset)
         try 
         {
-            $result = Invoke-RestMethod -Uri $uri `
+            $result = InvokeApi -Uri $uri `
                     -Body $body `
                     -ContentType "application/xml"  `
-                    -Method POST `
-                    -headers (@{Accept="application/json";}+$script:authorizationHeader)
+                    -Method POST
         }
         catch
         { 

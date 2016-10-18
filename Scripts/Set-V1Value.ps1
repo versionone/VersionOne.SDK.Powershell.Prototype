@@ -34,15 +34,23 @@ process
     $assetMeta = Get-V1AssetProperty $asset $name 
     if ( $assetMeta  )
     {
-        if ( -not (Get-Member -Input $asset -name $name ))
+        if ( $assetMeta.IsReadOnly )
         {
-            Add-Member -InputObject $asset -MemberType NoteProperty -Name $name -Value (ConvertTo-V1AssetValue $value $assetMeta)
+           throw "Property $name on asset of type $($asset.AssetType) is READ ONLY" 
         }
         else
         {
-            $asset.$name = $value
+            if ( -not (Get-Member -Input $asset -name $name ))
+            {
+                $value = ConvertTo-V1AssetValue $value $assetMeta
+                Add-Member -InputObject $asset -MemberType NoteProperty -Name $name -value $value
+            }
+            else
+            {
+                $asset.$name = $value
+            }
+            return $asset
         }
-        return $asset
     }
     else 
     {

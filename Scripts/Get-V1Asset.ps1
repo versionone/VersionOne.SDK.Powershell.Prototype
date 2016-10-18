@@ -51,6 +51,11 @@ $ID,
 
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Properties: $properties ID: $ID" )
 
+    if ( -not (Get-V1Meta)[$assetType] )
+    {
+        throw "$assetType was not found in meta"
+    }
+    
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType"
     if ( $ID )
     {
@@ -70,9 +75,7 @@ $ID,
         $uri += "?sel=$($properties -join ",")"
     }
 
-    $result = Invoke-RestMethod -Uri $uri -ContentType "application/json"  `
-            -Method GET `
-            -headers (@{Accept="application/json";}+$script:authorizationHeader)
+    $result =  InvokeApi -Uri $uri
 
     if ( $filter )
     {
