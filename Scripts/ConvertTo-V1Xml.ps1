@@ -42,7 +42,7 @@ process
     {
         $xml = "<Asset>`n"
         $addedKeys = @()
-
+        
         foreach ( $m in $asset | Get-Member -MemberType Properties )
         {
             $name = $m.name
@@ -89,10 +89,13 @@ process
         } 
         $xml += "</Asset>"
 
-        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $addedKeys }
-        if ( $missingRequired )
+        if ( $addedKeys -notcontains "id") # if updating don't check for missing 
         {
-            throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $addedKeys }
+            if ( $missingRequired )
+            {
+                throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+            }
         }
     }
     $xml

@@ -59,7 +59,7 @@ $ID,
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType"
     if ( $ID )
     {
-        if ( $ID -is "string" -and $ID -like "*:*" )
+        if ( $ID -is "string" -and $ID.Contains(":") )
         {
             $parts = ($ID -split ":")
             if ( $parts[0] -ne $assetType )
@@ -75,13 +75,20 @@ $ID,
         $uri += "?sel=$($properties -join ",")"
     }
 
-    $result =  InvokeApi -Uri $uri
-
     if ( $filter )
     {
-        #TODO
-        Write-Warning "Filters not yet implmented"
+        if ( $uri.Contains("?"))
+        {
+            $uri += "&"
+        }
+        else
+        {
+            $uri += "?"
+        }
+        $uri += "where=$filter"
     }   
+
+    $result =  InvokeApi -Uri $uri
 
     if ( $result | Get-Member -Name "Assets" )
     {

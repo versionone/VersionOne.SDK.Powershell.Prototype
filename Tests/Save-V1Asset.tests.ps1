@@ -32,6 +32,19 @@ Describe "NewV1Asset" {
         }
 	}
 
+    It "Updates a category" {
+        $epicCat = (Get-V1Asset EpicCategory -properties Name,Description) | Select -First 1
+        $epicCat | Should not be $null
+
+        $now = (Get-Date).ToString()
+        $epicCat.Description = $now
+        $savedCat = Save-V1Asset $epicCat
+        $savedCat | Should not be $null
+
+        $retrievedEpic = Get-V1Asset EpicCategory -id $savedCat.id
+        $retrievedEpic.Description | Should be $now
+    }
+
     AfterAll {
         $InformationPreference = $script:prevInfoSetting
     }

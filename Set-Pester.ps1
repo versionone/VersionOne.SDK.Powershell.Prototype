@@ -7,4 +7,8 @@ param(
 
      $env:V1_BASE_URI = $baseUri
      $env:V1_API_TOKEN = $token
+	 if ( ${Function:Set-V1Default} )
+	 {
+		Set-V1Default -baseUri $baseUri -token $token
+	 }
 

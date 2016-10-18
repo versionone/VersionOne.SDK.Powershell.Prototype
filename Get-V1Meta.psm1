@@ -1,25 +1,40 @@
 $script:meta = $null
 $script:sortedKeys = $null
 
-if ( -not (Get-Command PrevTabExpansionV1 -ErrorAction Ignore))
+if ( -not $Function:PrevTabExpansionV1 -and $Function:TabExpansion)
 {
     Rename-Item Function:\TabExpansion PrevTabExpansionV1
 }
 
 function TabExpansion( $line, $lastword )
 {
-    if ( $script:sortedKeys -and ($line -like '*-V1*-assett* *' -or $line -like "Get-V1Asset* *" ))
+    if ( $script:sortedKeys )
     {
-        if ( $lastword )
+        if ( $line  -match "-V1ass\w* +(?:-ass\w+ (\w+)|(\w+)) +-pr\w* ")
         {
-            return $script:sortedKeys | Where-Object {$_ -like "$lastword*" }
+            if ( $script:sortedKeys -contains $Matches[0])
+            {
+                return $script:meta[$Matches[0]].keys | sort
+            }
         }
-        else
+        elseif ( ($line -like '*-V1*-assett* *' -or $line -match "(New|Get)-V1Asset +$" ))
         {
-            return $script:sortedKeys
-        }        
+            # assetType 
+            if ( $lastword )
+            {
+                return $script:sortedKeys | Where-Object {$_ -like "$lastword*" }
+            }
+            else
+            {
+                return $script:sortedKeys
+            }        
+        }
     }
-    PrevTabExpansionV1 $line $lastWord 
+
+    if ( $Function:PrevTabExpansionV1 )
+    {
+        PrevTabExpansionV1 $line $lastWord 
+    }
 }
 
 <#
@@ -56,6 +71,7 @@ param(
 
     Write-Progress -Activity $activityName -PercentComplete 0 -CurrentOperation "Getting meta from server..." 
 
+    Write-Verbose "Loading meta from http://$(Get-V1BaseUri)/meta.v1"
     $metaJson = Invoke-RestMethod -Uri "http://$(Get-V1BaseUri)/meta.v1" -Headers @{Accept="application/json"}
 
     $script:meta = @{}

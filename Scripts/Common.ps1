@@ -17,6 +17,8 @@ $body = $null
 
     Set-StrictMode -Version Latest
 
+    Write-Verbose "Calling $uri"
+    
     if ( $script:credential )
     {
         Invoke-RestMethod -Uri $uri -ContentType $contentType  `
