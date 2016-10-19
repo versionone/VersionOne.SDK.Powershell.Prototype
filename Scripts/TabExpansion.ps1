@@ -1,4 +1,6 @@
 $script:sortedKeys = $null
+$script:debuggingTab = $false
+Set-StrictMode -Version Latest
 
 if ( -not $Function:PrevTabExpansionV1 -and $Function:TabExpansion)
 {
@@ -9,22 +11,34 @@ function TabExpansion( $line, $lastword )
 {
     if ( -not $script:sortedKeys )
     {
-        $script:sortedKeys = (Get-V1Meta).Keys | sort
+        $script:sortedKeys = (Get-V1Meta -noLoad).Keys | sort
     }
 
-    [System.IO.File]::AppendText("C:\temp\tabexpansion.txt", ">$line<\t>$lastword<`n")
-    if ( $line  -match "-V1ass\w* +(?:-ass\w+ (\w+)|(\w+)) +-pr\w* ")
+    if ( $script:debuggingTab) { [System.IO.File]::AppendAllText("C:\temp\tabexpansion.txt", ">$line<`t>$lastword<`n") }
+
+    # already have assetType and completing attributes
+    if ( $line -match "-V1ass\w* +(?:-as\w+)?(\w+).*(?:-pr\w* *)?(?:\w*|, *\w*)$" )
     {
-        [System.IO.File]::AppendText("C:\temp\tabexpansion.txt", "Match! $($Matches[0])`n")
-        if ( $script:sortedKeys -contains $Matches[0])
+        if ( $script:debuggingTab) { [System.IO.File]::AppendAllText("C:\temp\tabexpansion.txt", "Match! $($Matches[1])`n") }
+
+        if ( $script:sortedKeys -contains $Matches[1])
         {
-            return $script:meta[$Matches[0]].keys | sort
+         
+            $lastword = $lastword -split "," | Select-Object -Last 1
+            if ( $lastword )
+            {
+                return (Get-V1Meta -assetType $Matches[1]).keys | Where-Object {$_ -like "$lastword*" } | Sort-Object
+            }
+            else
+            {
+                return (Get-V1Meta -assetType $Matches[1]).keys | Sort-Object
+            }        
         }
     }
     
-    if ( $script:sortedKeys -and ($line -like '*-V1*-assett* *' -or $line -match "(New|Get)-V1Asset +$" ))
+    # complete assetType
+    if ( $script:sortedKeys -and ($line -like '*-V1*-assett* *' -or $line -match "(New|Get)-V1Asset +\w*$" ))
     {
-        # assetType 
         if ( $lastword )
         {
             return $script:sortedKeys | Where-Object {$_ -like "$lastword*" }

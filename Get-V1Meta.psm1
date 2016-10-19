@@ -1,39 +1,14 @@
 $script:meta = $null
-$script:sortedKeys = $null
 
-if ( -not $Function:PrevTabExpansionV1 -and $Function:TabExpansion)
+function returnMeta( $assetType )
 {
-    Rename-Item Function:\TabExpansion PrevTabExpansionV1
-}
-
-function TabExpansion( $line, $lastword )
-{
-    if ( $script:sortedKeys )
+    if ( $assetType )
     {
-        if ( $line  -match "-V1ass\w* +(?:-ass\w+ (\w+)|(\w+)) +-pr\w* ")
-        {
-            if ( $script:sortedKeys -contains $Matches[0])
-            {
-                return $script:meta[$Matches[0]].keys | sort
-            }
-        }
-        elseif ( ($line -like '*-V1*-assett* *' -or $line -match "(New|Get)-V1Asset +$" ))
-        {
-            # assetType 
-            if ( $lastword )
-            {
-                return $script:sortedKeys | Where-Object {$_ -like "$lastword*" }
-            }
-            else
-            {
-                return $script:sortedKeys
-            }        
-        }
+        return $script:meta[$assetType]
     }
-
-    if ( $Function:PrevTabExpansionV1 )
+    else
     {
-        PrevTabExpansionV1 $line $lastWord 
+        return $script:meta
     }
 }
 
@@ -43,6 +18,9 @@ function TabExpansion( $line, $lastword )
 
 .Parameter Force
 	force reload from the server
+
+.Parameter AssetType
+    An asset type to get a hash table of attributes.  Same as (Get-V1Meta)[$assetType]    
 
 .Link
     https://community.versionone.com/VersionOne_Connect/Developer_Library/Getting_Started/Platform_Concepts/Endpoints/rest-1.v1%2F%2FData
@@ -57,14 +35,36 @@ function Get-V1Meta
 {
 [CmdletBinding()]
 param(
-[switch] $Force
+[string] $assetType,
+[switch] $Force,
+[switch] $noLoad
 )
     Set-StrictMode -Version Latest
 
-    if ( $script:meta -and -not $Force )
+    $tempFile = Join-Path ($env:APPDATA) "V1Api\meta\$((Get-V1BaseUri) -replace '[\\/:]','_').xml"
+
+    if ( -not $Force )
     {
-        Write-Verbose "Meta already loaded"
-        return $script:meta;
+        if ( $script:meta  )
+        {
+            Write-Verbose "Meta already loaded"
+            return returnMeta $assetType
+        }
+
+        if ( Test-Path $tempFile -PathType Leaf )
+        {
+            try 
+            {
+                $script:meta = Import-Clixml $tempFile
+                Write-Verbose "Read meta from cache file $tempFile"
+                return returnMeta $assetType
+            }
+            catch {}
+        }
+    }
+    if ( $noLoad )
+    {
+        return $null
     }
 
     $activityName = "Processing meta (once per PowerShell session)"
@@ -108,8 +108,23 @@ param(
     }
     $script:sortedKeys = $script:meta.Keys | sort
 
-    return $script:meta
+    try 
+    {
+        $folder = Split-Path $tempFile -Parent
+        if ( -not (Test-Path $folder))
+        {
+            New-Item -Path $folder -ItemType Directory
+        }
+        Export-Clixml -Path $tempFile -InputObject $script:meta
+        Write-Verbose "Wrote meta to cache file $tempFile"
+    }
+    catch 
+    {
+        Write-Warning "Failed to save cache file $tempFile`n$_"
+    }
+
+    return returnMeta $assetType
 
 }
 
-Export-ModuleMember -Function "*"
+Export-ModuleMember -Function "*-*"
