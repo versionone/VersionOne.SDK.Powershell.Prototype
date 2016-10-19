@@ -1,4 +1,5 @@
-﻿ipmo (Join-path $PSScriptRoot V1.psm1) -Force
+﻿ipmo (Join-path $PSScriptRoot "..\V1.psm1") -Force
+
 cls
 
 $error.Clear()
@@ -16,22 +17,22 @@ $epicCategories = Get-V1Asset -assetType "EpicCategory" -properties "Name"
 
 $epics = Get-V1Asset -assetType "Epic"
 
-$testScheme = "JimTestScheme1"
-$testScope = "JimTestScope1"
+$testScheme = "PSTestScheme1"
+$testScope = "PSTestScope1"
 
 $scheme = $Schemes | Where-Object name -eq $testScheme | Select -first 1
 if ( -not $scheme )
 {
     Write-Information "Adding Scheme $testScheme"
-    $scheme = New-V1Asset -assetType Scheme -asset @{Name = $testScheme}
-    $scheme = Save-V1Asset -asset $scheme -Verbose -WhatIf
+    $scheme = New-V1Asset -assetType Scheme -properties @{Name = $testScheme}
+    $scheme = Save-V1Asset -asset $scheme 
 }
 
 $scope = $scopes | Where-Object name -eq $testScope | Select -first 1
 if ( -not $scope )
 {
     Write-Information "Adding scope $testScope"
-    $scope = New-V1Asset -assetType Scope -asset @{BeginDate=(Get-Date -f 'd')
+    $scope = New-V1Asset -assetType Scope -properties @{BeginDate=(Get-Date -f 'd')
                                                    Name = $testScope
                                                    Parent = "Scope:0"
                                                    Scheme = $scheme.id}
@@ -47,7 +48,7 @@ foreach ( $i in (1..10) )
     if ( -not ($epics | Where-Object name -eq "PSTestEpic$i") )
     {
         Write-Information "Adding Epic PSTestEpic$i"
-        $epic = New-V1Asset -assetType "Epic" -asset @{Name="PSTestEpic$i";Scope=$scope.id} -defaultvalues $defaultEpicProps
+        $epic = New-V1Asset -assetType "Epic" -properties @{Name="PSTestEpic$i";Scope=$scope.id} -defaultproperties $defaultEpicProps
         
         $newEpics += Save-V1Asset $epic
     }
@@ -55,7 +56,7 @@ foreach ( $i in (1..10) )
 }
 
 
-   $scope = New-V1Asset -assetType Scope -asset @{BeginDate=(Get-Date -f 'd')
+   $scope = New-V1Asset -assetType Scope -properties @{BeginDate=(Get-Date -f 'd')
                                                    Name = $testScope
                                                    Parent = "Scope:0"
                                                    Scheme = $scheme.id

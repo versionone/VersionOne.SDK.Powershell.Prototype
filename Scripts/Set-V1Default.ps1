@@ -26,6 +26,15 @@ $script:credential = $null
 .Parameter token
 	V1 Application token
 
+.Example
+    Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+
+    Set the defaults with a token    
+
+.Example
+    Set-V1Default -baseUri "localhost/VersionOne.Web" -credential (Get-Credential)
+
+    Set the defaults with a credential object.  This will prompt you for credentials    
 #>
 function Set-V1Default
 {
