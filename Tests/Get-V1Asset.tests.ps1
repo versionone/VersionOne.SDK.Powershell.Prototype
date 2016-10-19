@@ -32,6 +32,10 @@ Describe "GetV1Asset" {
 		(Get-V1Asset EpicCategory -filter "AssetState='64'").Count | Should not be 0
 	}
 	
+	It "Tries to get invalid asset id " {
+		 Get-V1Asset Story -ID 99999999  | should be $null
+	}
+	
 	It "Tries to get invalid asset type" {
 		 { Get-V1Asset blah } | should throw "blah was not found in meta"
 	}

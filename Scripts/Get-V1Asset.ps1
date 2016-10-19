@@ -90,13 +90,19 @@ $ID,
 
     $result =  InvokeApi -Uri $uri
 
-    if ( $result | Get-Member -Name "Assets" )
+    if ( $result )
     {
-        $result.Assets | ConvertFrom-V1Json
+        if ( $result | Get-Member -Name "Assets" )
+        {
+            $result.Assets | ConvertFrom-V1Json
+        }
+        else
+        {
+            $result | ConvertFrom-V1Json
+        }
     }
-    else
+    else 
     {
-        $result | ConvertFrom-V1Json
+        return $null    
     }
-
 }

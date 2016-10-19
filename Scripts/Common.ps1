@@ -1,5 +1,5 @@
 <#
-    Helper to call the api, handling credentials
+    Helper to call the api, handling credentials, and not found exception
 #>
 function InvokeApi
 {
@@ -19,21 +19,39 @@ $body = $null
 
     Write-Verbose "Calling $uri"
     
-    if ( $script:credential )
+    try 
     {
-        Invoke-RestMethod -Uri $uri -ContentType $contentType  `
-                -Method $method `
-                -Body $body `
-                -headers @{Accept=$acceptHeader} `
-                -Credential $script:credential
+        if ( $script:credential )
+        {
+            Invoke-RestMethod -Uri $uri -ContentType $contentType  `
+                    -Method $method `
+                    -Body $body `
+                    -headers @{Accept=$acceptHeader} `
+                    -Credential $script:credential
+        }
+        else
+        {
+            Invoke-RestMethod -Uri $uri -ContentType $contentType  `
+                    -Method $method `
+                    -Body $body `
+                    -headers (@{Accept=$acceptHeader}+$script:authorizationHeader)
+        }
     }
-    else
+    catch 
     {
-        Invoke-RestMethod -Uri $uri -ContentType $contentType  `
-                -Method $method `
-                -Body $body `
-                -headers (@{Accept=$acceptHeader}+$script:authorizationHeader)
+        $myError = $_
+        try 
+        {
+            if ( $_.exception.response.statusCode -eq [System.Net.HttpStatusCode]::NotFound )
+            {
+                return $null
+            }
+            throw $myError
+        }
+        catch 
+        {
+            throw $myError
+        }
     }
 }
-
 

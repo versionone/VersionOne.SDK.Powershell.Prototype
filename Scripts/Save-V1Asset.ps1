@@ -1,3 +1,21 @@
+<#
+.Synopsis
+	Save (add or update) a V1 Asset
+	
+.Description
+	If the asset has an id, it will update it, otherwise it will create it
+
+.Parameter asset
+	The asset object returned from Get-V1Asset or New-V1Asset
+
+.Outputs
+	The created or updated asset
+
+.Example
+    $savedStory = New-V1Asset Story -properties @{Name="Test";Scope="Scope:0"} | Save-V1Asset 
+
+    New up a story and save it to the server
+#>
 function Save-V1Asset
 {
 [CmdletBinding(SupportsShouldProcess)]

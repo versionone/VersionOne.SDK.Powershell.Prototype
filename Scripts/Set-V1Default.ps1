@@ -13,6 +13,20 @@ if ( $script:authorizationHeader -or $script:baseUri )
 }
 $script:credential = $null
 
+<#
+.Synopsis
+	Set the Uri and credentials to use for V1 API calls
+	
+.Parameter baseUri
+	the base Uri to use, e.g. localhost/VersionOne.Web
+
+.Parameter credential
+	PSCredential object of the user
+
+.Parameter token
+	V1 Application token
+
+#>
 function Set-V1Default
 {
 param(
