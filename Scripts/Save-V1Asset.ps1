@@ -48,14 +48,13 @@ process
         }
     }
 
+    $body = ConvertTo-V1Json $asset
     if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
     {
-        $body = (ConvertTo-V1Xml $asset)
         try 
         {
             $result = InvokeApi -Uri $uri `
                     -Body $body `
-                    -ContentType "application/xml"  `
                     -Method POST
         }
         catch
@@ -66,7 +65,7 @@ process
     }
     else
     {
-        Write-Verbose(ConvertTo-V1Xml $asset)
+        Write-Verbose($body)
     }
 
 }

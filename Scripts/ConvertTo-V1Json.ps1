@@ -28,36 +28,48 @@ process
     }
     else 
     {
+        $addedKeys = @()
         foreach ( $m in $asset | Get-Member -MemberType Properties | Where name -ne "AssetType" )
         {
             $name = $m.name
+            $addedKeys += $name
+
             if ( -not ( $assetMeta.ContainsKey($name)))
             {
                 throw "Attribute name of $name not found on asset of type $($asset.AssetType)"
             }
 
-            if ( $assetMeta[$name].IsMultivalue) 
+            if ($assetMeta.$name.IsReadOnly -or $asset.$name -eq $null)
             {
-                $act = "add"
+                continue;
             }
-            else 
+
+            if ( $assetMeta.$name.AttributeType -eq "Relation" )
             {
-                $act = "set"
+                if ( $assetMeta[$name].IsMultivalue) 
+                {
+                    $values = $asset.$name | ForEach-Object { @{idref=$(getMultiValue $_);act="add"}}
+
+                    $v1Object.Attributes[$name]=@{name=$name;value=$values}
+                }
+                else 
+                {
+                    $v1Object.Attributes[$name]=@{name=$name;value=$asset.$name;act="set"}
+                }
             }
-            if ($assetMeta[$name].RelatedNameRef )
+            else # simple type 
             {
-                $attrName = $assetMeta[$name].RelatedNameRef
+                $v1Object.Attributes[$name]=@{name=$name;value=$asset.$name;act="set"}
             }
-            else
-            {
-                $attrName = $name    
-            }
-            $v1Object.Attributes[$name]=@{Name=$attrName;value=$asset.$name;act=$act}
         } 
-        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $v1Object.Attributes.Keys }
-        if ( $missingRequired )
+
+        if ( $addedKeys -notcontains "id") # if updating don't check for missing 
         {
-            throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $v1Object.Attributes.Keys }
+            if ( $missingRequired )
+            {
+                throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+            }
         }
     }
     ConvertTo-Json $v1Object -Depth 100
