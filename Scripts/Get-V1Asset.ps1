@@ -1,3 +1,21 @@
+function appendToUri 
+{
+param(
+[Parameter(Mandatory)]    
+$uri,
+[Parameter(Mandatory)]    
+$s
+)    
+    if ( $uri.Contains("?"))
+    {
+        return "${uri}&$s"
+    }
+    else
+    {
+        return "${uri}?$s"
+    }
+}
+
 <#
 .Synopsis
 	Get version assets from the sever
@@ -12,19 +30,22 @@
 	optional list of attributes to return, otherwise it returns default set
 
 .Parameter filter
-	optional filter for limiting results
+	optional filter (where clause) for limiting results.  For details run Get-V1Help Filter 
+
+.Parameter sort
+	optional sort attributes. For details run Get-V1Help Sort  
+
+.Parameter startPage
+	optional starting page, first page is 0
+
+.Parameter pageSize
+	optional pageSize, if startPage is used defaults to 1
+
+.Parameter asOf
+	optional asOf DateTime to get an asset as of that time
 
 .Outputs
 	Asset objects of the given type
-
-.Notes 
-    https://community.versionone.com/VersionOne_Connect/Developer_Library/Learn_the_API/Data_API/Queries/select
-
-    REST API select help    
-
-    https://community.versionone.com/VersionOne_Connect/Developer_Library/Learn_the_API/Data_API/Queries/filter
-
-    REST API filter help
 
 .Example
     Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
@@ -35,7 +56,22 @@
 .Example
     Get-V1Asset -assetType ChangeSet -id 4434
 
-    Get a changeset with id of 4434    
+    Get a changeset with id of 4434
+
+.Example
+    Get-V1Asset EpicCategory -asOf 2001-1-1
+
+    Get a epic categories as they looked as of January 1, 2001
+
+.Example 
+    Get-V1Asset Story -attributes Name,Status -pageSize 10 -startPage 0 | ft
+
+    Get name and status of first 10 Stories
+
+.Example
+    Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter "Estimate>'1'" | ft
+
+    Get PrimaryWorkitems that have an estimate > 1.  Note that when not using a variable, you must enclose the filter in double quotes, otherwise it will return an error.            
 #>
 function Get-V1Asset
 {
@@ -45,7 +81,13 @@ param(
 [string] $assetType,
 $ID,
 [string[]] $attributes,
-[string] $filter
+[string] $filter,
+[string] $sort,
+[ValidateRange(-1,[int]::MaxValue)]
+[int] $startPage = -1,
+[ValidateRange(1,[int]::MaxValue)]
+[int] $pageSize = 1,
+[DateTime] $asOf
 )
     Set-StrictMode -Version Latest
 
@@ -70,23 +112,31 @@ $ID,
         }
         $uri += "/$ID"
     }
+
     if ( $attributes )
     {
-        $uri += "?sel=$($attributes -join ",")"
+        $uri = appendToUri $uri "sel=$($attributes -join ",")" 
     }
 
     if ( $filter )
     {
-        if ( $uri.Contains("?"))
-        {
-            $uri += "&"
-        }
-        else
-        {
-            $uri += "?"
-        }
-        $uri += "where=$filter"
+        $uri = appendToUri $uri "where=$filter"
     }   
+
+    if ( $sort )
+    {
+        $uri = appendToUri $uri "sort=$sort"
+    }   
+
+    if ( $startPage -ge 0 )
+    {
+        $uri = appendToUri $uri "page=${pageSize},$startPage"
+    }
+
+    if ( $asOf )
+    {
+        $uri = appendToUri $uri "asof=$($asOf.ToString("s"))"
+    }
 
     $result =  InvokeApi -Uri $uri
 

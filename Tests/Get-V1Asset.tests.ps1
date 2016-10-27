@@ -6,7 +6,7 @@ Describe "GetV1Asset" {
 
          $c = Get-V1Asset Scope
 		 $c | Should not be $null
-		 ($c.Count -gt 0) | Should be $true
+		 ($c.Count -gt 1) | Should be $true
 	}
 
 	It "Gets Scope 0 by ID" {
@@ -19,13 +19,34 @@ Describe "GetV1Asset" {
 
          $c = Get-V1Asset EpicCategory -attributes Name
 		 $c | Should not be $null
-		 ($c.Count -gt 0) | Should be $true
+		 ($c.Count -gt 1) | Should be $true
 
 		($c[0] | Get-Member -MemberType Properties ).Count | Should be 3
 		Get-Member -InputObject $c[0] -Name "AssetType" | Should not be $null
 		Get-Member -InputObject $c[0] -Name "id" | Should not be $null
 		Get-Member -InputObject $c[0] -Name "Name" | Should not be $null
 
+	}
+
+	It "Gets EpicCategories sorted by name" {
+
+         $c = Get-V1Asset EpicCategory -attributes Name -sort Name
+		 $c | Should not be $null
+		 ($c.Count -gt 1) | Should be $true
+
+		 $sortedNames = $c.Name | Sort-Object
+		 (0..($sortedNames.Count-1)) | ForEach-Object { $sortedNames[$_] | Should be $c[$_].Name }
+	}
+
+	It "Gets EpicCategories paged" {
+
+         $c = @(Get-V1Asset EpicCategory -attributes Name -start 0 -pagesize 1)
+		 $c | Should not be $null
+		 $c.Count | Should be 1
+
+         $c = @(Get-V1Asset EpicCategory -attributes Name -start 0 -pagesize 3)
+		 $c | Should not be $null
+		 $c.Count | Should be 3
 	}
 
 	It "Gets epics on AssetState" {

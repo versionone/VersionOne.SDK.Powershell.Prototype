@@ -1,3 +1,25 @@
+<#
+.Synopsis
+	Get the details about an V1 asset's attribute from meta
+	
+.Description
+    This is use in conversion functions
+    
+.Parameter asset
+	the asset object
+
+.Parameter name
+	the name of the attribute on the asset
+
+.Outputs
+	hash table of attribute meta data
+
+.Example
+    $x = Get-V1Asset -assetType EpicCategory
+    Get-V1AssetAttribute $x[0] ColorName
+
+    Show the details about the ColorName attribute on the EpicCategory AssetType
+#>
 function Get-V1AssetAttribute
 {
 param(
