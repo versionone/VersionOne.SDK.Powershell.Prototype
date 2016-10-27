@@ -3,6 +3,7 @@
 function Get-V1MetaFromXml
 {
 [CmdletBinding()]
+[OutputType([System.Collections.Hashtable])]
 param(
 )
     Set-StrictMode -Version Latest
@@ -14,7 +15,6 @@ param(
     }
 
     $metaXml = [xml](Invoke-WebRequest -Uri "http://$(Get-V1BaseUri)/meta.v1")
-    $metaJson = Invoke-RestMethod -Uri "http://$(Get-V1BaseUri)/meta.v1" -Headers @{Accept="application/json"}
 
     function getBase( $o )
     { 
@@ -49,7 +49,7 @@ param(
         return $count
     }
 
-    foreach ( $m in $script:meta.Values | ? Depth -gt 0 )
+    foreach ( $m in $script:meta.Values | Where-Object Depth -gt 0 )
     {
         $m.Depth = getDepth $m 1
     }

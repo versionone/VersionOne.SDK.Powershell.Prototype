@@ -10,8 +10,20 @@ function getMultiValue( $assetValue )
   }
 }
 
+<#
+.Synopsis
+	Convert an object to V1 XML for sending to the REST API
+	
+.Parameter asset
+	An asset created with New-V1Object or converted via ConvertFrom-V1Xml, which is called from Get-V1Asset
+
+.Outputs
+	XML
+
+#>
 function ConvertTo-V1Xml
 {
+[OutputType([string])]    
 [CmdletBinding()]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
@@ -24,10 +36,10 @@ process
     
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
     {
-        throw "Must supply object with AssetType property"
+        throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta =  Get-V1AssetType -assetType $asset.AssetType
+    $assetMeta =  Get-V1AssetTypeMeta -assetType $asset.AssetType
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )
@@ -91,7 +103,7 @@ process
 
         if ( $addedKeys -notcontains "id") # if updating don't check for missing 
         {
-            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $addedKeys }
+            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $addedKeys }
             if ( $missingRequired )
             {
                 throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"

@@ -59,7 +59,9 @@ param(
                 Write-Verbose "Read meta from cache file $tempFile"
                 return returnMeta $assetType
             }
-            catch {}
+            catch {
+                Write-Warning "Error trying to read cache file $tempFile, continuing"
+            }
         }
     }
     if ( $noLoad )
@@ -97,7 +99,7 @@ param(
                 {
                     $simpleName = ($simpleName -split '\.')[1]
                 }
-                $metum[$simpleName] = $metaJson.AssetTypes.$name.Attributes.$attrName | Select Name,IsReadOnly,IsRequired,IsMultivalue,IsCustom,AttributeType,
+                $metum[$simpleName] = $metaJson.AssetTypes.$name.Attributes.$attrName | Select-Object Name,IsReadOnly,IsRequired,IsMultivalue,IsCustom,AttributeType,
                                 @{n="RelatedNameRef";e={if ( $_.AttributeType -eq "Relation"){$_.RelatedAsset.nameref}else{$null}}}
             }
             $meta[$name] = $metum
@@ -106,7 +108,7 @@ param(
         Write-Progress -Activity $activityName -Completed 
 
     }
-    $script:sortedKeys = $script:meta.Keys | sort
+    $script:sortedKeys = $script:meta.Keys | Sort-Object
 
     try 
     {

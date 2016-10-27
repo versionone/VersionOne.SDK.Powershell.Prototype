@@ -12,7 +12,7 @@
 	The created or updated asset
 
 .Example
-    $savedStory = New-V1Asset Story -properties @{Name="Test";Scope="Scope:0"} | Save-V1Asset 
+    $savedStory = New-V1Asset Story -attributes @{Name="Test";Scope="Scope:0"} | Save-V1Asset 
 
     New up a story and save it to the server
 #>
@@ -30,7 +30,7 @@ process
 
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
     {
-        throw "Must supply object with AssetType property"
+        throw "Must supply object with AssetType attribute"
     }
 
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$($asset.AssetType)"

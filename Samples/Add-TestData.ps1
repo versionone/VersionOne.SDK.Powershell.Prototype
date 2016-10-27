@@ -9,11 +9,11 @@ Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q
 
 $null = Get-V1Meta
 
-$scopes = Get-V1Asset -assetType "Scope" -properties "Name"
+$scopes = Get-V1Asset -assetType "Scope" -attributes "Name"
 
-$schemes = Get-V1Asset -assetType "Scheme" -properties "Name"
+$schemes = Get-V1Asset -assetType "Scheme" -attributes "Name"
 
-$epicCategories = Get-V1Asset -assetType "EpicCategory" -properties "Name"
+$epicCategories = Get-V1Asset -assetType "EpicCategory" -attributes "Name"
 
 $epics = Get-V1Asset -assetType "Epic"
 
@@ -24,7 +24,7 @@ $scheme = $Schemes | Where-Object name -eq $testScheme | Select -first 1
 if ( -not $scheme )
 {
     Write-Information "Adding Scheme $testScheme"
-    $scheme = New-V1Asset -assetType Scheme -properties @{Name = $testScheme}
+    $scheme = New-V1Asset -assetType Scheme -attributes @{Name = $testScheme}
     $scheme = Save-V1Asset -asset $scheme 
 }
 
@@ -32,7 +32,7 @@ $scope = $scopes | Where-Object name -eq $testScope | Select -first 1
 if ( -not $scope )
 {
     Write-Information "Adding scope $testScope"
-    $scope = New-V1Asset -assetType Scope -properties @{BeginDate=(Get-Date -f 'd')
+    $scope = New-V1Asset -assetType Scope -attributes @{BeginDate=(Get-Date -f 'd')
                                                    Name = $testScope
                                                    Parent = "Scope:0"
                                                    Scheme = $scheme.id}
@@ -48,7 +48,7 @@ foreach ( $i in (1..10) )
     if ( -not ($epics | Where-Object name -eq "PSTestEpic$i") )
     {
         Write-Information "Adding Epic PSTestEpic$i"
-        $epic = New-V1Asset -assetType "Epic" -properties @{Name="PSTestEpic$i";Scope=$scope.id} -defaultproperties $defaultEpicProps
+        $epic = New-V1Asset -assetType "Epic" -attributes @{Name="PSTestEpic$i";Scope=$scope.id} -defaultAttributes $defaultEpicProps
         
         $newEpics += Save-V1Asset $epic
     }
@@ -56,7 +56,7 @@ foreach ( $i in (1..10) )
 }
 
 
-   $scope = New-V1Asset -assetType Scope -properties @{BeginDate=(Get-Date -f 'd')
+   $scope = New-V1Asset -assetType Scope -attributes @{BeginDate=(Get-Date -f 'd')
                                                    Name = $testScope
                                                    Parent = "Scope:0"
                                                    Scheme = $scheme.id

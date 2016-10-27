@@ -1,6 +1,18 @@
+<#
+.Synopsis
+	Convert an object to V1 JSON for sending to the REST API
+	
+.Parameter asset
+	An asset created with New-V1Object or converted via ConvertFrom-V1Json, which is called from Get-V1Asset
+
+.Outputs
+	JSON
+
+#>
 function ConvertTo-V1Json
 {
 [CmdletBinding()]
+[OutputType([string])]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
 [object] $asset  
@@ -12,10 +24,10 @@ process
     
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
     {
-        throw "Must supply object with AssetType property"
+        throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta =  Get-V1AssetType -assetType $asset.AssetType
+    $assetMeta =  Get-V1AssetTypeMeta -assetType $asset.AssetType
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )
@@ -29,7 +41,7 @@ process
     else 
     {
         $addedKeys = @()
-        foreach ( $m in $asset | Get-Member -MemberType Properties | Where name -ne "AssetType" )
+        foreach ( $m in $asset | Get-Member -MemberType Properties | Where-Object name -ne "AssetType" )
         {
             $name = $m.name
             $addedKeys += $name
@@ -65,7 +77,7 @@ process
 
         if ( $addedKeys -notcontains "id") # if updating don't check for missing 
         {
-            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $v1Object.Attributes.Keys }
+            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $v1Object.Attributes.Keys }
             if ( $missingRequired )
             {
                 throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"

@@ -8,8 +8,8 @@
 .Parameter ID
 	optional ID to specify to get just one item, can be <type>:num, or just the number
 
-.Parameter properties
-	optional list of properties to return, otherwise it returns default set
+.Parameter attributes
+	optional list of attributes to return, otherwise it returns default set
 
 .Parameter filter
 	optional filter for limiting results
@@ -28,7 +28,7 @@
 
 .Example
     Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
-    $scopes = Get-V1Asset -assetType "Scope" -properties "Name"
+    $scopes = Get-V1Asset -assetType "Scope" -attributes "Name"
 
     Get all scopes, just the Name field
 
@@ -44,12 +44,12 @@ param(
 [Parameter(Mandatory)]
 [string] $assetType,
 $ID,
-[string[]] $properties,
+[string[]] $attributes,
 [string] $filter
 )
     Set-StrictMode -Version Latest
 
-    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Properties: $properties ID: $ID" )
+    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Attributes: $attributes ID: $ID" )
 
     if ( -not (Get-V1Meta)[$assetType] )
     {
@@ -70,9 +70,9 @@ $ID,
         }
         $uri += "/$ID"
     }
-    if ( $properties )
+    if ( $attributes )
     {
-        $uri += "?sel=$($properties -join ",")"
+        $uri += "?sel=$($attributes -join ",")"
     }
 
     if ( $filter )

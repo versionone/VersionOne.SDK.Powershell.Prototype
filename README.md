@@ -20,7 +20,7 @@ There are many functions that get loaded by the module, some of which are called
 | Function                | Description |
 |-------------------------|-------------|
 |`Get-V1Meta`| Loads and caches meta locally.  Certain function will call this to load meta.  Once this is called you can use tab completion for assetType and assetAttribute names! (Use -Force to reload from the server)|
-|`Get-V1Asset`| Gets one or more assets, depending on parameters.  Can select properties to return, and a filter. |
+|`Get-V1Asset`| Gets one or more assets, depending on parameters.  Can select attributes to return, and a filter. |
 |`New-V1Asset`| Creates an asset from a hash table, validating against meta.  Can fill in required parameters.  Pass to Save-V1Meta. |
 |`Set-V1Value`| Sets a value on an object, adding it if not there.  Tab-completion works and the names are validated |
 |`Save-V1Asset`| Saves the asset.  If it has an id is will try to update, it otherwise it will create it.  Assets from New-V1Asset do not have an id, ones from Get-V1Asset will. |

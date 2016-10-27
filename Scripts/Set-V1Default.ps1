@@ -42,6 +42,7 @@ param(
 [Parameter(Mandatory)]
 [string] $baseUri,
 [Parameter(Mandatory,ParameterSetName="User")]
+[System.Management.Automation.CredentialAttribute()]
 [PSCredential] $credential,
 [Parameter(Mandatory,ParameterSetName="Token")]
 [string] $token)

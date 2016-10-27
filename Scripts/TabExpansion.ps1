@@ -1,3 +1,7 @@
+<#
+    V1 PowerShell SDK Tab expansion helper function to allow 
+    tab expansion of asset types and their attributes
+#>
 $script:sortedKeys = $null
 $script:debuggingTab = $false
 Set-StrictMode -Version Latest
@@ -11,7 +15,7 @@ function TabExpansion( $line, $lastword )
 {
     if ( -not $script:sortedKeys )
     {
-        $script:sortedKeys = (Get-V1Meta -noLoad).Keys | sort
+        $script:sortedKeys = (Get-V1Meta -noLoad).Keys | Sort-Object
     }
 
     if ( $script:debuggingTab) { [System.IO.File]::AppendAllText("C:\temp\tabexpansion.txt", ">$line<`t>$lastword<`n") }

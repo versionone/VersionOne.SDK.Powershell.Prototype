@@ -5,14 +5,14 @@
 .Parameter assetType
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
-.Parameter properties
-	Initial properties for the asset.  They must be valid and include all required ones.  To see them, use Get-V1AssetTypeValue -assetType Epic -required | select name,attributeType
+.Parameter attributes
+	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1AssetType -assetType Epic -required | select name,attributeType
 
-.Parameter defaultProperties
-	Optional addition properties to set.
+.Parameter defaultAttributes
+	Optional addition attributes to set.
 
 .Parameter full
-	if set will populate the object with all the possible writable properties for the asset
+	if set will populate the object with all the possible writable attributes for the asset
 
 .Outputs
 	a PSCustomObject
@@ -25,9 +25,9 @@ param(
 [Parameter(Mandatory)]
 [string] $assetType,
 [Parameter(Mandatory,ValueFromPipeline)]
-[hashtable] $properties,
+[hashtable] $attributes,
 [ValidateNotNull()]
-[hashtable] $defaultProperties = @{},
+[hashtable] $defaultAttributes = @{},
 [switch] $addMissingRequired,
 [switch] $full
 )
@@ -36,11 +36,11 @@ process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1AssetType -assetType $assetType
+    $assetMeta = Get-V1AssetTypeMeta -assetType $assetType
 
-    $ret = @{AssetType=$assetType}+$properties+$defaultProperties
+    $ret = @{AssetType=$assetType}+$attributes+$defaultAttributes
     
-    $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where { $_ -notin $ret.Keys }
+    $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ret.Keys }
     $ret = [PSCustomObject]$ret
 
     if ( $missingRequired )
@@ -58,7 +58,7 @@ process
      
     if ( $full )
     {
-        # add All writable properties
+        # add All writable attributes
         Write-Warning "TODO"
     }
 

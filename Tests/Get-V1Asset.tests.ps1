@@ -17,7 +17,7 @@ Describe "GetV1Asset" {
 
 	It "Gets just the name of EpicCategories" {
 
-         $c = Get-V1Asset EpicCategory -properties Name
+         $c = Get-V1Asset EpicCategory -attributes Name
 		 $c | Should not be $null
 		 ($c.Count -gt 0) | Should be $true
 

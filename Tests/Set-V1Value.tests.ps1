@@ -41,11 +41,11 @@ Describe "SetV1Value" {
         $updatedEpics | ForEach-Object { $_.Name | Should belike "*00"} 
 	}
 
-    It "Tries to set a readonly property" {
+    It "Tries to set a readonly attribute" {
         { Set-V1Value $(makeFakeEpic) -name CreateReason -value "CreateReason" } | Should throw
     }
 
-    It "Tries to set a missing property" {
+    It "Tries to set a missing attribute" {
         { Set-V1Value $(makeFakeEpic) -name NotFoundHere -value "ow!" } | Should throw
     }
     

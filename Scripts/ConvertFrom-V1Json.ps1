@@ -1,4 +1,4 @@
-function getValue($attributeType, $assetValue)
+function getJsonValue($attributeType, $assetValue)
 {
     switch ($attributeType)
     {   
@@ -33,6 +33,18 @@ function removeMomement( [hashtable] $asset )
     }
 }
 
+
+<#
+.Synopsis
+	Convert JSON from REST API to an object
+	
+.Parameter asset
+	the JSON object returned from Invoke-RestMethod 
+
+.Outputs
+	an object hydrated from JSON
+
+#>
 function ConvertFrom-V1Json
 {
 [CmdletBinding()]
@@ -54,7 +66,7 @@ process
         {
             $name = $a.name
             $attribute = $asset.Attributes.($name)
-            $ret[$name] = getValue $attribute._type $attribute.value
+            $ret[$name] = getJsonValue $attribute._type $attribute.value
         }
         $ret["AssetType"]  = ($asset.id -split ":")[0]
         removeMomement $ret

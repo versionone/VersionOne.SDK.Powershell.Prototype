@@ -1,4 +1,4 @@
-function Get-V1AssetProperty
+function Get-V1AssetAttribute
 {
 param(
 [Parameter(Mandatory)]
@@ -9,7 +9,7 @@ param(
     Set-StrictMode -Version Latest
     if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
     {
-        throw "Must supply object with AssetType property"
+        throw "Must supply object with AssetType attribute"
     }
 
     $assetMeta = (Get-V1Meta)[$asset.AssetType]
