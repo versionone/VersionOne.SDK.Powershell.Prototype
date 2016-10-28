@@ -38,17 +38,6 @@ Describe "GetV1Asset" {
 		 (0..($sortedNames.Count-1)) | ForEach-Object { $sortedNames[$_] | Should be $c[$_].Name }
 	}
 
-	It "Gets EpicCategories paged" {
-
-         $c = @(Get-V1Asset EpicCategory -attributes Name -start 0 -pagesize 1)
-		 $c | Should not be $null
-		 $c.Count | Should be 1
-
-         $c = @(Get-V1Asset EpicCategory -attributes Name -start 0 -pagesize 3)
-		 $c | Should not be $null
-		 $c.Count | Should be 3
-	}
-
 	It "Gets epics on AssetState" {
 		(Get-V1Asset EpicCategory -filter "AssetState='64'").Count | Should not be 0
 	}

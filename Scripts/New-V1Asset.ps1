@@ -24,8 +24,8 @@ function New-V1Asset
 param(
 [Parameter(Mandatory)]
 [string] $assetType,
-[Parameter(Mandatory,ValueFromPipeline)]
-[hashtable] $attributes,
+[Parameter(ValueFromPipeline)]
+[hashtable] $attributes = @{},
 [ValidateNotNull()]
 [hashtable] $defaultAttributes = @{},
 [switch] $addMissingRequired,
@@ -39,29 +39,32 @@ process
     $assetMeta = Get-V1AssetTypeMeta -assetType $assetType
 
     $ret = @{AssetType=$assetType}+$attributes+$defaultAttributes
-    
-    $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ret.Keys }
-    $ret = [PSCustomObject]$ret
 
-    if ( $missingRequired )
+    if ( $full )
     {
-        if ( $addMissingRequired )
+        $missingWritable = $assetMeta.Keys | Where-Object { -not $assetMeta[$_].IsReadOnly } | Where-Object { $_ -notin $ret.Keys }
+        $ret = [PSCustomObject]$ret
+        $missingWritable | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
+    }
+    else
+    {    
+        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ret.Keys }
+        $ret = [PSCustomObject]$ret
+
+        if ( $missingRequired )
         {
-            $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
-            Write-Warning "For asset of type $($assetType), added missing attributes: $($missingRequired -join ", ")"
-        }
-        else 
-        {
-            throw "Asset of type $($assetType) requires missing attributes: $($missingRequired -join ", ")"        
+            if ( -not $attributes -or $addMissingRequired )
+            {
+                $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
+                Write-Warning "For asset of type $($assetType), added missing attributes: $($missingRequired -join ", ")"
+            }
+            else 
+            {
+                throw "Asset of type $($assetType) requires missing attributes: $($missingRequired -join ", ")"        
+            }
         }
     }
      
-    if ( $full )
-    {
-        # add All writable attributes
-        Write-Warning "TODO"
-    }
-
     return $ret
 }
 

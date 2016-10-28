@@ -1,24 +1,6 @@
-function appendToUri 
-{
-param(
-[Parameter(Mandatory)]    
-$uri,
-[Parameter(Mandatory)]    
-$s
-)    
-    if ( $uri.Contains("?"))
-    {
-        return "${uri}&$s"
-    }
-    else
-    {
-        return "${uri}?$s"
-    }
-}
-
 <#
 .Synopsis
-	Get version assets from the sever
+	Get version assets from the server
 	
 .Parameter assetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
@@ -34,12 +16,6 @@ $s
 
 .Parameter sort
 	optional sort attributes. For details run Get-V1Help Sort  
-
-.Parameter startPage
-	optional starting page, first page is 0
-
-.Parameter pageSize
-	optional pageSize, if startPage is used defaults to 1
 
 .Parameter asOf
 	optional asOf DateTime to get an asset as of that time
@@ -63,11 +39,6 @@ $s
 
     Get a epic categories as they looked as of January 1, 2001
 
-.Example 
-    Get-V1Asset Story -attributes Name,Status -pageSize 10 -startPage 0 | ft
-
-    Get name and status of first 10 Stories
-
 .Example
     Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter "Estimate>'1'" | ft
 
@@ -83,76 +54,9 @@ $ID,
 [string[]] $attributes,
 [string] $filter,
 [string] $sort,
-[ValidateRange(-1,[int]::MaxValue)]
-[int] $startPage = -1,
-[ValidateRange(1,[int]::MaxValue)]
-[int] $pageSize = 1,
 [DateTime] $asOf
 )
     Set-StrictMode -Version Latest
 
-    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Attributes: $attributes ID: $ID" )
-
-    if ( -not (Get-V1Meta)[$assetType] )
-    {
-        throw "$assetType was not found in meta"
-    }
-    
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType"
-    if ( $ID )
-    {
-        if ( $ID -is "string" -and $ID.Contains(":") )
-        {
-            $parts = ($ID -split ":")
-            if ( $parts[0] -ne $assetType )
-            {
-                throw "AssetType of $assetType does not match type in ID of $($parts[0])"
-            }
-            $ID = $parts[1]
-        }
-        $uri += "/$ID"
-    }
-
-    if ( $attributes )
-    {
-        $uri = appendToUri $uri "sel=$($attributes -join ",")" 
-    }
-
-    if ( $filter )
-    {
-        $uri = appendToUri $uri "where=$filter"
-    }   
-
-    if ( $sort )
-    {
-        $uri = appendToUri $uri "sort=$sort"
-    }   
-
-    if ( $startPage -ge 0 )
-    {
-        $uri = appendToUri $uri "page=${pageSize},$startPage"
-    }
-
-    if ( $asOf )
-    {
-        $uri = appendToUri $uri "asof=$($asOf.ToString("s"))"
-    }
-
-    $result =  InvokeApi -Uri $uri
-
-    if ( $result )
-    {
-        if ( $result | Get-Member -Name "Assets" )
-        {
-            $result.Assets | ConvertFrom-V1Json
-        }
-        else
-        {
-            $result | ConvertFrom-V1Json
-        }
-    }
-    else 
-    {
-        return $null    
-    }
+    (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
 }
