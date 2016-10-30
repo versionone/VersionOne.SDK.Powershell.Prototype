@@ -47,3 +47,5 @@ process
 }
 
 }
+
+Set-Alias -Name v1del Remove-V1Asset

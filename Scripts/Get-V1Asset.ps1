@@ -50,8 +50,8 @@ function Get-V1Asset
 param(
 [Parameter(Mandatory)]
 [string] $assetType,
-$ID,
 [string[]] $attributes,
+$ID,
 [string] $filter,
 [string] $sort,
 [DateTime] $asOf
@@ -60,3 +60,5 @@ $ID,
 
     (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
 }
+
+Set-Alias -Name v1get Get-V1Asset

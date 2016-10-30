@@ -143,3 +143,5 @@ $ID,
     }
     $ret
 }
+
+New-Alias -Name v1paged -Value Get-V1AssetPaged

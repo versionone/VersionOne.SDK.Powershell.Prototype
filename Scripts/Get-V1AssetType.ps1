@@ -38,7 +38,7 @@ param(
 
     Set-StrictMode -Version Latest
 
-    $ret = Get-V1AssetTypeMeta -assetType $assetType
+    $ret = Get-V1MetaAssetType -assetType $assetType
     if ( $required )
     {
         return $ret.values | Where-Object IsRequired -eq $true

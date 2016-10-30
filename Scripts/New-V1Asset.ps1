@@ -36,7 +36,7 @@ process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1AssetTypeMeta -assetType $assetType
+    $assetMeta = Get-V1MetaAssetType -assetType $assetType
 
     $ret = @{AssetType=$assetType}+$attributes+$defaultAttributes
 
@@ -70,3 +70,4 @@ process
 
 }
 
+Set-Alias -Name v1new New-V1Asset

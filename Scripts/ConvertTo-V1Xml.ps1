@@ -39,7 +39,7 @@ process
         throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta =  Get-V1AssetTypeMeta -assetType $asset.AssetType
+    $assetMeta =  Get-V1MetaAssetType -assetType $asset.AssetType
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )

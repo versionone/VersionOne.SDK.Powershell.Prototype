@@ -71,3 +71,5 @@ process
 }
 
 }
+
+Set-Alias -Name v1save Save-V1Asset

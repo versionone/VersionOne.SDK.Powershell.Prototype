@@ -18,7 +18,7 @@
 	hash table of hash tables of attribute data
 
 #>
-function Get-V1AssetTypeMeta
+function Get-V1MetaAssetType
 {
 param( 
 [Parameter(Mandatory)]    

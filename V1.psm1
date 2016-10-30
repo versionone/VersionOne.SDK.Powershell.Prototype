@@ -1,6 +1,7 @@
-﻿# for now separate module so can reload other scripts w/o losing meta
-Import-Module (Join-Path $PSScriptRoot Get-V1Meta.psm1)
+﻿#requires -Version 5.0
 
+# for now separate module so can reload other scripts w/o losing meta
+Import-Module (Join-Path $PSScriptRoot Get-V1Meta.psm1)
 
 # load all the script files into this module
 foreach( $i in (Get-ChildItem (Join-Path $PSScriptRoot "scripts\*.ps1") -File ))
@@ -8,7 +9,7 @@ foreach( $i in (Get-ChildItem (Join-Path $PSScriptRoot "scripts\*.ps1") -File ))
     . $i
 }
 
-Export-ModuleMember -Function "*-*","TabExpansion"
+Export-ModuleMember -Function "*-*" -Alias "*"
 
 if ( -not $script:baseUri)
 {
