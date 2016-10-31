@@ -16,11 +16,14 @@ function returnMeta( $assetType )
 .Synopsis
 	Get VersionOne meta data about assets
 
+.Parameter AssetType
+    An asset type to get a hash table of attributes.  Same as (Get-V1Meta)[$assetType]    
+
 .Parameter Force
 	force reload from the server
 
-.Parameter AssetType
-    An asset type to get a hash table of attributes.  Same as (Get-V1Meta)[$assetType]    
+.Parameter noload
+    don't load if not already cached, will retun $null
 
 .Link
     https://community.versionone.com/VersionOne_Connect/Developer_Library/Getting_Started/Platform_Concepts/Endpoints/rest-1.v1%2F%2FData

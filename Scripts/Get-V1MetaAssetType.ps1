@@ -1,39 +1,60 @@
 <#
 .Synopsis
-    Get the attributes for an asset type as a hash table
-
-.Description
-    Used by many of the PS SDK functions
-
+	Get the the attributes for a V1 AssetType
+	
 .Parameter assetType
 	the name of the asset type to show
 
-.Parameter dontThrowIfNotExists
+.Parameter throwIfNotExists
 	throw an exception if the asset type doesn't exist in meta.  Otherwise returns $null
+
+.Parameter required
+	only return the required attributes
 
 .Parameter alsoReadOnly
 	also return the read-only attributes.  Otherwise only returns writable attributes.
 
 .Outputs
-	hash table of hash tables of attribute data
+	array of hash tables of attribute data
 
+.Example
+     Get-V1MetaAttribute Epic | ft
+
+     Get the Epic's attributes and format them in a table
+
+.Example
+     Get-V1MetaAttribute Story -also | sort name | ft
+
+     Get all the Story's attributes (including read-only) sorte by name and format them in a table     
 #>
 function Get-V1MetaAssetType
 {
 param( 
 [Parameter(Mandatory)]    
 [string] $assetType, 
-[switch] $dontThrowIfNotExists, 
-[switch] $alsoReadOnly)
+[switch] $throwIfNotExists,
+[switch] $required, 
+[switch] $alsoReadOnly )
 
     Set-StrictMode -Version Latest
 
-    $meta = Get-V1Meta
-    $ret = $meta[$assetType]
-    if (-not $ret -and -not $dontThrowIfNotExists)  
+    $attrs = Get-V1Meta -assetType $assetType
+    if (-not $assetType -and -not $throwIfNotExists)  
     {
         throw  "Asset type of $AssetType not found in meta"    
-    }
-    return $ret
-}
+    }    
 
+    if ( $required )
+    {
+        $ret = $attrs.values | Where-Object IsRequired -eq $true
+    }
+    elseif ( $alsoReadOnly )
+    {
+        $ret = $attrs.values
+    }
+    else
+    {
+        $ret = $attrs.values | Where-Object IsReadOnly -eq $false 
+    }
+    $ret
+}

@@ -6,7 +6,7 @@
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
 .Parameter attributes
-	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1AssetType -assetType Epic -required | select name,attributeType
+	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1MetaAttribute -assetType Epic -required | select name,attributeType
 
 .Parameter defaultAttributes
 	Optional addition attributes to set.
@@ -36,7 +36,7 @@ process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1MetaAssetType -assetType $assetType
+    $assetMeta = Get-V1Meta -assetType $assetType
 
     $ret = @{AssetType=$assetType}+$attributes+$defaultAttributes
 

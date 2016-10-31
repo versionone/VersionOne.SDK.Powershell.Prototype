@@ -15,6 +15,15 @@
     $savedStory = New-V1Asset Story -attributes @{Name="Test";Scope="Scope:0"} | Save-V1Asset 
 
     New up a story and save it to the server
+
+.Example
+    $bundles = v1asset Bundle -attributes ChangeSets -id 1016
+    $changeSets = v1asset ChangeSet -attributes Name -id 2144
+    $bundles[0].ChangeSets = $changeSets[0].id
+    Save-V1Asset $bundles[0]
+
+    Add a ChangeSet to a Bundle 
+
 #>
 function Save-V1Asset
 {
@@ -48,7 +57,7 @@ process
         }
     }
 
-    $body = ConvertTo-V1Json $asset
+    $body = ConvertTo-V1Json $asset -stripDotted
     if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
     {
         try 

@@ -12,7 +12,7 @@ $script:sortedKeys = $null
 	sorted string array of assetTypes
 
 #>
-function Get-V1MetaAssetName
+function Get-V1MetaName
 {
 [CmdletBinding()]
 param(
@@ -27,4 +27,4 @@ param(
     return $script:sortedKeys
 }
 
-New-Alias -Name v1metaname -Value Get-V1MetaAssetName
+New-Alias -Name v1metaname -Value Get-V1MetaName

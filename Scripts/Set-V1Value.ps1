@@ -31,7 +31,7 @@ process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1AssetAttribute $asset $name 
+    $assetMeta = Get-V1MetaAttribute $asset $name 
     if ( $assetMeta  )
     {
         if ( $assetMeta.IsReadOnly )

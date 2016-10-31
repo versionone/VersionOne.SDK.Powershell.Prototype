@@ -16,11 +16,11 @@
 
 .Example
     $x = Get-V1Asset -assetType EpicCategory
-    Get-V1AssetAttribute $x[0] ColorName
+    Get-V1MetaAttribute $x[0] ColorName
 
     Show the details about the ColorName attribute on the EpicCategory AssetType
 #>
-function Get-V1AssetAttribute
+function Get-V1MetaAttribute
 {
 param(
 [Parameter(Mandatory)]

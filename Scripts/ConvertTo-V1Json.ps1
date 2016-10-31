@@ -15,7 +15,8 @@ function ConvertTo-V1Json
 [OutputType([string])]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
-[object] $asset  
+[object] $asset,
+[switch] $stripDotted  
 )
 
 process
@@ -27,13 +28,17 @@ process
         throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta =  Get-V1MetaAssetType -assetType $asset.AssetType
+    $assetMeta =  Get-V1Meta -assetType $asset.AssetType
 
     $v1Object = @{Attributes=@{}}
     if ( $asset -is "HashTable" )
     {
         foreach ( $n in $asset.keys )
         {
+            if ( $stripDotted -and $n.Contains("."))
+            {
+                continue
+            }
             $v1Object[$n] = @{name=$n;value=$asset[$n];act="set"}
         }
 
@@ -44,6 +49,11 @@ process
         foreach ( $m in $asset | Get-Member -MemberType Properties | Where-Object name -ne "AssetType" )
         {
             $name = $m.name
+            if ( $stripDotted -and $name.Contains("."))
+            {
+                continue
+            }
+
             $addedKeys += $name
 
             if ( -not ( $assetMeta.ContainsKey($name)))
@@ -60,7 +70,7 @@ process
             {
                 if ( $assetMeta[$name].IsMultivalue) 
                 {
-                    $values = $asset.$name | ForEach-Object { @{idref=$(getMultiValue $_);act="add"}}
+                    $values = @($asset.$name | ForEach-Object { @{idref=$(getMultiValue $_);act="add"}})
 
                     $v1Object.Attributes[$name]=@{name=$name;value=$values}
                 }

@@ -66,7 +66,6 @@ $ID,
 [string] $filter,
 [string] $sort,
 [ValidateRange(0,[int]::MaxValue)]
-[Parameter(Mandatory)]
 [int] $startPage = 0,
 [ValidateRange(1,[int]::MaxValue)]
 [int] $pageSize = [int]::MaxValue,
@@ -76,7 +75,7 @@ $ID,
 
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Attributes: $attributes ID: $ID" )
 
-    if ( -not (Get-V1Meta)[$assetType] )
+    if ( -not (Get-V1Meta -assetType $assetType) )
     {
         throw "$assetType was not found in meta"
     }
