@@ -1,6 +1,7 @@
 ﻿[CmdletBinding()]
 param(
 [string] $testName = "PSTest", # name used for all names,
+[string] $baseUri = "localhost/VersionOne.Web"
 [string] $token = "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
 )
 
@@ -17,7 +18,7 @@ $error.Clear()
 $ErrorActionPreference = "Stop"
 $InformationPreference = "Continue"
 
-Set-V1Default -baseUri "localhost/VersionOne.Web" -token $token
+Set-V1Default -baseUri $baseUri -token $token
 
 $activityName = "Add Daag data"
 

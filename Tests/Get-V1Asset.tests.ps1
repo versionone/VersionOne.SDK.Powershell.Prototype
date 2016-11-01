@@ -38,6 +38,24 @@ Describe "GetV1Asset" {
 		 (0..($sortedNames.Count-1)) | ForEach-Object { $sortedNames[$_] | Should be $c[$_].Name }
 	}
 
+	It "Gets EpicCategory with name feature using string" {
+
+         $c = Get-V1Asset EpicCategory -attributes Name -filter "Name='Feature'"
+		 $c | Should not be $null
+
+		 $c.Name | Should be 'Feature'
+	}
+
+	It "Gets EpicCategory with name feature using scriptBlock" {
+
+		$ec = Get-V1FilterAsset EpicCategory
+		$ec | Should not be $null
+
+        $c = Get-V1Asset EpicCategory -attributes Name -filter { $ec.Name -eq "Feature"}
+		$c | Should not be $null
+
+		$c.Name | Should be 'Feature'
+	}
 	It "Gets epics on AssetState" {
 		(Get-V1Asset EpicCategory -filter "AssetState='64'").Count | Should not be 0
 	}

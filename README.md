@@ -34,6 +34,7 @@ All functions support pipelines when appropriate.  All functions support the com
 |-------------------------|-------------|
 |`Get-V1Asset`| Gets one or more assets from the server, depending on parameters.  Can select attributes to return, asof, sorting, and a filter.  This returns asset objects. |
 |`Get-V1AssetPaged`| Superset of Get-V1Asset, but does paging.  This returns the total available and the paged data. |
+|`Get-V1AssetFilter`| Returns an object with properties for all the attributes.  A variable of this type can then be used to tab complete for the -filter paramter of Get-V1Asset, and Get-V1AssetPaged |
 |`New-V1Asset`| Creates an asset from scratch or from a hash table of values, validating against meta.  Can fill in required parameters.  Pass to ```Save-V1Meta``` to add or update an asset. |
 |`Set-V1Value`| Sets a value on an object, adding it if not there.  Tab-completion works and the names are validated |
 |`Save-V1Asset`| Saves the asset.  If it has an ```id``` attribute it will try to update, it otherwise it will create it.  Assets from ```New-V1Asset``` do not have an id, ones from ```Get-V1Asset``` will. |

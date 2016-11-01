@@ -1,7 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
 Describe "SaveV1Asset" {
-    $script:prevInfoSetting = $InformationPreference
     $script:deleteMe = @()
 
     BeforeAll {
@@ -16,7 +15,6 @@ Describe "SaveV1Asset" {
         $savedStory | Should not be $null
         $savedStory.id | Should not beNullOrEmpty
         $script:deleteMe += $savedStory.id
-        Write-Information "Added story with id of $($savedStory.id) -- clean this up"
                 
 	}
 
@@ -31,7 +29,6 @@ Describe "SaveV1Asset" {
             $savedStory | Should not be $null
             $savedStory.id | Should not beNullOrEmpty
             $script:deleteMe += $savedStory.id
-            Write-Information "Added story with id of $($savedStory.id) -- clean this up"
         }
 	}
 
@@ -50,7 +47,5 @@ Describe "SaveV1Asset" {
 
     AfterAll {
         $script:deleteMe | Remove-V1Asset
-        Write-Information "Nevermind, I removed them." 
-        $InformationPreference = $script:prevInfoSetting
     }
 }

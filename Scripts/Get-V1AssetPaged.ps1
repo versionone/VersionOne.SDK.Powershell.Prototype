@@ -63,7 +63,7 @@ param(
 [string] $assetType,
 $ID,
 [string[]] $attributes,
-[string] $filter,
+$filter,
 [string] $sort,
 [ValidateRange(0,[int]::MaxValue)]
 [int] $startPage = 0,
@@ -102,7 +102,14 @@ $ID,
 
     if ( $filter )
     {
-        $uri = appendToUri $uri "where=$filter"
+        if ( $filter -is 'string')
+        {
+            $uri = appendToUri $uri "where=$filter"
+        }
+        elseif ( $filter -is 'scriptblock')
+        {
+            $uri = appendToUri $uri "where=$(ConvertFrom-V1Filter $filter)"
+        }
     }   
 
     if ( $sort )

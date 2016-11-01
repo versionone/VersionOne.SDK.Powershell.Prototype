@@ -9,7 +9,7 @@
 	The asset object returned from Get-V1Asset or New-V1Asset
 
 .Outputs
-	The created or updated asset
+	The created or updated asset, as returned from the REST API
 
 .Example
     $savedStory = New-V1Asset Story -attributes @{Name="Test";Scope="Scope:0"} | Save-V1Asset 

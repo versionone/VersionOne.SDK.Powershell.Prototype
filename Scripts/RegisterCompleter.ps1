@@ -1,5 +1,5 @@
 <#
-    Register all the tab completion script blocks for the SDK
+    Register all the tab completion script blocks for the SDK, this uses the PS V5 Register-ArgumentCompleter function
 #>
 $global:debuggingTabV1 = $false
 Set-StrictMode -Version Latest
@@ -45,7 +45,7 @@ $attributeTabComplete = {
     }
 }
 
-Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","Get-V1Meta","Get-V1MetaAttribute","Get-V1MetaAssetType","New-V1Asset" -ParameterName "assetType" -ScriptBlock $assetTypeTabComplete
+Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","Get-V1Meta","Get-V1FilterAsset","Get-V1MetaAttribute","Get-V1MetaAssetType","New-V1Asset" -ParameterName "assetType" -ScriptBlock $assetTypeTabComplete
 Register-ArgumentCompleter -CommandName "Remove-V1Asset" -ParameterName "id" -ScriptBlock $assetTypeTabComplete
 
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","New-V1Asset" -ParameterName "attributes" -ScriptBlock $attributeTabComplete

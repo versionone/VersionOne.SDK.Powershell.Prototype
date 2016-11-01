@@ -12,7 +12,7 @@
 	optional list of attributes to return, otherwise it returns default set
 
 .Parameter filter
-	optional filter (where clause) for limiting results.  For details run Get-V1Help Filter 
+	optional filter (where clause) for limiting results. May be a string or script block. 
 
 .Parameter sort
 	optional sort attributes. For details run Get-V1Help Sort  
@@ -42,7 +42,18 @@
 .Example
     Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter "Estimate>'1'" | ft
 
-    Get PrimaryWorkitems that have an estimate > 1.  Note that when not using a variable, you must enclose the filter in double quotes, otherwise it will return an error.            
+    Get PrimaryWorkitems that have an estimate > 1.  Note that when not using a variable, you must enclose the filter in double quotes, otherwise it will return an error.  For details about filter syntax run Get-V1Help Filter            
+
+.Example
+    $pi = Get-V1FilterAsset PrimaryWorkitem 
+    Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter { $pi.Estimate -gt 1 } | ft
+
+    Get PrimaryWorkitems that have an estimate > 1 using a script block that can use tab completion for $pi.
+
+.Example
+    Get-V1Asset EpicCategory -filter {$x.Name -eq 'Feature'}
+
+    Get the Feature EpicCategory
 #>
 function Get-V1Asset
 {
@@ -52,7 +63,7 @@ param(
 [string] $assetType,
 [string[]] $attributes,
 $ID,
-[string] $filter,
+$filter,
 [string] $sort,
 [DateTime] $asOf
 )
