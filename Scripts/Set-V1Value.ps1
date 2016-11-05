@@ -60,4 +60,4 @@ process
 
 }
 
-New-Alias -Name v1set -Value Get-V1SetValue
+New-Alias -Name v1set -Value Set-V1Value
