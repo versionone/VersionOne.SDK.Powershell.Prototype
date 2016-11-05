@@ -40,18 +40,31 @@ $body = $null
     catch 
     {
         $myError = $_
+        
         try 
         {
-            if ( $_.exception.response.statusCode -eq [System.Net.HttpStatusCode]::NotFound )
+            if ($myError.exception.response.statusCode -eq [System.Net.HttpStatusCode]::NotFound )
             {
-                return $null
+                try 
+                {
+                    if ( (ConvertFrom-Json $_.ErrorDetails).error -eq "Not Found")
+                    {
+                        # if get here, V1 returned not found don't throw
+                        $error.RemoveAt($error.Count-1)
+                        return $null
+                    }
+                }
+                catch
+                {
+                    Write-Debug "Yes, I promise not to have empty catches"
+                }
             }
-            throw $myError
         }
         catch 
         {
-            throw $myError
+            Write-Debug "Yes, I promise not to have empty catches"
         }
+        throw
     }
 }
 

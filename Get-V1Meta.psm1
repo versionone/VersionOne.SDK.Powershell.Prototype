@@ -62,7 +62,8 @@ param(
                 Write-Verbose "Read meta from cache file $tempFile"
                 return returnMeta $AssetType
             }
-            catch {
+            catch 
+            {
                 Write-Warning "Error trying to read cache file $tempFile, continuing"
             }
         }

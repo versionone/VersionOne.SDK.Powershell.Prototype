@@ -24,7 +24,7 @@
 	Asset objects of the given type
 
 .Example
-    Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+    Set-V1Connection -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
     $scopes = Get-V1Asset -assetType "Scope" -attributes "Name"
 
     Get all scopes, just the Name field

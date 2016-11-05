@@ -28,7 +28,7 @@ $HelpType = "All"
     }
     else 
     {
-        Write-Warning "Call Set-V1Default to set the baseUri and credentials to be able to get help"    
+        Write-Warning "Call Set-V1Connection to set the baseUri and credentials to be able to get help"    
     }
 }
 

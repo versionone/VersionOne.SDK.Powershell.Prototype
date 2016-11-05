@@ -9,7 +9,7 @@ else
 }
 if ( $script:authorizationHeader -or $script:baseUri )
 {
-    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI ($env:V1_BASE_URI) and `$env:V1_API_TOKEN ($env:V1_API_TOKEN).  Call Set-V1Default to change them."
+    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI ($env:V1_BASE_URI) and `$env:V1_API_TOKEN ($env:V1_API_TOKEN).  Call Set-V1Connection to change them."
 }
 $script:credential = $null
 
@@ -26,17 +26,20 @@ $script:credential = $null
 .Parameter Token
 	V1 Application token
 
-.Example
-    Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
-
-    Set the defaults with a token    
+.Outputs
+    Nothing, unless -test is set then will return its return
 
 .Example
-    Set-V1Default -baseUri "localhost/VersionOne.Web" -credential (Get-Credential)
+    Set-V1Connection -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+
+    Set the defaults with a token
+
+.Example
+    Set-V1Connection -baseUri "localhost/VersionOne.Web" -credential (Get-Credential)
 
     Set the defaults with a credential object.  This will prompt you for credentials    
 #>
-function Set-V1Default
+function Set-V1Connection
 {
 param(
 [Parameter(Mandatory)]
@@ -45,7 +48,8 @@ param(
 [System.Management.Automation.CredentialAttribute()]
 [PSCredential] $Credential,
 [Parameter(Mandatory,ParameterSetName="Token")]
-[string] $Token)
+[string] $Token,
+[switch] $test)
 
     Set-StrictMode -Version Latest
 
@@ -59,25 +63,10 @@ param(
     {
         $script:credential = $Credential    
     }
+    if ( $test )
+    {
+        return Test-V1Connection
+    }
 }
 
-
-<#
-.Synopsis
-	Get the Uri set be Set-V1Default
-
-.Outputs 
-    the base Uri used for all calls
-#>
-function Get-V1BaseUri
-{
-    if ( $script:baseUri )
-    {
-        return $script:baseUri
-    }
-    else
-    {
-        throw "Call Set-V1Default to set base Uri and credentials"    
-    }
-
-}
+New-Alias -Name v1conn -Value Set-V1Connection
