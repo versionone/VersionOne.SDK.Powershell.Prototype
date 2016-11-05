@@ -1,6 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
-Describe "GetV1Meta" {
+Describe "Get-V1Meta" {
 
 	It "Gets the metadata" {
 

@@ -1,17 +1,17 @@
-function getJsonValue($attributeType, $assetValue)
+function getJsonValue($attributeType, $AssetValue)
 {
     switch ($attributeType)
     {   
-        "Attribute" { return $assetValue }
+        "Attribute" { return $AssetValue }
         "Relation" { 
-            if ( $assetValue -eq $null ) 
+            if ( $AssetValue -eq $null ) 
             {
-                 return $assetValue 
+                 return $AssetValue 
             } 
-            elseif ( $assetValue -is "Array")
+            elseif ( $AssetValue -is "Array")
             {
                 $ret = @()
-                foreach ( $v in $assetValue )
+                foreach ( $v in $AssetValue )
                 {
                     $ret += $v.idref
                 }
@@ -19,17 +19,17 @@ function getJsonValue($attributeType, $assetValue)
             }
             else
             {
-                 return $assetValue.idref 
+                 return $AssetValue.idref 
             } }
-        default { throw "Unknow asset value type of $($assetValue._type)"}
+        default { throw "Unknow asset value type of $($AssetValue._type)"}
     }
 }
 
-function removeMomement( [hashtable] $asset )
+function removeMomement( [hashtable] $Asset )
 {
-    if ( $asset.Keys -contains "id" -and $asset["id"] -like "*:*:*" )
+    if ( $Asset.Keys -contains "id" -and $Asset["id"] -like "*:*:*" )
     {
-        $asset["id"] = ($asset["id"] -split ":")[0..1] -join ":"
+        $Asset["id"] = ($Asset["id"] -split ":")[0..1] -join ":"
     }
 }
 
@@ -38,11 +38,11 @@ function removeMomement( [hashtable] $asset )
 .Synopsis
 	Convert JSON from REST API to an object
 	
-.Parameter asset
-	the JSON object returned from Invoke-RestMethod 
+.Parameter Asset
+	The JSON object returned from Invoke-RestMethod 
 
 .Outputs
-	an object hydrated from JSON
+	An object hydrated from JSON
 
 #>
 function ConvertFrom-V1Json
@@ -50,7 +50,7 @@ function ConvertFrom-V1Json
 [CmdletBinding()]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
-[object] $asset
+[object] $Asset
 )
 
 process
@@ -59,23 +59,23 @@ process
 
     $ret = @{};
 
-    if ( (Get-Member -InputObject $asset -Name "_type") -and ($asset._type -eq "Asset"))
+    if ( (Get-Member -InputObject $Asset -Name "_type") -and ($Asset._type -eq "Asset"))
     {
-        $ret["id"] = $asset.id;
-        foreach ( $a in $asset.Attributes | Get-Member -MemberType Properties )
+        $ret["id"] = $Asset.id;
+        foreach ( $a in $Asset.Attributes | Get-Member -MemberType Properties )
         {
             $name = $a.name
-            $attribute = $asset.Attributes.($name)
+            $attribute = $Asset.Attributes.($name)
             $ret[$name] = getJsonValue $attribute._type $attribute.value
         }
-        $ret["AssetType"]  = ($asset.id -split ":")[0]
+        $ret["AssetType"]  = ($Asset.id -split ":")[0]
         removeMomement $ret
         [PSCustomObject]$ret
     
     }
     else 
     {
-        throw "Unknown asset: $asset"
+        throw "Unknown asset: $Asset"
     }
     
 }

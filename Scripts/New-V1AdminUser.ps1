@@ -2,8 +2,18 @@
 .Synopsis
     Add a V1 Admin user, for testing
 
-.Parameter memberName
+.Parameter MemberName
     Name of member to add as an administrator
+
+.Example 
+    "jblow","jdoe","mmouse" | New-V1AdminUser
+
+    Add the list of users as admins. 
+
+.Example 
+    (Get-Content .\adminusernames.txt) | New-V1AdminUser
+
+    Add the users listed in the file 
 
 .Example 
     Get-AdGroupMember  "Developers" | Select-Object -expand SamaccountName | New-V1AdminUser
@@ -15,7 +25,7 @@ function New-V1AdminUser
 [Cmdletbinding(SupportsShouldProcess)]
 param(
 [Parameter(ValueFromPipeline,Mandatory)]
-$memberName
+$MemberName
 )
 
 begin
@@ -31,13 +41,18 @@ process
     write-verbose "Adding one"
     Set-StrictMode -Version Latest
 
+    if ( $PSCmdlet.ShouldProcess("","") )
+    {
+        # since New- lint barks unless have ShouldProcess
+    }
+
     $member = @{
-                Name= $memberName
-                Username= $memberName
-                Password= $memberName
+                Name= $MemberName
+                Username= $MemberName
+                Password= $MemberName
                 DefaultRole = $ADMIN_ROLE
                 IsCollaborator = $false
-                Nickname = $memberName
+                Nickname = $MemberName
                 NotifyViaEmail = $true
                 SendConversationEmails = $true
             }
@@ -106,7 +121,7 @@ process
     $uri = "http://$(Get-V1BaseUri)/$relativeUrl"
 
     $null = InvokeApi -uri $uri -method POST -body $payloadJson
-    Write-Information "Added user $memberName"
+    Write-Information "Added user $MemberName"
 }
 
 end

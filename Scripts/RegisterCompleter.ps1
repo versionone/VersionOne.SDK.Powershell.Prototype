@@ -1,7 +1,7 @@
 <#
     Register all the tab completion script blocks for the SDK, this uses the PS V5 Register-ArgumentCompleter function
 #>
-$global:debuggingTabV1 = $false
+$global:debuggingTabV1 = $true
 Set-StrictMode -Version Latest
 
 <#

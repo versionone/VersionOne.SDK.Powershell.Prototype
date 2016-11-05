@@ -20,29 +20,29 @@ $s
 .Synopsis
 	Get V1 assets from the server, in a paged manner.  See Get-V1Asset for non-paged
 	
-.Parameter assetType
+.Parameter AssetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
 
 .Parameter ID
-	optional ID to specify to get just one item, can be <type>:num, or just the number
+	Optional ID to specify to get just one item, can be <type>:num, or just the number
 
-.Parameter attributes
-	optional list of attributes to return, otherwise it returns default set
+.Parameter Attributes
+	Optional list of attributes to return, otherwise it returns default set
 
-.Parameter filter
-	optional filter (where clause) for limiting results.  For details run Get-V1Help Filter 
+.Parameter Filter
+	Optional filter (where clause) for limiting results. May be a string or script block. 
 
-.Parameter sort
-	optional sort attributes. For details run Get-V1Help Sort  
+.Parameter Sort
+	Optional sort attributes. For details run Get-V1Help Sort  
 
-.Parameter startPage
-	optional starting page, first page is 0
+.Parameter StartPage
+	Optional starting page, first page is 0
 
 .Parameter pageSize
-	optional pageSize, if startPage is used defaults to 1
+	Optional pageSize, if startPage is used defaults to 1
 
-.Parameter asOf
-	optional asOf DateTime to get an asset as of that time
+.Parameter AsOf
+	Optional asOf DateTime to get an asset as of that time
 
 .Outputs
 	Object with Total and Assets (array of asset objects of the given type)
@@ -60,71 +60,71 @@ function Get-V1AssetPaged
 [CmdletBinding()]
 param(
 [Parameter(Mandatory)]
-[string] $assetType,
+[string] $AssetType,
 $ID,
-[string[]] $attributes,
-$filter,
-[string] $sort,
+[string[]] $Attributes,
+$Filter,
+[string] $Sort,
 [ValidateRange(0,[int]::MaxValue)]
-[int] $startPage = 0,
+[int] $StartPage = 0,
 [ValidateRange(1,[int]::MaxValue)]
-[int] $pageSize = [int]::MaxValue,
-[DateTime] $asOf
+[int] $PageSize = [int]::MaxValue,
+[DateTime] $AsOf
 )
     Set-StrictMode -Version Latest
 
-    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $assetType Attributes: $attributes ID: $ID" )
+    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attributes: $Attributes ID: $ID" )
 
-    if ( -not (Get-V1Meta -assetType $assetType) )
+    if ( -not (Get-V1Meta -assetType $AssetType) )
     {
-        throw "$assetType was not found in meta"
+        throw "$AssetType was not found in meta"
     }
     
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType"
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( $ID )
     {
         if ( $ID -is "string" -and $ID.Contains(":") )
         {
             $parts = ($ID -split ":")
-            if ( $parts[0] -ne $assetType )
+            if ( $parts[0] -ne $AssetType )
             {
-                throw "AssetType of $assetType does not match type in ID of $($parts[0])"
+                throw "AssetType of $AssetType does not match type in ID of $($parts[0])"
             }
             $ID = $parts[1]
         }
         $uri += "/$ID"
     }
 
-    if ( $attributes )
+    if ( $Attributes )
     {
-        $uri = appendToUri $uri "sel=$($attributes -join ",")" 
+        $uri = appendToUri $uri "sel=$($Attributes -join ",")" 
     }
 
-    if ( $filter )
+    if ( $Filter )
     {
-        if ( $filter -is 'string')
+        if ( $Filter -is 'string')
         {
-            $uri = appendToUri $uri "where=$filter"
+            $uri = appendToUri $uri "where=$Filter"
         }
-        elseif ( $filter -is 'scriptblock')
+        elseif ( $Filter -is 'scriptblock')
         {
-            $uri = appendToUri $uri "where=$(ConvertFrom-V1Filter $filter)"
+            $uri = appendToUri $uri "where=$(ConvertFrom-V1Filter $Filter)"
         }
     }   
 
-    if ( $sort )
+    if ( $Sort )
     {
-        $uri = appendToUri $uri "sort=$sort"
+        $uri = appendToUri $uri "sort=$Sort"
     }   
 
-    if ( $pageSize -ne [int]::MaxValue )
+    if ( $PageSize -ne [int]::MaxValue )
     {
-        $uri = appendToUri $uri "page=${pageSize},$startPage"
+        $uri = appendToUri $uri "page=${pageSize},$StartPage"
     }
 
-    if ( $asOf )
+    if ( $AsOf )
     {
-        $uri = appendToUri $uri "asof=$($asOf.ToString("s"))"
+        $uri = appendToUri $uri "asof=$($AsOf.ToString("s"))"
     }
 
     $result =  InvokeApi -Uri $uri
@@ -140,11 +140,15 @@ $filter,
 
         if ( $result | Get-Member -Name "Assets" )
         {
-            $ret.Assets = ,($result.Assets | ConvertFrom-V1Json)
+            $ret.Assets = $result.Assets | ConvertFrom-V1Json
         }
         else
         {
-            $ret.Assets = ,($result | ConvertFrom-V1Json)
+            $ret.Assets = $result | ConvertFrom-V1Json
+        }
+        if ( -not $ret.Assets -is "array")
+        {
+            $ret.Assets = ,$ret.Assets 
         }
     }
     $ret

@@ -5,14 +5,14 @@
 .Description
     This is use in conversion functions
     
-.Parameter asset
-	the asset object
+.Parameter Asset
+	The asset object
 
-.Parameter name
-	the name of the attribute on the asset
+.Parameter Name
+	The name of the attribute on the asset
 
 .Outputs
-	hash table of attribute meta data
+	Hash table of attribute meta data
 
 .Example
     $x = Get-V1Asset -assetType EpicCategory
@@ -24,24 +24,24 @@ function Get-V1MetaAttribute
 {
 param(
 [Parameter(Mandatory)]
-[object] $asset,
+[object] $Asset,
 [Parameter(Mandatory)]
-[string] $name)
+[string] $Name)
 
     Set-StrictMode -Version Latest
-    if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
+    if ( -not (Get-Member -InputObject $Asset -Name "AssetType"))
     {
         throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta = (Get-V1Meta)[$asset.AssetType]
-    if ( $assetMeta )
+    $AssetMeta = (Get-V1Meta)[$Asset.AssetType]
+    if ( $AssetMeta )
     {
-        return $assetMeta[$name] 
+        return $AssetMeta[$Name] 
     }
     else
     {
-        throw "AssetType of name '$assetType' not found in meta"
+        throw "AssetType of name '$AssetType' not found in meta"
     }
     
 }

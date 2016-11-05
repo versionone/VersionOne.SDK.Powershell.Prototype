@@ -17,13 +17,13 @@ $script:credential = $null
 .Synopsis
 	Set the Uri and credentials to use for V1 API calls
 	
-.Parameter baseUri
-	the base Uri to use, e.g. localhost/VersionOne.Web
+.Parameter BaseUri
+	The base Uri to use, e.g. localhost/VersionOne.Web
 
-.Parameter credential
-	PSCredential object of the user
+.Parameter Credential
+	PSCredential object of the user, or user name and it will prompt for password
 
-.Parameter token
+.Parameter Token
 	V1 Application token
 
 .Example
@@ -40,28 +40,35 @@ function Set-V1Default
 {
 param(
 [Parameter(Mandatory)]
-[string] $baseUri,
+[string] $BaseUri,
 [Parameter(Mandatory,ParameterSetName="User")]
 [System.Management.Automation.CredentialAttribute()]
-[PSCredential] $credential,
+[PSCredential] $Credential,
 [Parameter(Mandatory,ParameterSetName="Token")]
-[string] $token)
+[string] $Token)
 
     Set-StrictMode -Version Latest
 
-    $script:baseUri = $baseUri
+    $script:baseUri = $BaseUri
 
     if ( $PSCmdlet.ParameterSetName -eq "Token")
     {
-        $script:authorizationHeader = @{AUTHORIZATION="Bearer $token"}
+        $script:authorizationHeader = @{AUTHORIZATION="Bearer $Token"}
     }
     else 
     {
-        $script:credential = $credential    
+        $script:credential = $Credential    
     }
 }
 
 
+<#
+.Synopsis
+	Get the Uri set be Set-V1Default
+
+.Outputs 
+    the base Uri used for all calls
+#>
 function Get-V1BaseUri
 {
     if ( $script:baseUri )

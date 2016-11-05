@@ -2,16 +2,16 @@
 .Synopsis
 	Create a new V1 Asset of the given type
 	
-.Parameter assetType
+.Parameter AssetType
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
 .Parameter attributes
 	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1MetaAttribute -assetType Epic -required | select name,attributeType
 
-.Parameter defaultAttributes
+.Parameter DefaultAttributes
 	Optional addition attributes to set.
 
-.Parameter full
+.Parameter Full
 	if set will populate the object with all the possible writable attributes for the asset
 
 .Outputs
@@ -23,44 +23,44 @@ function New-V1Asset
 [CmdletBinding()]
 param(
 [Parameter(Mandatory)]
-[string] $assetType,
+[string] $AssetType,
 [Parameter(ValueFromPipeline)]
-[hashtable] $attributes = @{},
+[hashtable] $Attributes = @{},
 [ValidateNotNull()]
-[hashtable] $defaultAttributes = @{},
-[switch] $addMissingRequired,
-[switch] $full
+[hashtable] $DefaultAttributes = @{},
+[switch] $AddMissingRequired,
+[switch] $Full
 )
 
 process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1Meta -assetType $assetType
+    $assetMeta = Get-V1Meta -assetType $AssetType
 
-    $ret = @{AssetType=$assetType}+$attributes+$defaultAttributes
+    $ht = @{AssetType=$AssetType}+$Attributes+$DefaultAttributes
 
-    if ( $full )
+    $ret = [PSCustomObject]$ht
+    
+    if ( $Full )
     {
-        $missingWritable = $assetMeta.Keys | Where-Object { -not $assetMeta[$_].IsReadOnly } | Where-Object { $_ -notin $ret.Keys }
-        $ret = [PSCustomObject]$ret
+        $missingWritable = $assetMeta.Keys | Where-Object { -not $assetMeta[$_].IsReadOnly } | Where-Object { $_ -notin $ht.Keys }
         $missingWritable | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
     }
     else
     {    
-        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ret.Keys }
-        $ret = [PSCustomObject]$ret
+        $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ht.Keys }
 
         if ( $missingRequired )
         {
-            if ( -not $attributes -or $addMissingRequired )
+            if ( -not $Attributes -or $AddMissingRequired )
             {
                 $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
-                Write-Warning "For asset of type $($assetType), added missing attributes: $($missingRequired -join ", ")"
+                Write-Warning "For asset of type $($AssetType), added missing attributes: $($missingRequired -join ", ")"
             }
             else 
             {
-                throw "Asset of type $($assetType) requires missing attributes: $($missingRequired -join ", ")"        
+                throw "Asset of type $($AssetType) requires missing attributes: $($missingRequired -join ", ")"        
             }
         }
     }

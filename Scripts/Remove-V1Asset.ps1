@@ -2,7 +2,7 @@
 .Synopsis
 	Remove a V1 asset from the server
 	
-.Parameter id
+.Parameter ID
 	A V1 id in the format <assetType>:<number>
 
 .Outputs
@@ -16,22 +16,22 @@ function Remove-V1Asset
 [CmdletBinding(SupportsShouldProcess)]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]  
-[String]$id
+[String] $ID
 )
 
 process
 {
     Set-StrictMode -Version Latest
 
-    ($assetType,$num) = $id -split ":"
+    ($AssetType,$num) =  $ID -split ":"
 
-    if ( -not $assetType -or -not $num )
+    if ( -not $AssetType -or -not $num )
     {
         throw "Id must be of format <assetType>:<number>"
     }
 
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$assetType/${num}?op=Delete"
-    if ( $PSCmdlet.ShouldProcess("$uri", "Remove-V1Asset of type $($assetType)"))
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType/${num}?op=Delete"
+    if ( $PSCmdlet.ShouldProcess("$uri", "Remove-V1Asset of type $($AssetType)"))
     {
         try 
         {

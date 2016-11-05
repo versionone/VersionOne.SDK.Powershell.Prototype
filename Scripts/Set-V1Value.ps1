@@ -5,14 +5,14 @@
 .Description
 	Use this when getting an asset from the server with a subset of attributes, but you want to set one that didn't come down.
 
-.Parameter asset
-	the asset object
+.Parameter Asset
+	The asset object
 
-.Parameter name
-	the name of the attribute
+.Parameter Name
+	The name of the attribute
 
-.Parameter value
-	the value of the attribute, may be null
+.Parameter Value
+	The value of the attribute, may be null
 
 .Outputs
 	the updated asset
@@ -22,40 +22,42 @@ function Set-V1Value
 {
 param( 
 [Parameter(Mandatory,ValueFromPipeline)]
-$asset, 
+$Asset, 
 [Parameter(Mandatory)]
-[string] $name, 
-$value )
+[string] $Name, 
+$Value )
 
 process
 {
     Set-StrictMode -Version Latest
 
-    $assetMeta = Get-V1MetaAttribute $asset $name 
-    if ( $assetMeta  )
+    $AssetMeta = Get-V1MetaAttribute $Asset $Name 
+    if ( $AssetMeta  )
     {
-        if ( $assetMeta.IsReadOnly )
+        if ( $AssetMeta.IsReadOnly )
         {
-           throw "Attribute $name on asset of type $($asset.AssetType) is READ ONLY" 
+           throw "Attribute $Name on asset of type $($Asset.AssetType) is READ ONLY" 
         }
         else
         {
-            if ( -not (Get-Member -Input $asset -name $name ))
+            if ( -not (Get-Member -Input $Asset -name $Name ))
             {
-                $value = ConvertTo-V1AssetValue $value $assetMeta
-                Add-Member -InputObject $asset -MemberType NoteProperty -Name $name -value $value
+                $Value = ConvertTo-V1AssetValue $Value $AssetMeta
+                Add-Member -InputObject $Asset -MemberType NoteProperty -Name $Name -value $Value
             }
             else
             {
-                $asset.$name = $value
+                $Asset.$Name = $Value
             }
-            return $asset
+            return $Asset
         }
     }
     else 
     {
-        throw "Attribute $name not found on asset of type $($asset.AssetType)"    
+        throw "Attribute $Name not found on asset of type $($Asset.AssetType)"    
     }
 }
 
 }
+
+New-Alias -Name v1set -Value Get-V1SetValue

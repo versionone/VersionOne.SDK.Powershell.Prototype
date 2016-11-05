@@ -1,6 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
-Describe "SaveV1Asset" {
+Describe "Save-V1Asset" {
     $script:deleteMe = @()
 
     BeforeAll {

@@ -2,23 +2,23 @@
 .Synopsis
 	Get version assets from the server
 	
-.Parameter assetType
+.Parameter AssetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
 
 .Parameter ID
-	optional ID to specify to get just one item, can be <type>:num, or just the number
+	Optional ID to specify to get just one item, can be <type>:num, or just the number
 
-.Parameter attributes
-	optional list of attributes to return, otherwise it returns default set
+.Parameter Attributes
+	Optional list of attributes to return, otherwise it returns default set
 
-.Parameter filter
-	optional filter (where clause) for limiting results. May be a string or script block. 
+.Parameter Filter
+	Optional filter (where clause) for limiting results. May be a string or script block. 
 
-.Parameter sort
-	optional sort attributes. For details run Get-V1Help Sort  
+.Parameter Sort
+	Optional sort attributes. For details run Get-V1Help Sort  
 
-.Parameter asOf
-	optional asOf DateTime to get an asset as of that time
+.Parameter AsOf
+	Optional asOf DateTime to get an asset as of that time
 
 .Outputs
 	Asset objects of the given type
@@ -60,12 +60,12 @@ function Get-V1Asset
 [CmdletBinding()]
 param(
 [Parameter(Mandatory)]
-[string] $assetType,
-[string[]] $attributes,
+[string] $AssetType,
+[string[]] $Attributes,
 $ID,
-$filter,
-[string] $sort,
-[DateTime] $asOf
+$Filter,
+[string] $Sort,
+[DateTime] $AsOf
 )
     Set-StrictMode -Version Latest
 

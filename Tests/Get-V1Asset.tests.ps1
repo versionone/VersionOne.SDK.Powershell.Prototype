@@ -1,6 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
-Describe "GetV1Asset" {
+Describe "Get-V1Asset" {
 
 	It "Gets all Scopes" {
 

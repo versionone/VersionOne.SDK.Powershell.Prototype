@@ -6,22 +6,22 @@ $script:sortedKeys = $null
 	Get AssetType Names
 
 .Parameter Force
-	force reload from the server
+	Force reload from the server
 
 .Outputs
-	sorted string array of assetTypes
+	Sorted string array of assetTypes
 
 #>
 function Get-V1MetaName
 {
 [CmdletBinding()]
 param(
-[switch] $force    
+[switch] $Force    
 )
 
-    if ( $force -or (-not $script:sortedKeys) )
+    if ( $Force -or (-not $script:sortedKeys) )
     {
-        $script:sortedKeys = (Get-V1Meta -force:$force).keys  | Sort-Object
+        $script:sortedKeys = (Get-V1Meta -force:$Force).keys  | Sort-Object
     }    
 
     return $script:sortedKeys

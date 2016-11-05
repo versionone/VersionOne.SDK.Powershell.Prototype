@@ -1,12 +1,12 @@
-function getMultiValue( $assetValue )
+function getMultiValue( $AssetValue )
 {
-  if ( $assetValue -is "string" )
+  if ( $AssetValue -is "string" )
   {
-      return $assetValue
+      return $AssetValue
   }
   else 
   {
-       return $assetValue.id
+       return $AssetValue.id
   }
 }
 
@@ -14,7 +14,7 @@ function getMultiValue( $assetValue )
 .Synopsis
 	Convert an object to V1 XML for sending to the REST API
 	
-.Parameter asset
+.Parameter Asset
 	An asset created with New-V1Object or converted via ConvertFrom-V1Xml, which is called from Get-V1Asset
 
 .Outputs
@@ -27,26 +27,26 @@ function ConvertTo-V1Xml
 [CmdletBinding()]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
-[object] $asset  
+[object] $Asset  
 )
 
 process
 {
     Set-StrictMode -Version Latest
     
-    if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
+    if ( -not (Get-Member -InputObject $Asset -Name "AssetType"))
     {
         throw "Must supply object with AssetType attribute"
     }
 
-    $assetMeta =  Get-V1Meta -assetType $asset.AssetType
+    $AssetMeta =  Get-V1Meta -assetType $Asset.AssetType
 
     $v1Object = @{Attributes=@{}}
-    if ( $asset -is "HashTable" )
+    if ( $Asset -is "HashTable" )
     {
-        foreach ( $n in $asset.keys )
+        foreach ( $n in $Asset.keys )
         {
-            $v1Object[$n] = @{name=$n;value=$asset[$n];act="set"}
+            $v1Object[$n] = @{name=$n;value=$Asset[$n];act="set"}
         }
 
     }
@@ -55,58 +55,58 @@ process
         $xml = "<Asset>`n"
         $addedKeys = @()
         
-        foreach ( $m in $asset | Get-Member -MemberType Properties )
+        foreach ( $m in $Asset | Get-Member -MemberType Properties )
         {
             $name = $m.name
             $addedKeys += $name
 
-            if ( -not ( $assetMeta.ContainsKey($name)))
+            if ( -not ( $AssetMeta.ContainsKey($name)))
             {
-                throw "Attribute name of $name not found on asset of type $($asset.AssetType)"
+                throw "Attribute name of $name not found on asset of type $($Asset.AssetType)"
             }
             
-            if ($assetMeta.$name.IsReadOnly -or $asset.$name -eq $null)
+            if ($AssetMeta.$name.IsReadOnly -or $Asset.$name -eq $null)
             {
                 continue;
             }
 
-            if ( $assetMeta.$name.AttributeType -eq "Relation" )
+            if ( $AssetMeta.$name.AttributeType -eq "Relation" )
             {
-                if ($assetMeta.$name.IsMultivalue)
+                if ($AssetMeta.$name.IsMultivalue)
                 {
-                    $xml += "    <Relation name=`"$($assetMeta.$name.Name)`">`n"    
-                    if ( $asset.$name -is 'Array')
+                    $xml += "    <Relation name=`"$($AssetMeta.$name.Name)`">`n"    
+                    if ( $Asset.$name -is 'Array')
                     {
-                        foreach ( $v in $asset.$name )
+                        foreach ( $v in $Asset.$name )
                         {
                             $xml += "        <Asset idref=`"$(getMultiValue $v)`" act=`"add`"/>`n"   
                         } 
                     }
                     else 
                     {
-                        $xml += "        <Asset idref=`"$(getMultiValue $asset.$name)`" act=`"add`"/>`n"    
+                        $xml += "        <Asset idref=`"$(getMultiValue $Asset.$name)`" act=`"add`"/>`n"    
                     }
                 }
                 else 
                 {
-                    $xml += "    <Relation name=`"$($assetMeta.$name.Name)`" act=`"set`">`n"    
-                    $xml += "        <Asset idref=`"$(getMultiValue $asset.$name)`"/>`n"    
+                    $xml += "    <Relation name=`"$($AssetMeta.$name.Name)`" act=`"set`">`n"    
+                    $xml += "        <Asset idref=`"$(getMultiValue $Asset.$name)`"/>`n"    
                 }
                 $xml += "    </Relation>`n"    
             }
             else # simple type
             {
-                $xml += "    <Attribute name=`"$name`" act=`"set`">$($asset.$name)</Attribute>`n"
+                $xml += "    <Attribute name=`"$name`" act=`"set`">$($Asset.$name)</Attribute>`n"
             }
         } 
         $xml += "</Asset>"
 
         if ( $addedKeys -notcontains "id") # if updating don't check for missing 
         {
-            $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $addedKeys }
+            $missingRequired =  $AssetMeta.Keys | Where-Object { $AssetMeta[$_].IsRequired } | Where-Object { $_ -notin $addedKeys }
             if ( $missingRequired )
             {
-                throw "Asset of type $($asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
+                throw "Asset of type $($Asset.AssetType) requires missing attributes: $($missingRequired -join ", ")"
             }
         }
     }

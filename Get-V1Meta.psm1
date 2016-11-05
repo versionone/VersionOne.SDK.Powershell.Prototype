@@ -1,10 +1,10 @@
 $script:meta = $null
 
-function returnMeta( $assetType )
+function returnMeta( $AssetType )
 {
-    if ( $assetType )
+    if ( $AssetType )
     {
-        return $script:meta[$assetType]
+        return $script:meta[$AssetType]
     }
     else
     {
@@ -17,13 +17,13 @@ function returnMeta( $assetType )
 	Get VersionOne meta data about assets
 
 .Parameter AssetType
-    An asset type to get a hash table of attributes.  Same as (Get-V1Meta)[$assetType]    
+    An asset type to get a hash table of attributes.  Same as (Get-V1Meta)[$AssetType]    
 
 .Parameter Force
-	force reload from the server
+	Force reload from the server
 
-.Parameter noload
-    don't load if not already cached, will retun $null
+.Parameter Noload
+    Don't load if not already cached, will retun $null
 
 .Link
     https://community.versionone.com/VersionOne_Connect/Developer_Library/Getting_Started/Platform_Concepts/Endpoints/rest-1.v1%2F%2FData
@@ -38,9 +38,9 @@ function Get-V1Meta
 {
 [CmdletBinding()]
 param(
-[string] $assetType,
+[string] $AssetType,
 [switch] $Force,
-[switch] $noLoad
+[switch] $NoLoad
 )
     Set-StrictMode -Version Latest
 
@@ -51,7 +51,7 @@ param(
         if ( $script:meta  )
         {
             Write-Verbose "Meta already loaded"
-            return returnMeta $assetType
+            return returnMeta $AssetType
         }
 
         if ( Test-Path $tempFile -PathType Leaf )
@@ -60,14 +60,14 @@ param(
             {
                 $script:meta = Import-Clixml $tempFile
                 Write-Verbose "Read meta from cache file $tempFile"
-                return returnMeta $assetType
+                return returnMeta $AssetType
             }
             catch {
                 Write-Warning "Error trying to read cache file $tempFile, continuing"
             }
         }
     }
-    if ( $noLoad )
+    if ( $NoLoad )
     {
         return $null
     }
@@ -128,8 +128,10 @@ param(
         Write-Warning "Failed to save cache file $tempFile`n$_"
     }
 
-    return returnMeta $assetType
+    return returnMeta $AssetType
 
 }
+
+New-Alias -Name v1meta -Value Get-V1Meta
 
 Export-ModuleMember -Function "*-*"

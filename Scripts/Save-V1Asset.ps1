@@ -5,7 +5,7 @@
 .Description
 	If the asset has an id, it will update it, otherwise it will create it
 
-.Parameter asset
+.Parameter Asset
 	The asset object returned from Get-V1Asset or New-V1Asset
 
 .Outputs
@@ -30,23 +30,23 @@ function Save-V1Asset
 [CmdletBinding(SupportsShouldProcess)]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]  
-$asset  
+$Asset  
 )
 
 process
 {
     Set-StrictMode -Version Latest
 
-    if ( -not (Get-Member -InputObject $asset -Name "AssetType"))
+    if ( -not (Get-Member -InputObject $Asset -Name "AssetType"))
     {
         throw "Must supply object with AssetType attribute"
     }
 
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$($asset.AssetType)"
-    if ( ($asset | Get-Member -Name "id") -and $asset.id)
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$($Asset.AssetType)"
+    if ( ($Asset | Get-Member -Name "id") -and $Asset.id)
     {
         # updating
-        $id = $asset.id -split ":"
+        $id = $Asset.id -split ":"
         if ( $id.Count -gt 1 )
         {
             $uri += "/$($id[1])"
@@ -57,8 +57,8 @@ process
         }
     }
 
-    $body = ConvertTo-V1Json $asset -stripDotted
-    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($asset.AssetType)"))
+    $body = ConvertTo-V1Json $Asset -stripDotted
+    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($Asset.AssetType)"))
     {
         try 
         {
@@ -68,7 +68,7 @@ process
         }
         catch
         { 
-            throw "Exception Saving asset of type $($asset.AssetType) with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
+            throw "Exception Saving asset of type $($Asset.AssetType) with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
         }
         $result | ConvertFrom-V1Json
     }

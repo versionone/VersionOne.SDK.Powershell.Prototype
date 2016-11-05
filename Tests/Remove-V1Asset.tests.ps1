@@ -1,6 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
-Describe "RemoveV1Asset" {
+Describe "Remove-V1Asset" {
     $script:prevInfoSetting = $InformationPreference
 
     BeforeAll {

@@ -5,11 +5,11 @@
 .Description
     Used by the SDK, may be useful for creating filters in other cases.
 
-.Parameter expression
-	script block containing an expression to be translated
+.Parameter Expression
+	Script block containing an expression to be translated
 
 .Outputs
-	a string in the V1 format
+	A string in the V1 format
 
 .Example
     $story = Get-V1FilterAsset Story
@@ -27,14 +27,14 @@ function ConvertFrom-V1Filter {
     [CmdletBinding()]
     param(
     [Parameter(Mandatory)]        
-    [ScriptBlock] $expression
+    [ScriptBlock] $Expression
     )
 
     $psTokens = $null
     $parseErrors = $null
     $prevPrevToken = $null;
 
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($expression, [ref]$psTokens, [ref]$parseErrors)
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($Expression, [ref]$psTokens, [ref]$parseErrors)
     if ( $parseErrors )
     {
         throw "Error parsing filter: $($parseErrors | out-string)"

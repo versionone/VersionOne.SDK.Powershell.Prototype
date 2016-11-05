@@ -2,20 +2,20 @@
 .Synopsis
 	Get the the attributes for a V1 AssetType
 	
-.Parameter assetType
-	the name of the asset type to show
+.Parameter AssetType
+	The name of the asset type to show
 
-.Parameter throwIfNotExists
-	throw an exception if the asset type doesn't exist in meta.  Otherwise returns $null
+.Parameter ThrowIfNotExists
+	Throw an exception if the asset type doesn't exist in meta.  Otherwise returns $null
 
-.Parameter required
-	only return the required attributes
+.Parameter Required
+	Only return the required attributes
 
-.Parameter alsoReadOnly
-	also return the read-only attributes.  Otherwise only returns writable attributes.
+.Parameter AlsoReadOnly
+	Also return the read-only attributes.  Otherwise only returns writable attributes.
 
 .Outputs
-	array of hash tables of attribute data
+	Array of hash tables of attribute data
 
 .Example
      Get-V1MetaAttribute Epic | ft
@@ -31,24 +31,24 @@ function Get-V1MetaAssetType
 {
 param( 
 [Parameter(Mandatory)]    
-[string] $assetType, 
-[switch] $throwIfNotExists,
-[switch] $required, 
-[switch] $alsoReadOnly )
+[string] $AssetType, 
+[switch] $ThrowIfNotExists,
+[switch] $Required, 
+[switch] $AlsoReadOnly )
 
     Set-StrictMode -Version Latest
 
-    $attrs = Get-V1Meta -assetType $assetType
-    if (-not $assetType -and -not $throwIfNotExists)  
+    $attrs = Get-V1Meta -assetType $AssetType
+    if (-not $AssetType -and -not $ThrowIfNotExists)  
     {
         throw  "Asset type of $AssetType not found in meta"    
     }    
 
-    if ( $required )
+    if ( $Required )
     {
         $ret = $attrs.values | Where-Object IsRequired -eq $true
     }
-    elseif ( $alsoReadOnly )
+    elseif ( $AlsoReadOnly )
     {
         $ret = $attrs.values
     }
@@ -58,3 +58,5 @@ param(
     }
     $ret
 }
+
+New-Alias -Name v1asset -Value Get-V1MetaAssetType

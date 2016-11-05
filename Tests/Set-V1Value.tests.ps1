@@ -1,6 +1,6 @@
 Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
 
-Describe "SetV1Value" {
+Describe "Set-V1Value" {
 
     function makeFakeEpic($i)
     {
