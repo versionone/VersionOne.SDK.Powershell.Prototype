@@ -77,7 +77,7 @@ function Get-V1BaseUri
     }
     else
     {
-        Write-Error "Call Set-V1Default to set base Uri and credentials"    
+        throw "Call Set-V1Default to set base Uri and credentials"    
     }
 
 }
