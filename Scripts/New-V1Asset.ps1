@@ -1,11 +1,20 @@
 <#
 .Synopsis
 	Create a new V1 Asset of the given type
+
+.Description
+    The Name/Value parameter set is useful when exploring since tab completion can be used for names.
 	
 .Parameter AssetType
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
-.Parameter attributes
+.Parameter Names
+	Names of attributes to add.  Number of Names must match number of values
+
+.Parameter Values
+	Values to set. Number of Names must match number of values
+
+.Parameter Attributes
 	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1MetaAttribute -assetType Epic -required | select name,attributeType
 
 .Parameter DefaultAttributes
@@ -13,6 +22,21 @@
 
 .Parameter Full
 	if set will populate the object with all the possible writable attributes for the asset
+
+.Example 
+    $epic = New-V1Asset Epic -attributes @{Name="Test";Scope="Scope:0"} -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
+
+    Create a new Epic using hash table
+
+.Example
+    $epic = New-V1Asset Epic -Names "Name","Scope" -values "Test","Scope:0" -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
+
+    Create a new Epic using names and values
+
+.Example
+    $stories = gc names.txt | v1new Story -Names Name -DefaultAttributes @{Scope="Scope:0"}
+
+    Create Story assets for each line in names.txt and scope of Scope:0
 
 .Outputs
 	a PSCustomObject
@@ -22,9 +46,13 @@ function New-V1Asset
 {
 [CmdletBinding()]
 param(
-[Parameter(Mandatory)]
+[Parameter(Mandatory,Position=0)]
 [string] $AssetType,
-[Parameter(ValueFromPipeline)]
+[Parameter(Mandatory,ParameterSetName="Values")]
+[string[]] $Names,
+[Parameter(Mandatory,ValueFromPipeline,ParameterSetName="Values")]
+[object[]] $Values,
+[Parameter(ValueFromPipeline,ParameterSetName="Object")]
 [hashtable] $Attributes = @{},
 [ValidateNotNull()]
 [hashtable] $DefaultAttributes = @{},
@@ -38,7 +66,20 @@ process
 
     $assetMeta = Get-V1Meta -assetType $AssetType
 
-    $ht = @{AssetType=$AssetType}+$Attributes+$DefaultAttributes
+    $ht = @{AssetType=$AssetType}+$DefaultAttributes
+
+    if ( $PSCmdlet.ParameterSetName -eq "Object")
+    {
+        $Attributes.Keys | ForEach-Object { $ht[$_] = $Attributes[$_] } # += will barf if duplicate key
+    }
+    else 
+    {
+        if ( $Names.Count -ne $Values.Count )
+        {
+            throw "Count of names ($($Names.Count)) must equal count of values ($($Values.Count))"
+        }
+        (0..($Names.Count-1)) | ForEach-Object { $ht[$Names[$_]] = $values[$_]}
+    }
 
     $ret = [PSCustomObject]$ht
     
@@ -60,7 +101,7 @@ process
             }
             else 
             {
-                throw "Asset of type $($AssetType) requires missing attributes: $($missingRequired -join ", ")"        
+                throw "Asset of type $($AssetType) requires missing attributes: $($missingRequired -join ", ")"
             }
         }
     }
