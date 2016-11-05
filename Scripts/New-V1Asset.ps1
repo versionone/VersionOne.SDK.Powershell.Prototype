@@ -20,6 +20,9 @@
 .Parameter DefaultAttributes
 	Optional addition attributes to set.
 
+.Parameter Required
+	Fill in any missing required attributes.
+
 .Parameter Full
 	if set will populate the object with all the possible writable attributes for the asset
 
@@ -39,7 +42,7 @@
     Create Story assets for each line in names.txt and scope of Scope:0
 
 .Outputs
-	a PSCustomObject
+	A PSCustomObject
 
 #>
 function New-V1Asset
@@ -56,7 +59,7 @@ param(
 [hashtable] $Attributes = @{},
 [ValidateNotNull()]
 [hashtable] $DefaultAttributes = @{},
-[switch] $AddMissingRequired,
+[switch] $Required,
 [switch] $Full
 )
 
@@ -94,7 +97,7 @@ process
 
         if ( $missingRequired )
         {
-            if ( -not $Attributes -or $AddMissingRequired )
+            if ( -not $Attributes -or $Required )
             {
                 $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
                 Write-Warning "For asset of type $($AssetType), added missing attributes: $($missingRequired -join ", ")"
