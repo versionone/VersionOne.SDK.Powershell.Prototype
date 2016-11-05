@@ -18,7 +18,7 @@ $error.Clear()
 $ErrorActionPreference = "Stop"
 $InformationPreference = "Continue"
 
-Set-V1Default -baseUri $baseUri -token $token
+Set-V1Connection -baseUri $baseUri -token $token
 
 $activityName = "Add Daag data"
 

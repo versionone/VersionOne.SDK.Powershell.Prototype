@@ -13,5 +13,5 @@ Export-ModuleMember -Function "*-*" -Alias "*"
 
 if ( -not $script:baseUri)
 {
-    Write-Warning "V1 PowerShell API loaded.  Run Set-V1Default to set Uri and credentials"
+    Write-Warning "V1 PowerShell API loaded.  Run Set-V1Connection to set Uri and credentials"
 } 

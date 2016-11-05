@@ -5,7 +5,7 @@ cls
 $error.Clear()
 $ErrorActionPreference = "Stop"
 
-Set-V1Default -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+Set-V1Connection -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
 
 $null = Get-V1Meta
 
