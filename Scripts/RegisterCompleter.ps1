@@ -23,7 +23,7 @@ $assetTypeTabComplete = {
     Tab completion for attribute of an asset type
 #>
 function tabCompleteForAssetAttributes {
-    param($assetType, $wordToComplete, $commandAst)
+    param($assetType, $wordToComplete, $commandAst, $alsoReadOnly = $false)
     
     $excludes = @()
     
@@ -40,11 +40,11 @@ function tabCompleteForAssetAttributes {
         [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "4 Excluding $excludes`n");
     }
     
-    return (Get-V1Meta -assetType assetType ).keys | Where-Object {$_ -like "$wordToComplete*" -and $_ -notin $excludes } | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_)}
+    return (Get-V1MetaAssetType -assetType $assetType -alsoReadOnly:$alsoReadOnly ).Name | Where-Object {$_ -like "$wordToComplete*" -and $_ -notin $excludes } | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_)}
 }
 
-$attributeTabComplete = {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+function attributeTabComplete {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter, $alsoReadOnly )
 
     if ( $global:debuggingTabV1 )
     {
@@ -53,12 +53,24 @@ $attributeTabComplete = {
 
     if ( $fakeBoundParameter.keys -contains "assetType")
     {
-        return tabCompleteForAssetAttributes $fakeBoundParameter["assetType"] $wordToComplete $commandAst
+        return tabCompleteForAssetAttributes $fakeBoundParameter["assetType"] $wordToComplete $commandAst $alsoReadOnly
     }
     else 
     {
         return $null
     }
+}
+
+$attributeTabCompleteFull = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+
+    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter $true
+}
+
+$attributeTabCompleteWriteable = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+
+    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter $false
 }
 
 $attributeTabCompleteForAsset = {
@@ -82,7 +94,8 @@ Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","Get-V1
 Register-ArgumentCompleter -CommandName "Remove-V1Asset" -ParameterName "ID" -ScriptBlock $assetTypeTabComplete
 
 # attribute for functions that take assetType
-Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","New-V1Asset" -ParameterName "attributes" -ScriptBlock $attributeTabComplete
-Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Names" -ScriptBlock $attributeTabComplete
-Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Sort" -ScriptBlock $attributeTabComplete
-Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Filter" -ScriptBlock $attributeTabComplete
+Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "attributes" -ScriptBlock $attributeTabCompleteFull
+Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "attributes" -ScriptBlock $attributeTabCompleteWriteable
+Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Names" -ScriptBlock $attributeTabCompleteWriteable
+Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Sort" -ScriptBlock $attributeTabCompleteFull
+Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Filter" -ScriptBlock $attributeTabCompleteFull
