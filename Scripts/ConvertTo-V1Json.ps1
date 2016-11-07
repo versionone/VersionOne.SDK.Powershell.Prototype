@@ -79,7 +79,7 @@ process
                 }
                 else 
                 {
-                    $v1Object.Attributes[$name]=@{name=$name;value=$Asset.$name;act="set"}
+                    $v1Object.Attributes[$name]=@{name=$name;value=$(getMultiValue $Asset.$name);act="set"}
                 }
             }
             else # simple type 
