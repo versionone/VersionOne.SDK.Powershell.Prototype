@@ -68,6 +68,10 @@ process
     Set-StrictMode -Version Latest
 
     $assetMeta = Get-V1Meta -assetType $AssetType
+    if ( -not $assetMeta )
+    {
+        throw "$AssetType not found in meta."
+    }
 
     $ht = @{AssetType=$AssetType}+$DefaultAttributes
 
