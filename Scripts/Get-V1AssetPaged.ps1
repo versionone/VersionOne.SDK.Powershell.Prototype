@@ -44,6 +44,12 @@ $s
 .Parameter AsOf
 	Optional asOf DateTime to get an asset as of that time
 
+.Parameter Find
+	String to find in common attributes of object
+
+.Parameter FindIn
+	Attributes for Find.  Uses default attributes for type if not supplied
+
 .Outputs
 	Object with Total and Assets (array of asset objects of the given type)
 
@@ -61,6 +67,7 @@ function Get-V1AssetPaged
 param(
 [Parameter(Mandatory)]
 [string] $AssetType,
+[Parameter(ValueFromPipeline)]
 $ID,
 [string[]] $Attributes,
 $Filter,
@@ -68,9 +75,15 @@ $Filter,
 [ValidateRange(0,[int]::MaxValue)]
 [int] $StartPage = 0,
 [ValidateRange(1,[int]::MaxValue)]
-[int] $PageSize = [int]::MaxValue,
-[DateTime] $AsOf
+[int] $PageSize = 50,
+[DateTime] $AsOf,
+[string] $Find,
+[string] $FindIn
 )
+
+process
+{
+
     Set-StrictMode -Version Latest
 
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attributes: $Attributes ID: $ID" )
@@ -127,6 +140,15 @@ $Filter,
         $uri = appendToUri $uri "asof=$($AsOf.ToString("s"))"
     }
 
+    if ( $Find )
+    {
+        $uri = appendToUri $uri "find=$Find"
+        if ( $FindIn )
+        {
+            $uri = appendToUri $uri "findin=$FindIn"
+        }
+    }
+
     $result =  InvokeApi -Uri $uri
 
     $ret = @{Total=0;Assets = $null}
@@ -152,6 +174,8 @@ $Filter,
         }
     }
     $ret
+}
+    
 }
 
 New-Alias -Name v1paged -Value Get-V1AssetPaged

@@ -20,6 +20,12 @@
 .Parameter AsOf
 	Optional asOf DateTime to get an asset as of that time
 
+.Parameter Find
+	String to find in common attributes of object
+
+.Parameter FindIn
+	Attributes for Find.  Uses default attributes for type if not supplied
+
 .Outputs
 	Asset objects of the given type
 
@@ -62,14 +68,21 @@ param(
 [Parameter(Mandatory)]
 [string] $AssetType,
 [string[]] $Attributes,
+[Parameter(ValueFromPipeline)]
 $ID,
 $Filter,
 [string] $Sort,
-[DateTime] $AsOf
+[DateTime] $AsOf,
+[string] $Find
 )
+
+process
+{
     Set-StrictMode -Version Latest
 
     (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
+}
+
 }
 
 Set-Alias -Name v1get Get-V1Asset
