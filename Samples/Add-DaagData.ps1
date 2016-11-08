@@ -1,7 +1,10 @@
-﻿[CmdletBinding()]
+﻿<#
+Port of Valve's index.js file for loading Daag data
+#>
+[CmdletBinding()]
 param(
 [string] $testName = "PSTest", # name used for all names,
-[string] $baseUri = "localhost/VersionOne.Web"
+[string] $baseUri = "localhost/VersionOne.Web",
 [string] $token = "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
 )
 
@@ -11,19 +14,15 @@ try
 cls
 
 Set-StrictMode -Version Latest
-
-Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
-
 $error.Clear()
 $ErrorActionPreference = "Stop"
 $InformationPreference = "Continue"
 
+Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
 Set-V1Connection -baseUri $baseUri -token $token
+$null = Get-V1Meta
 
 $activityName = "Add Daag data"
-
-# load meta 
-$null = Get-V1Meta
 
 Write-Progress -Activity $activityName -Status "Initializing"
 
