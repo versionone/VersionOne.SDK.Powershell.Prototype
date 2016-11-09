@@ -20,8 +20,7 @@ param()
 
     try 
     {
-        $null = InvokeApi  "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0"
-        return $true
+        return ((InvokeApi  "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0") -ne $null)
     }
     catch
     {

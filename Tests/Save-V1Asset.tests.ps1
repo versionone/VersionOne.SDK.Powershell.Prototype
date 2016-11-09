@@ -46,6 +46,6 @@ Describe "Save-V1Asset" {
     }
 
     AfterAll {
-        $script:deleteMe | Remove-V1Asset
+        $null = $script:deleteMe | Remove-V1Asset
     }
 }

@@ -38,7 +38,7 @@ Describe "Set-V1Value" {
         $i = 1
         $updatedEpics = (1..10) | ForEach-Object { makeFakeEpic $_ } | Set-V1Value -name Name -value (($i++)*100)
         $updatedEpics.Count | Should be 10
-        $updatedEpics | ForEach-Object { $_.Name | Should belike "*00"} 
+        $updatedEpics | ForEach-Object { $_.Name -like "*00" | Should be $true } 
 	}
 
     It "Tries to set a readonly attribute" {

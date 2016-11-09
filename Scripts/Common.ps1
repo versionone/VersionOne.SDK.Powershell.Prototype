@@ -41,6 +41,7 @@ $body = $null
     {
         $myError = $_
         
+        $Global:v1NetworkError = $myError
         try 
         {
             if ($myError.exception.response.statusCode -eq [System.Net.HttpStatusCode]::NotFound )
@@ -50,7 +51,6 @@ $body = $null
                     if ( (ConvertFrom-Json $_.ErrorDetails).error -eq "Not Found")
                     {
                         # if get here, V1 returned not found don't throw
-                        $error.RemoveAt($error.Count-1)
                         return $null
                     }
                 }
@@ -62,7 +62,18 @@ $body = $null
         }
         catch 
         {
-            Write-Debug "Yes, I promise not to have empty catches"
+            # on linux don't get response.status code, so assume 404 missing asset
+            try 
+            {
+                if ( $myError.Exception.Message -like "* 404 *")
+                {
+                    return $null
+                }
+            }
+            catch 
+            {
+                Write-Debug "Yes, I promise not to have empty catches"
+            }
         }
         throw
     }

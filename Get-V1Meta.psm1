@@ -42,9 +42,21 @@ param(
 [switch] $Force,
 [switch] $NoLoad
 )
+
+
+try 
+{
+    
     Set-StrictMode -Version Latest
 
-    $tempFile = Join-Path ($env:APPDATA) "V1Api\meta\$((Get-V1BaseUri) -replace '[\\/:]','_').xml"
+    if ( $env:APPDATA )
+    {
+        $tempFile = Join-Path ($env:APPDATA) "V1Api\meta\$((Get-V1BaseUri) -replace '[\\/:]','_').xml"
+    }
+    else
+    {
+        $tempFile = Join-Path $env:HOME "V1Api/meta/$((Get-V1BaseUri) -replace '[\\/:]','_').xml"
+    }
 
     if ( -not $Force )
     {
@@ -130,6 +142,11 @@ param(
     }
 
     return returnMeta $AssetType
+}
+catch 
+{
+    Write-Error "Error:`n$_`n$($_.ScriptStackTrace)"
+}
 
 }
 

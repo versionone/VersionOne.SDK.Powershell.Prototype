@@ -52,8 +52,8 @@ Describe "New-V1Asset" {
         { New-V1Asset Epic -attributes @{Name="Test"}} | Should throw
     }
 
-    It "Tries creates an epic without required attribute with -addMissingRequired" {
-        $epic = New-V1Asset Epic -attributes @{Name="Test"} -addMissingRequired
+    It "Tries creates an epic without required attribute with -Required" {
+        $epic = New-V1Asset Epic -attributes @{Name="Test"} -Required
         $epic | Should not be $null
         (Get-Member -InputObject $epic -Name "Name") | Should not be $Null
         (Get-Member -InputObject $epic -Name "Scope") | Should not be $Null
