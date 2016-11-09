@@ -56,10 +56,19 @@ Describe "Get-V1Asset" {
 
 		$c.Name | Should be 'Feature'
 	}
+
 	It "Gets epics on AssetState" {
-		(Get-V1Asset EpicCategory -filter "AssetState='64'").Count | Should not be 0
+		@(Get-V1Asset EpicCategory -filter "AssetState='64'").Count | Should not be 0
 	}
 	
+	It "Gets epics with find" {
+		@(Get-V1Asset EpicCategory -find "Non").Count | Should not be 0
+	}
+
+	It "Gets epics with findin" {
+		@(Get-V1Asset EpicCategory -find "Non" -findin "Name").Count | Should not be 0
+	}
+
 	It "Tries to get invalid asset id " {
 		 Get-V1Asset Story -ID 99999999  | should be $null
 	}

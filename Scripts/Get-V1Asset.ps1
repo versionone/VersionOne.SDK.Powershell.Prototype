@@ -21,7 +21,7 @@
 	Optional asOf DateTime to get an asset as of that time
 
 .Parameter Find
-	String to find in common attributes of object
+	Prefix string to find in common attributes, or ones specified in FindIn.  Anything after * is ignored.  If * is not supplied, it is appended.
 
 .Parameter FindIn
 	Attributes for Find.  Uses default attributes for type if not supplied
@@ -60,6 +60,11 @@
     Get-V1Asset EpicCategory -filter {$x.Name -eq 'Feature'}
 
     Get the Feature EpicCategory
+
+.Example    
+    v1get ChangeSet -Find 'DoneChangeSet*'
+    
+    Get changesets that start with DoneChangeSet
 #>
 function Get-V1Asset
 {
@@ -73,14 +78,19 @@ $ID,
 $Filter,
 [string] $Sort,
 [DateTime] $AsOf,
-[string] $Find
+[string] $Find,
+[string[]] $FindIn
 )
 
 process
 {
     Set-StrictMode -Version Latest
 
-    (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
+    $ret = (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
+    if ( $ret )   # don't return $null if empty, don't return anything 
+    {
+        $ret 
+    }
 }
 
 }

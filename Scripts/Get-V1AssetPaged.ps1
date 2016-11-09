@@ -18,7 +18,7 @@ $s
 
 <#
 .Synopsis
-	Get V1 assets from the server, in a paged manner.  See Get-V1Asset for non-paged
+	Get V1 assets from the server, in a paged manner.  See Get-V1Asset for non-paged and more examples
 	
 .Parameter AssetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
@@ -45,7 +45,7 @@ $s
 	Optional asOf DateTime to get an asset as of that time
 
 .Parameter Find
-	String to find in common attributes of object
+	Prefix string to find in common attributes, or ones specified in FindIn.  Anything after * is ignored.  If * is not supplied, it is appended.
 
 .Parameter FindIn
 	Attributes for Find.  Uses default attributes for type if not supplied
@@ -78,7 +78,7 @@ $Filter,
 [int] $PageSize = 50,
 [DateTime] $AsOf,
 [string] $Find,
-[string] $FindIn
+[string[]] $FindIn
 )
 
 process
@@ -142,10 +142,14 @@ process
 
     if ( $Find )
     {
+        if ( $Find -notmatch "\*" )
+        {
+            $Find += "*"
+        }
         $uri = appendToUri $uri "find=$Find"
         if ( $FindIn )
         {
-            $uri = appendToUri $uri "findin=$FindIn"
+            $uri = appendToUri $uri "findin=$($FindIn -join ",")"
         }
     }
 
@@ -175,7 +179,7 @@ process
     }
     $ret
 }
-    
+
 }
 
 New-Alias -Name v1paged -Value Get-V1AssetPaged
