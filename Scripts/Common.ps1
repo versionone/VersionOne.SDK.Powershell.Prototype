@@ -63,16 +63,19 @@ $body = $null
         catch 
         {
             # on linux don't get response.status code, so assume 404 missing asset
-            try 
+            if ( (Test-Path variable:isWindows) -and -not $isWindows ) # on PS 6, *nix systems have $isWindows, etc.
             {
-                if ( $myError.Exception.Message -like "* 404 *")
+                try 
                 {
-                    return $null
+                    if ( $myError.Exception.Message -like "* 404 *")
+                    {
+                        return $null
+                    }
                 }
-            }
-            catch 
-            {
-                Write-Debug "Yes, I promise not to have empty catches"
+                catch 
+                {
+                    Write-Debug "Yes, I promise not to have empty catches"
+                }
             }
         }
         throw

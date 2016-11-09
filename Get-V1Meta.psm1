@@ -49,7 +49,7 @@ try
     
     Set-StrictMode -Version Latest
 
-    if ( $env:APPDATA )
+    if ( -not (Test-Path variable:isWindows) -or $isWindows ) # on PS 6, *nix systems have $isWindows, etc.
     {
         $tempFile = Join-Path ($env:APPDATA) "V1Api\meta\$((Get-V1BaseUri) -replace '[\\/:]','_').xml"
     }
