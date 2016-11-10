@@ -5,23 +5,27 @@ Add a scope, schemes and Epics
 param(
 [string] $testName = "PSTest", # name used for all names,
 [string] $baseUri = "localhost/VersionOne.Web",
-[string] $token = "1.bxDPFh/9y3x9MAOt469q2SnGDqo=",
+[System.Management.Automation.CredentialAttribute()]
+[PSCredential] $Credential,
+[string] $token,
 [int] $epicCount = 10
 )
+
+$ErrorActionPreference = "Stop"
+$InformationPreference = "Continue"
+
+. (Join-Path $PSScriptRoot Push-V1Asset.ps1)
+. (Join-Path $PSScriptRoot New-V1TestName.ps1)
 
 try 
 {
 
-cls
-
 Set-StrictMode -Version Latest
 $error.Clear()
-$ErrorActionPreference = "Stop"
-$InformationPreference = "Continue"
 
 
 Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
-Set-V1Connection -baseUri $baseUri -token $token
+$null = Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test
 $null = Get-V1Meta
 
 # load common base assets
@@ -54,21 +58,12 @@ if ( -not $scope )
 }
 
 # add epicCount epics 
-$defaultEpicProps = @{Description="Added via PS"}
-$newEpics = @()
-foreach ( $i in (1..$epicCount) )
-{
-    if ( -not ($epics | Where-Object name -eq "${testName}Epic$i") )
-    {
-        Write-Information "Adding Epic ${testName}Epic$i"
-        $epic = New-V1Asset -assetType "Epic" -attributes @{Name="${testName}Epic$i";Scope=$scope.id} -defaultAttributes $defaultEpicProps
-        
-        $newEpics += Save-V1Asset $epic
-    }
+$defaultEpicProps = @{Description="Added via PS";Scope=$scope.id}
 
-}
+$epics = New-V1TestName $epicCount -prefix "${testName}Epic" | New-V1Asset -assetType "Epic" -Name Name `
+            -defaultAttributes $defaultEpicProps | Push-V1Asset  
 
-$newEpics | Out-GridView
+$epics | Select id,name,description | Format-Table -AutoSize
 
 }
 catch

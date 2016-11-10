@@ -44,18 +44,21 @@ function Set-V1Connection
 param(
 [Parameter(Mandatory)]
 [string] $BaseUri,
-[Parameter(Mandatory,ParameterSetName="User")]
 [System.Management.Automation.CredentialAttribute()]
 [PSCredential] $Credential,
-[Parameter(Mandatory,ParameterSetName="Token")]
 [string] $Token,
-[switch] $test)
+[switch] $Test)
+
+    if ( -not $Token -and (-not $Credential))
+    {
+        throw "Must supply Token or Credential"
+    }
 
     Set-StrictMode -Version Latest
 
     $script:baseUri = $BaseUri
 
-    if ( $PSCmdlet.ParameterSetName -eq "Token")
+    if ( $Token )
     {
         $script:authorizationHeader = @{AUTHORIZATION="Bearer $Token"}
     }
@@ -63,7 +66,7 @@ param(
     {
         $script:credential = $Credential    
     }
-    if ( $test )
+    if ( $Test )
     {
         return Test-V1Connection
     }

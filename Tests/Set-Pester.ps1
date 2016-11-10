@@ -1,14 +1,20 @@
+[CmdletBinding()]
 param(
 [ValidateNotNullOrEmpty()]
-[string] $baseUri = "localhost/VersionOne.Web",
-[ValidateNotNullOrEmpty()]
-[string] $token = "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+[string] $BaseUri = "localhost/VersionOne.Web",
+[System.Management.Automation.CredentialAttribute()]
+[PSCredential] $Credential,
+[string] $Token
 )
+	if ( -not $Token -and (-not $Credential))
+	{
+		throw "Must supply token or credential"
+	}
 
      $env:V1_BASE_URI = $baseUri
-     $env:V1_API_TOKEN = $token
+     $env:V1_API_TOKEN = $Token
 	 if ( ${Function:Set-V1Connection} )
 	 {
-		Set-V1Connection -baseUri $baseUri -token $token
+		Set-V1Connection -baseUri $BaseUri @PSBoundParameters -test
 	 }
 

@@ -5,7 +5,9 @@ Port of Valve's index.js file for loading Daag data
 param(
 [string] $testName = "PSTest", # name used for all names,
 [string] $baseUri = "localhost/VersionOne.Web",
-[string] $token = "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
+[System.Management.Automation.CredentialAttribute()]
+[PSCredential] $Credential,
+[string] $token
 )
 
 try
@@ -19,7 +21,7 @@ $ErrorActionPreference = "Stop"
 $InformationPreference = "Continue"
 
 Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
-Set-V1Connection -baseUri $baseUri -token $token
+Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test
 $null = Get-V1Meta
 
 $activityName = "Add Daag data"
