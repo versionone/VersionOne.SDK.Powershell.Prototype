@@ -42,8 +42,8 @@ $script:credential = $null
 function Set-V1Connection
 {
 param(
-[Parameter(Mandatory)]
-[string] $BaseUri,
+[ValidateNotNullOrEmpty()]
+[string] $BaseUri = "localhost/VersionOne.Web",
 [System.Management.Automation.CredentialAttribute()]
 [PSCredential] $Credential,
 [string] $Token,
