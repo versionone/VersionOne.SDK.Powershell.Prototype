@@ -18,6 +18,17 @@ Describe "Save-V1Asset" {
                 
 	}
 
+	It "Creates and save a story using wrong case for asset type" {
+        $story = New-V1Asset story -attributes @{Name="Test";Scope="Scope:0"}
+        $story | Should not be $null
+
+        $savedStory = Save-V1Asset $story
+        $savedStory | Should not be $null
+        $savedStory.id | Should not beNullOrEmpty
+        $script:deleteMe += $savedStory.id
+                
+	}
+
 	It "Creates and saves 5 stories via pipeline" {
         $stories = (1..5) | ForEach-Object { New-V1Asset Story -attributes @{Name="Test$_";Scope="Scope:0"}} | 
             Save-V1Asset

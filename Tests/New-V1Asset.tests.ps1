@@ -48,6 +48,12 @@ Describe "New-V1Asset" {
         $epic.PlannedStart | Should be $plannedStart
     }
 
+    It "Creates a story with the wrong case for assetType" {
+        $story = New-V1Asset story -Required
+
+        $story.AssetType | Should beexactly "Story"
+    }
+
     It "Tries to create an epic without required attribute" {
         { New-V1Asset Epic -attributes @{Name="Test"}} | Should throw
     }

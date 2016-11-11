@@ -88,10 +88,7 @@ process
 
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attributes: $Attributes ID: $ID" )
 
-    if ( -not (Get-V1Meta -assetType $AssetType) )
-    {
-        throw "$AssetType was not found in meta"
-    }
+    $AssetType = Get-V1AssetTypeName $AssetType
     
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( $ID -ne $null )

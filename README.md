@@ -76,12 +76,12 @@ The `Tests` folder has Pester test files.  First set credentials with Set-V1Conn
 
 * Object-oriented alternative, like the Python SDK, JavaScript SDK, and Fluent vNext wrapper for the .NET SDK
 * Support for query.v1
-* Support for OAuth2 
 
 ### TODOs
- * Always check case of assetType since get nothing if wrong
+ * Always check case of attribute names
  * Implement remove relation
  * Make loading meta optional?
  
 ### Dones 
  * Filter helper for tab completion via object.  Take scriptblock or string
+ * Always check case of assetType since get nothing if wrong

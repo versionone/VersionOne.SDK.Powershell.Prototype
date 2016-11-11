@@ -72,6 +72,7 @@ process
     {
         throw "$AssetType not found in meta."
     }
+    $AssetType = Get-V1AssetTypeName $AssetType
 
     $ht = @{AssetType=$AssetType}+$DefaultAttributes
 

@@ -41,8 +41,9 @@ process
     {
         throw "Must supply object with AssetType attribute"
     }
+    $AssetType = Get-V1AssetTypeName $Asset.AssetType
 
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$($Asset.AssetType)"
+    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( ($Asset | Get-Member -Name "id") -and $Asset.id)
     {
         # updating
@@ -58,7 +59,7 @@ process
     }
 
     $body = ConvertTo-V1Json $Asset -stripDotted
-    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $($Asset.AssetType)"))
+    if ( $PSCmdlet.ShouldProcess("$uri", "Save-V1Asset of type $AssetType"))
     {
         try 
         {
@@ -68,7 +69,7 @@ process
         }
         catch
         { 
-            throw "Exception Saving asset of type $($Asset.AssetType) with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
+            throw "Exception Saving asset of type $AssetType with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
         }
         $result | ConvertFrom-V1Json
     }
