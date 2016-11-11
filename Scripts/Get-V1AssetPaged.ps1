@@ -94,7 +94,7 @@ process
     }
     
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
-    if ( $ID )
+    if ( $ID -ne $null )
     {
         if ( $ID -is "string" -and $ID.Contains(":") )
         {
