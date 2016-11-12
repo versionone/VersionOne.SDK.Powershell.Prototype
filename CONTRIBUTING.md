@@ -32,6 +32,7 @@ You should also follow the code style and whitespace conventions of the original
 When in Rome....
  * Public functions should be in their own file in the Scripts folder and have the name of the function. (The V1.psm1 file loads all files in the Scripts folder and exports any names that follow the naming convention)
  * Public functions should be named <verb>-V1<singularNoun>.
+ * Create a test file in the Tests folder with tests for the function.
  * Parameter names should look like the other functions.
  * An alias for the function should be created at the end of the file and start with v1.  
  * Use valueFromPipeline is possibly 

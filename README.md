@@ -66,12 +66,12 @@ All the functions have self-contained help accessed using the PowerShell help fu
 ```Show-V1Help``` function will launch the browser with various web-based help from your server.  Tab through the options.
 
 ## Samples and Tests
-The `Samples` folder has several samples. Filea ending in `Sample.ps1` are designed to be used in PowerShell ISE and highlighting a couple lines at a time and using F8 to run them.  At each pause you can run other commands in the PowerShell windows, including just dumping out variables.  The other files are scripts that show using the SDK to load test data.
+The `Samples` folder has several samples. Files ending in `Sample.ps1` are designed to be used in PowerShell ISE and highlighting a couple lines at a time and using F8 to run them.  At each pause you can run other commands in the PowerShell windows, including just dumping out variables.  The other files are scripts that show using the SDK to load test data.
 
-The `Tests` folder has Pester test files.  First set credentials with Set-V1Connection, or set environment variables like the ```Tests\Set-Pester.ps1``` sample file.  Then do ``Invoke-Pester`` to run the tests.  Each file is named for the function it tests, so you may look at those for more examples of using the SDK. 
+The `Tests` folder has Pester test files.  First set credentials with Set-V1Connection.  Then do ``Invoke-Pester`` to run the tests.  Each file is named for the function it tests, so you may look at those for more examples of using the SDK. 
 
 ## Contribute
-Read the [contribution guidelines](.github/CONTRIBUTING.md) if you want to contribute to this project.
+Read the [contribution guidelines](CONTRIBUTING.md) if you want to contribute to this project.
 
 See the [change log](CHANGELOG.md) for changes and road map.
 
