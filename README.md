@@ -40,7 +40,8 @@ All functions support pipelines when appropriate and the common PowerShell param
 |`Set-V1Value`| `v1set` | Sets a value on an object, adding it if not there.  Tab-completion works and the names are validated | The asset passed into it (for fluency) |
 |`Save-V1Asset`| `v1save` | Saves the asset.  If it has an ```id``` attribute it will try to update, it otherwise it will create it.  Assets from ```New-V1Asset``` do not have an id, ones from ```Get-V1Asset``` will. | Asset as returned from the server which has minimal attributes. |
 |`Remove-V1Asset`| `v1del` | Removes an asset on the server with a soft-delete.  The ID with the moment is returned. | Oid with the moment |
-|`New-V1AdminUser`|| Creates a new Administrator user with roles and scope access.  This is not strictly an SDK function, but used to populate users for regression testing ||
+|`Remove-V1Relation`| `v1delrel` | Removes a relationship from an asset. | Basic object |
+|`New-V1AdminUser`| `v1newadmin` | Creates a new Administrator user with roles and scope access.  This is not strictly an SDK function, but used to populate users for regression testing ||
 
 ### The Asset Object in the PowerShell SDK
 The PowerShell SDK converts the data returned from REST into simple PSCustomObjects to make them easy to work with.  It also loads meta so validatation and tab-completion can be used to easily discover valid asset and attribute name.
@@ -78,10 +79,10 @@ The `Tests` folder has Pester test files.  First set credentials with Set-V1Conn
 * Support for query.v1
 
 ### TODOs
- * Always check case of attribute names
- * Implement remove relation
+ * Always check case of attribute names, and that it exists
  * Make loading meta optional?
  
 ### Dones 
+ * Implement remove relation
  * Filter helper for tab completion via object.  Take scriptblock or string
  * Always check case of assetType since get nothing if wrong
