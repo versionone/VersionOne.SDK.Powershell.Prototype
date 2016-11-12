@@ -28,9 +28,9 @@ $scope
 Get-V1Asset EpicCategory | Format-Table
 
 # can get only a few attributes.  Tab completion works for attributes
-# Get-V1Asset EpicCategory -attributes <tab>
-# Get-V1Asset EpicCategory -attributes c<tab>
-Get-V1Asset EpicCategory -attributes ColorName,Order,Name | Format-Table
+# Get-V1Asset EpicCategory -Attribute <tab>
+# Get-V1Asset EpicCategory -Attribute c<tab>
+Get-V1Asset EpicCategory -Attribute ColorName,Order,Name | Format-Table
 
 # most commands have aliases that start with v1 to save some keystrokes, the next set of commands use them
 # 
@@ -38,24 +38,24 @@ Get-V1Asset EpicCategory -attributes ColorName,Order,Name | Format-Table
 # since filters more complex getting tab completion on them requires a filter object
 # -- or -- 
 # you can just enter a filter
-v1get Epic -filter "Status='EpicStatus:1049'" -Attributes Name,Status,Description | ft
+v1get Epic -filter "Status='EpicStatus:1049'" -Attribute Name,Status,Description | ft
 
 $f = v1filter EpicCategory
 # run the above line to get tab completion of $f
 v1get EpicCategory -filter{ $f.ColorName -ne 'iron' -and $f.Order -gt 20 } | ft
 
 # can sort results on the server.  tab complete sort attributes (or use | sort)
-# v1get Epic -attributes Name -sort <tab>
-v1get Epic -attributes Name -sort Name
+# v1get Epic -Attribute Name -sort <tab>
+v1get Epic -Attribute Name -sort Name
 
 # can also get assets as of a date
 v1get Epic -asOf '2016-11-1' | ft
 
 # findin
-v1get Epic -Find Janua* -FindIn Name -Attributes Name
+v1get Epic -Find Janua* -FindIn Name -Attribute Name
 
 # paging
-$paged = v1paged Epic -Attributes Name,Description -PageSize 3
+$paged = v1paged Epic -Attribute Name,Description -PageSize 3
 "Total count: $($paged.Total)"
 $paged.Assets | ft
 

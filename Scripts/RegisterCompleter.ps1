@@ -88,14 +88,15 @@ $attributeTabCompleteForAsset = {
 
 # asset with AssetType attribute
 Register-ArgumentCompleter -CommandName "Set-V1Value" -ParameterName "Name" -ScriptBlock $attributeTabCompleteForAsset
+Register-ArgumentCompleter -CommandName "Remove-V1Relation" -ParameterName "Attribute" -ScriptBlock $attributeTabCompleteForAsset
 
 # asset Type as string
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged","Get-V1Meta","Get-V1FilterAsset","Get-V1MetaAttribute","Get-V1MetaAssetType","New-V1Asset" -ParameterName "AssetType" -ScriptBlock $assetTypeTabComplete
 Register-ArgumentCompleter -CommandName "Remove-V1Asset" -ParameterName "ID" -ScriptBlock $assetTypeTabComplete
 
 # attribute for functions that take assetType
-Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "attributes" -ScriptBlock $attributeTabCompleteFull
-Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "attributes" -ScriptBlock $attributeTabCompleteWriteable
+Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Attribute" -ScriptBlock $attributeTabCompleteFull
+Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Attribute" -ScriptBlock $attributeTabCompleteWriteable
 Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Names" -ScriptBlock $attributeTabCompleteWriteable
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Sort" -ScriptBlock $attributeTabCompleteFull
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Filter" -ScriptBlock $attributeTabCompleteFull

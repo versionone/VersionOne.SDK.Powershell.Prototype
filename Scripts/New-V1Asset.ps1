@@ -8,16 +8,16 @@
 .Parameter AssetType
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
-.Parameter Names
+.Parameter Name
 	Names of attributes to add.  Number of Names must match number of values
 
-.Parameter Values
+.Parameter Value
 	Values to set. Number of Names must match number of values
 
-.Parameter Attributes
+.Parameter Attribute
 	Initial attributes for the asset.  They must be valid and include all required ones.  To see them, use Get-V1MetaAttribute -assetType Epic -required | select name,attributeType
 
-.Parameter DefaultAttributes
+.Parameter DefaultAttribute
 	Optional addition attributes to set.
 
 .Parameter Required
@@ -27,17 +27,17 @@
 	if set will populate the object with all the possible writable attributes for the asset
 
 .Example 
-    $epic = New-V1Asset Epic -attributes @{Name="Test";Scope="Scope:0"} -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
+    $epic = New-V1Asset Epic -Attribute @{Name="Test";Scope="Scope:0"} -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
 
     Create a new Epic using hash table
 
 .Example
-    $epic = New-V1Asset Epic -Names "Name","Scope" -values "Test","Scope:0" -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
+    $epic = New-V1Asset Epic -Name "Name","Scope" -Value "Test","Scope:0" -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
 
     Create a new Epic using names and values
 
 .Example
-    $stories = gc names.txt | v1new Story -Names Name -DefaultAttributes @{Scope="Scope:0"}
+    $stories = gc names.txt | v1new Story -Name Name -DefaultAttribute @{Scope="Scope:0"}
 
     Create Story assets for each line in names.txt and scope of Scope:0
 
@@ -52,13 +52,13 @@ param(
 [Parameter(Mandatory,Position=0)]
 [string] $AssetType,
 [Parameter(Mandatory,ParameterSetName="Values")]
-[string[]] $Names,
+[string[]] $Name,
 [Parameter(Mandatory,ValueFromPipeline,ParameterSetName="Values")]
-[object[]] $Values,
+[object[]] $Value,
 [Parameter(ValueFromPipeline,ParameterSetName="Object")]
-[hashtable] $Attributes = @{},
+[hashtable] $Attribute = @{},
 [ValidateNotNull()]
-[hashtable] $DefaultAttributes = @{},
+[hashtable] $DefaultAttribute = @{},
 [switch] $Required,
 [switch] $Full
 )
@@ -74,19 +74,19 @@ process
     }
     $AssetType = Get-V1AssetTypeName $AssetType
 
-    $ht = @{AssetType=$AssetType}+$DefaultAttributes
+    $ht = @{AssetType=$AssetType}+$DefaultAttribute
 
     if ( $PSCmdlet.ParameterSetName -eq "Object")
     {
-        $Attributes.Keys | ForEach-Object { $ht[$_] = $Attributes[$_] } # += will barf if duplicate key
+        $Attribute.Keys | ForEach-Object { $ht[$_] = $Attribute[$_] } # += will barf if duplicate key
     }
     else 
     {
-        if ( $Names.Count -ne $Values.Count )
+        if ( $Name.Count -ne $Value.Count )
         {
-            throw "Count of names ($($Names.Count)) must equal count of values ($($Values.Count))"
+            throw "Count of names ($($Name.Count)) must equal count of values ($($Value.Count))"
         }
-        (0..($Names.Count-1)) | ForEach-Object { $ht[$Names[$_]] = $values[$_]}
+        (0..($Name.Count-1)) | ForEach-Object { $ht[$Name[$_]] = $Value[$_]}
     }
 
     $ret = [PSCustomObject]$ht
@@ -102,7 +102,7 @@ process
 
         if ( $missingRequired )
         {
-            if ( -not $Attributes -or $Required )
+            if ( -not $Attribute -or $Required )
             {
                 $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
                 Write-Warning "For asset of type $($AssetType), added missing attributes: $($missingRequired -join ", ")"

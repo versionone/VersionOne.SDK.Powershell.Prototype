@@ -132,3 +132,5 @@ end
 
 }
 
+New-Alias -Name v1newadmin -Value New-V1AdminUser
+

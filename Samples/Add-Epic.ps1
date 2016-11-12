@@ -29,9 +29,9 @@ $null = Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test
 $null = Get-V1Meta
 
 # load common base assets
-$scopes = Get-V1Asset -assetType "Scope" -attributes "Name"
-$schemes = Get-V1Asset -assetType "Scheme" -attributes "Name"
-$epicCategories = Get-V1Asset -assetType "EpicCategory" -attributes "Name"
+$scopes = Get-V1Asset -assetType "Scope" -Attribute "Name"
+$schemes = Get-V1Asset -assetType "Scheme" -Attribute "Name"
+$epicCategories = Get-V1Asset -assetType "EpicCategory" -Attribute "Name"
 $epics = Get-V1Asset -assetType "Epic"
 
 # add scheme if not exists
@@ -40,7 +40,7 @@ $scheme = $Schemes | Where-Object name -eq $testScheme | Select -first 1
 if ( -not $scheme )
 {
     Write-Information "Adding Scheme $testScheme"
-    $scheme = New-V1Asset -assetType Scheme -attributes @{Name = $testScheme}
+    $scheme = New-V1Asset -assetType Scheme -Attribute @{Name = $testScheme}
     $scheme = Save-V1Asset -asset $scheme 
 }
 
@@ -50,7 +50,7 @@ $scope = $scopes | Where-Object name -eq $testScope | Select -first 1
 if ( -not $scope )
 {
     Write-Information "Adding scope $testScope"
-    $scope = New-V1Asset -assetType Scope -attributes @{BeginDate=(Get-Date -f 'd')
+    $scope = New-V1Asset -assetType Scope -Attribute @{BeginDate=(Get-Date -f 'd')
                                                    Name = $testScope
                                                    Parent = "Scope:0"
                                                    Scheme = $scheme.id}
@@ -61,7 +61,7 @@ if ( -not $scope )
 $defaultEpicProps = @{Description="Added via PS";Scope=$scope.id}
 
 $epics = New-V1TestName $epicCount -prefix "${testName}Epic" | New-V1Asset -assetType "Epic" -Name Name `
-            -defaultAttributes $defaultEpicProps | Push-V1Asset  
+            -DefaultAttribute $defaultEpicProps | Push-V1Asset  
 
 $epics | Select id,name,description | Format-Table -AutoSize
 

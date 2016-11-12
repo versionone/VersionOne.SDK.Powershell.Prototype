@@ -17,7 +17,7 @@ Describe "Get-V1Asset" {
 
 	It "Gets just the name of EpicCategories" {
 
-         $c = Get-V1Asset EpicCategory -attributes Name
+         $c = Get-V1Asset EpicCategory -Attribute Name
 		 $c | Should not be $null
 		 ($c.Count -gt 1) | Should be $true
 
@@ -30,7 +30,7 @@ Describe "Get-V1Asset" {
 
 	It "Gets EpicCategories sorted by name" {
 
-         $c = Get-V1Asset EpicCategory -attributes Name -sort Name
+         $c = Get-V1Asset EpicCategory -Attribute Name -sort Name
 		 $c | Should not be $null
 		 ($c.Count -gt 1) | Should be $true
 
@@ -40,7 +40,7 @@ Describe "Get-V1Asset" {
 
 	It "Gets EpicCategory with name feature using string" {
 
-         $c = Get-V1Asset EpicCategory -attributes Name -filter "Name='Feature'"
+         $c = Get-V1Asset EpicCategory -Attribute Name -filter "Name='Feature'"
 		 $c | Should not be $null
 
 		 $c.Name | Should be 'Feature'
@@ -51,7 +51,7 @@ Describe "Get-V1Asset" {
 		$ec = Get-V1FilterAsset EpicCategory
 		$ec | Should not be $null
 
-        $c = Get-V1Asset EpicCategory -attributes Name -filter { $ec.Name -eq "Feature"}
+        $c = Get-V1Asset EpicCategory -Attribute Name -filter { $ec.Name -eq "Feature"}
 		$c | Should not be $null
 
 		$c.Name | Should be 'Feature'
@@ -62,11 +62,11 @@ Describe "Get-V1Asset" {
 	}
 	
 	It "Gets epics with find" {
-		@(Get-V1Asset EpicCategory -find "Non").Count | Should not be 0
+		@(Get-V1Asset EpicCategory -find "Feat").Count | Should not be 0
 	}
 
 	It "Gets epics with findin" {
-		@(Get-V1Asset EpicCategory -find "Non" -findin "Name").Count | Should not be 0
+		@(Get-V1Asset EpicCategory -find "Feat" -findin "Name").Count | Should not be 0
 	}
 
 	It "Gets scope using wrong case for asset type" {

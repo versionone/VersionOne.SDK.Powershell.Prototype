@@ -26,7 +26,7 @@ $s
 .Parameter ID
 	Optional ID to specify to get just one item, can be <type>:num, or just the number
 
-.Parameter Attributes
+.Parameter Attribute
 	Optional list of attributes to return, otherwise it returns default set
 
 .Parameter Filter
@@ -48,13 +48,13 @@ $s
 	Prefix string to find in common attributes, or ones specified in FindIn.  Anything after * is ignored.  If * is not supplied, it is appended.
 
 .Parameter FindIn
-	Attributes for Find.  Uses default attributes for type if not supplied
+	Attribute for Find.  Uses default attributes for type if not supplied
 
 .Outputs
 	Object with Total and Assets (array of asset objects of the given type)
 
 .Example 
-    $ret = Get-V1AssetPaged Story -attributes Name,Status -pageSize 10 -startPage 0
+    $ret = Get-V1AssetPaged Story -Attribute Name,Status -pageSize 10 -startPage 0
     "Total is $($ret.total)" 
     $ret.Assets | ft
 
@@ -69,7 +69,7 @@ param(
 [string] $AssetType,
 [Parameter(ValueFromPipeline)]
 $ID,
-[string[]] $Attributes,
+[string[]] $Attribute,
 $Filter,
 [string] $Sort,
 [ValidateRange(0,[int]::MaxValue)]
@@ -86,7 +86,7 @@ process
 
     Set-StrictMode -Version Latest
 
-    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attributes: $Attributes ID: $ID" )
+    Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attribute: $Attribute ID: $ID" )
 
     $AssetType = Get-V1AssetTypeName $AssetType
     
@@ -105,9 +105,9 @@ process
         $uri += "/$ID"
     }
 
-    if ( $Attributes )
+    if ( $Attribute )
     {
-        $uri = appendToUri $uri "sel=$($Attributes -join ",")" 
+        $uri = appendToUri $uri "sel=$($Attribute -join ",")" 
     }
 
     if ( $Filter )

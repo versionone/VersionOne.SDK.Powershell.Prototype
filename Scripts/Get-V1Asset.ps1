@@ -8,7 +8,7 @@
 .Parameter ID
 	Optional ID to specify to get just one item, can be <type>:num, or just the number
 
-.Parameter Attributes
+.Parameter Attribute
 	Optional list of attributes to return, otherwise it returns default set
 
 .Parameter Filter
@@ -24,14 +24,14 @@
 	Prefix string to find in common attributes, or ones specified in FindIn.  Anything after * is ignored.  If * is not supplied, it is appended.
 
 .Parameter FindIn
-	Attributes for Find.  Uses default attributes for type if not supplied
+	Attribute for Find.  Uses default attributes for type if not supplied
 
 .Outputs
 	Asset objects of the given type
 
 .Example
     Set-V1Connection -baseUri "localhost/VersionOne.Web" -token "1.bxDPFh/9y3x9MAOt469q2SnGDqo="
-    $scopes = Get-V1Asset -assetType "Scope" -attributes "Name"
+    $scopes = Get-V1Asset -assetType "Scope" -Attribute "Name"
 
     Get all scopes, just the Name field
 
@@ -46,13 +46,13 @@
     Get a epic categories as they looked as of January 1, 2001
 
 .Example
-    Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter "Estimate>'1'" | ft
+    Get-V1Asset PrimaryWorkitem -Attribute Name,Status,ToDo,Estimate  -filter "Estimate>'1'" | ft
 
     Get PrimaryWorkitems that have an estimate > 1.  Note that when not using a variable, you must enclose the filter in double quotes, otherwise it will return an error.  For details about filter syntax run Get-V1Help Filter            
 
 .Example
     $pi = Get-V1FilterAsset PrimaryWorkitem 
-    Get-V1Asset PrimaryWorkitem -attributes Name,Status,ToDo,Estimate  -filter { $pi.Estimate -gt 1 } | ft
+    Get-V1Asset PrimaryWorkitem -Attribute Name,Status,ToDo,Estimate  -filter { $pi.Estimate -gt 1 } | ft
 
     Get PrimaryWorkitems that have an estimate > 1 using a script block that can use tab completion for $pi.
 
@@ -72,7 +72,7 @@ function Get-V1Asset
 param(
 [Parameter(Mandatory)]
 [string] $AssetType,
-[string[]] $Attributes,
+[string[]] $Attribute,
 [Parameter(ValueFromPipeline)]
 $ID,
 $Filter,

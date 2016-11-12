@@ -41,14 +41,14 @@ $null = Get-V1Meta
 
 Write-Progress -Activity $activityName -Status "Adding phases"
 $phases = "DevelopmentTrailing", "TestingTrailing","ProductionTrailing" |
-            New-V1Asset -assetType Phase -Name Name -defaultAttributes @{ColorName="denim"} | Push-V1Asset
+            New-V1Asset -assetType Phase -Name Name -DefaultAttribute @{ColorName="denim"} | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding scheme"
 $scheme = New-V1Asset -assetType Scheme -Name Name,SelectedValues -value "SchemeTrailing", 
     $($phases | Select-Object -expand id) | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding scope"
-$scope = New-V1Asset -assetType Scope -attributes @{
+$scope = New-V1Asset -assetType Scope -Attribute @{
         Name = "TrailingCommitsScope"
         Parent="Scope:0"
         Scheme=$scheme
@@ -56,7 +56,7 @@ $scope = New-V1Asset -assetType Scope -attributes @{
 
 Write-Progress -Activity $activityName -Status "Adding Done Stories"
 $stories =  New-V1TestName 5 "DoneStory" | New-V1Asset -assetType Story `
-        -Name Name -DefaultAttributes @{
+        -Name Name -DefaultAttribute @{
         Status="StoryStatus:135"
         Scope=$scope } | Push-V1Asset
 
@@ -67,7 +67,7 @@ $doneChangeSets =  $stories | ForEach-Object {  New-V1Asset -assetType ChangeSet
 
 Write-Progress -Activity $activityName -Status "Adding Stories"
 $stories =  New-V1TestName 10 "Story" | New-V1Asset -assetType Story `
-        -Name Name -DefaultAttributes @{
+        -Name Name -DefaultAttribute @{
         Scope=$scope } | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding ChangeSets"
@@ -81,13 +81,13 @@ $defect =  New-V1Asset -assetType Defect `
 
 Write-Progress -Activity $activityName -Status "Adding Defect ChangeSets"
 $spreadChangeSetsDev =  New-V1TestName 3 "ChangeSetForSpreadDefect_Dev" |  New-V1Asset -assetType ChangeSet `
-        -Name Name -defaultAttributes @{PrimaryWorkitems=$defect}   | Push-V1Asset
+        -Name Name -DefaultAttribute @{PrimaryWorkitems=$defect}   | Push-V1Asset
 
 $spreadChangeSetsTest =  New-V1TestName 3 "ChangeSetForSpreadDefect_Test" |  New-V1Asset -assetType ChangeSet `
-        -Name Name -defaultAttributes @{PrimaryWorkitems=$defect} | Push-V1Asset
+        -Name Name -DefaultAttribute @{PrimaryWorkitems=$defect} | Push-V1Asset
 
 $spreadChangeSetsStage =  New-V1TestName 3 "ChangeSetForSpreadDefect_Stg" |  New-V1Asset -assetType ChangeSet `
-        -Name Name -defaultAttributes @{PrimaryWorkitems=$defect} | Push-V1Asset
+        -Name Name -DefaultAttribute @{PrimaryWorkitems=$defect} | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding Rogue ChangeSets"
 $rougueChangeSets =  New-V1TestName 10 "RogueChangeSet" |  New-V1Asset -assetType ChangeSet `
@@ -95,12 +95,12 @@ $rougueChangeSets =  New-V1TestName 10 "RogueChangeSet" |  New-V1Asset -assetTyp
 
 Write-Progress -Activity $activityName -Status "Adding Shared Stories"
 $storiesForSharing =  New-V1TestName 2 "StorySharingChangeSet" | New-V1Asset -assetType Story `
-        -Name Name -DefaultAttributes @{
+        -Name Name -DefaultAttribute @{
         Scope=$scope.Id } | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding Shared ChangeSet"
 $sharedChangeSets = New-V1Asset -assetType ChangeSet `
-        -Name Name -Value "SharedChangeSet" -defaultAttributes @{PrimaryWorkitems=$storiesForSharing} | Push-V1Asset
+        -Name Name -Value "SharedChangeSet" -DefaultAttribute @{PrimaryWorkitems=$storiesForSharing} | Push-V1Asset
 
 Write-Progress -Activity $activityName -Status "Adding Bundles"
 $defaultValues = @{ PackageRevision = 1
@@ -109,15 +109,15 @@ $defaultValues = @{ PackageRevision = 1
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle With Rogue",$phases[0],
-            ($rougueChangeSets[0..2]+$changeSets[0]) -defaultAttributes $defaultValues | Push-V1Asset
+            ($rougueChangeSets[0..2]+$changeSets[0]) -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle With Rogue",$phases[1],
-            ($rougueChangeSets[0..2]+$changeSets[0..1]) -defaultAttributes $defaultValues | Push-V1Asset
+            ($rougueChangeSets[0..2]+$changeSets[0..1]) -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle With Rogue",$phases[2],
-            ($rougueChangeSets[2..3]+$changeSets[2]) -defaultAttributes $defaultValues | Push-V1Asset
+            ($rougueChangeSets[2..3]+$changeSets[2]) -DefaultAttribute $defaultValues | Push-V1Asset
 
 $defaultValues = @{ PackageRevision = 1
                     IsCustomLabel = $false
@@ -125,15 +125,15 @@ $defaultValues = @{ PackageRevision = 1
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle In 3 Phases Only in Last Phase1", $phases[0],
-            $doneChangeSets[0..4] -defaultAttributes $defaultValues | Push-V1Asset
+            $doneChangeSets[0..4] -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle In 3 Phases Only in Last Phase2", $phases[1],
-            $doneChangeSets[0..4] -defaultAttributes $defaultValues | Push-V1Asset
+            $doneChangeSets[0..4] -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle In 3 Phases Only in Last Phase3", $phases[2],
-            $doneChangeSets[0..4] -defaultAttributes $defaultValues | Push-V1Asset
+            $doneChangeSets[0..4] -DefaultAttribute $defaultValues | Push-V1Asset
 
 $defaultValues = @{ PackageRevision = 1
                     IsCustomLabel = $false
@@ -141,24 +141,24 @@ $defaultValues = @{ PackageRevision = 1
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle In 1 Phases with Done and not done items1",$phases[1],
-            ($doneChangeSets[0..2]+$changeSets[0..2]) -defaultAttributes $defaultValues | Push-V1Asset
+            ($doneChangeSets[0..2]+$changeSets[0..2]) -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle with defect spread across many phases1",$phases[0],
-            $spreadChangeSetsDev -defaultAttributes $defaultValues | Push-V1Asset
+            $spreadChangeSetsDev -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle with defect spread across many phases2",$phases[1],
-            $spreadChangeSetsTest -defaultAttributes $defaultValues | Push-V1Asset
+            $spreadChangeSetsTest -DefaultAttribute $defaultValues | Push-V1Asset
 
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle with defect spread across many phases3",$phases[1],
-            $spreadChangeSetsStage -defaultAttributes $defaultValues | Push-V1Asset
+            $spreadChangeSetsStage -DefaultAttribute $defaultValues | Push-V1Asset
 
 $defaultValues.PackageReference = "SharedChangeSetPackage"
 $bundle = New-V1Asset -assetType Bundle `
         -Name Name,Phase,ChangeSets -Value "Bundle with a ChangeSet shared by multiple workitems",$phases[2],
-            $sharedChangeSets -defaultAttributes $defaultValues | Push-V1Asset
+            $sharedChangeSets -DefaultAttribute $defaultValues | Push-V1Asset
 
 
 Write-Progress -Activity $activityName -Completed

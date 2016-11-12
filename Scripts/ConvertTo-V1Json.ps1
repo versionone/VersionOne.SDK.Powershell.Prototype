@@ -19,7 +19,9 @@ function ConvertTo-V1Json
 param(
 [Parameter(Mandatory,ValueFromPipeline)]
 [object] $Asset,
-[switch] $StripDotted  
+[switch] $StripDotted,
+[switch] $RemoveRelations,
+[string[]] $Attribute
 )
 
 process
@@ -49,46 +51,69 @@ process
     else 
     {
         $addedKeys = @()
+        $isInsert = $true
         foreach ( $m in $Asset | Get-Member -MemberType Properties | Where-Object name -ne "AssetType" )
         {
             $name = $m.name
-            if ( $StripDotted -and $name.Contains("."))
+            if ( $name -eq "id" )
+            {
+                $isInsert = $false
+                continue
+            }
+            
+            if ( ($StripDotted -and $name.Contains(".")) -or 
+                 ($Attribute -and $name -notin $Attribute) -or
+                 $AssetMeta.$name.IsReadOnly -or 
+                 $Asset.$name -eq $null)
             {
                 continue
             }
 
-            $addedKeys += $name
 
             if ( -not ( $AssetMeta.ContainsKey($name)))
             {
                 throw "Attribute name of $name not found on asset of type $($Asset.AssetType)"
             }
 
-            if ($AssetMeta.$name.IsReadOnly -or $Asset.$name -eq $null)
-            {
-                continue;
-            }
+            $addedKeys += $name
 
             if ( $AssetMeta.$name.AttributeType -eq "Relation" )
             {
                 if ( $AssetMeta[$name].IsMultivalue) 
                 {
-                    $values = @($Asset.$name | ForEach-Object { @{idref=$(getMultiValue $_);act="add"}})
+                    $action = "add"
+                    if ( $RemoveRelations )
+                    {
+                        $action = "remove"
+                    }
+                    $values = @($Asset.$name | ForEach-Object { @{idref=$(getMultiValue $_);act=$action}})
 
                     $v1Object.Attributes[$name]=@{name=$name;value=$values}
                 }
                 else 
                 {
-                    $v1Object.Attributes[$name]=@{name=$name;value=$(getMultiValue $Asset.$name);act="set"}
+                    if ( $RemoveRelations )
+                    {
+                        $value = $null
+                        $v1Object.Attributes[$name]=@{name=$name;act="set"}
+                    }
+                    else
+                    {
+                        $v1Object.Attributes[$name]=@{name=$name;value=$(getMultiValue $Asset.$name);act="set"}
+                    }
                 }
             }
-            else # simple type 
+            elseif (-not $RemoveRelations) # simple type 
             {
                 $v1Object.Attributes[$name]=@{name=$name;value=$Asset.$name;act="set"}
             }
         } 
 
-        if ( $addedKeys -notcontains "id") # if updating don't check for missing 
+        if ( -not $addedKeys )
+        {
+            Write-Warning "No attributes found when converting $($Asset.AssetType)"
+        }
+        if ( $isInsert ) # if updating or removing don't check for missing 
         {
             $missingRequired =  $AssetMeta.Keys | Where-Object { $AssetMeta[$_].IsRequired } | Where-Object { $_ -notin $v1Object.Attributes.Keys }
             if ( $missingRequired )

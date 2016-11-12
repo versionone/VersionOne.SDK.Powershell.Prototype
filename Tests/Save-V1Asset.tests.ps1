@@ -8,7 +8,7 @@ Describe "Save-V1Asset" {
     }
 
 	It "Creates and save a story" {
-        $story = New-V1Asset Story -attributes @{Name="Test";Scope="Scope:0"}
+        $story = New-V1Asset Story -Attribute @{Name="Test";Scope="Scope:0"}
         $story | Should not be $null
 
         $savedStory = Save-V1Asset $story
@@ -19,7 +19,7 @@ Describe "Save-V1Asset" {
 	}
 
 	It "Creates and save a story using wrong case for asset type" {
-        $story = New-V1Asset story -attributes @{Name="Test";Scope="Scope:0"}
+        $story = New-V1Asset story -Attribute @{Name="Test";Scope="Scope:0"}
         $story | Should not be $null
 
         $savedStory = Save-V1Asset $story
@@ -30,7 +30,7 @@ Describe "Save-V1Asset" {
 	}
 
 	It "Creates and saves 5 stories via pipeline" {
-        $stories = (1..5) | ForEach-Object { New-V1Asset Story -attributes @{Name="Test$_";Scope="Scope:0"}} | 
+        $stories = (1..5) | ForEach-Object { New-V1Asset Story -Attribute @{Name="Test$_";Scope="Scope:0"}} | 
             Save-V1Asset
         $stories | Should not be $null
         $stories.Count | Should be 5
@@ -44,7 +44,7 @@ Describe "Save-V1Asset" {
 	}
 
     It "Updates a category" {
-        $epicCat = (Get-V1Asset EpicCategory -attributes Name,Description) | Select -First 1
+        $epicCat = (Get-V1Asset EpicCategory -Attribute Name,Description) | Select -First 1
         $epicCat | Should not be $null
 
         $now = (Get-Date).ToString()
