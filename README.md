@@ -1,7 +1,13 @@
-# V1 PowerShell SDK 
-Powershell is a very handy tool in the Windows developer toolbox.
+# VersionOne PowerShell SDK 
+Copyright (c) 2016 [VersionOne](http://versionone.com/).
+All rights reserved.
 
-This is an experimental Powershell SDK for the VersionOne REST API. We welcome your participation in development of this! Just fork and send a pull-request.
+The VersionOne PowerShell SDK is a free and open-source library that accelerates software development of applications that integrate with VersionOne. The SDK serves as a wrapper to the VersionOne REST API, eliminating the need to code the infrastructure necessary for direct handling of HTTP requests and responses.
+
+The PowerShell SDK is open source and is licensed under a modified BSD license, which reflects our intent that software built with a dependency on the SDK can be for commercial and/or open source products.
+
+## System Requirements
+* PowerShell 5+ on Windows, OS/X, or Linux (PowerShell 6 beta Tested on Ubuntu 16.04)
 
 ## Getting Started
 To get things rolling, clone the repo and load the module, then set your Uri and credentials.
@@ -12,14 +18,14 @@ cd VersionOne.SDK.Powershell.Prototype
 
 Import-Module .\V1.psm1
 
-Set-V1Connection -baseUri localhost/VersionOne.Web -token <mytoken>
+# Use on of the following to set the Uri and credential and test the connection
+# It will return $true if successfully connected
+Set-V1Connection -baseUri localhost/VersionOne.Web -token <myAppToken> -Test
 # -- or --
-Set-V1Connection -baseUri localhost/VersionOne.Web -credentials <myusername>
+Set-V1Connection -baseUri localhost/VersionOne.Web -credentials <myusername> -Test
 # -- or --
 $cred = Get-Credential <myusername>
-Set-V1Connection -baseUri localhost/VersionOne.Web -credentials $cred
-
-Test-V1Connection
+Set-V1Connection -baseUri localhost/VersionOne.Web -credentials $cred -Test
 ```
 
 ## SDK Functions 
@@ -64,25 +70,8 @@ The `Samples` folder has several samples. Filea ending in `Sample.ps1` are desig
 
 The `Tests` folder has Pester test files.  First set credentials with Set-V1Connection, or set environment variables like the ```Tests\Set-Pester.ps1``` sample file.  Then do ``Invoke-Pester`` to run the tests.  Each file is named for the function it tests, so you may look at those for more examples of using the SDK. 
 
----------------------------
-## Goals for v1 (get it?)
+## Contribute
+Read the [contribution guidelines](.github/CONTRIBUTING.md) if you want to contribute to this project.
 
-* Native powershelly experience via pipes and filters model
-* Support for reading meta information and building strongly-typed objects at run-time
-* Basic Authentication support (VersionOne Authentication)
-* Documented samples
-* Documented source code using powershell conventions
+See the [change log](CHANGELOG.md) for changes and road map.
 
-## More ideas. What do you think?
-
-* Object-oriented alternative, like the Python SDK, JavaScript SDK, and Fluent vNext wrapper for the .NET SDK
-* Support for query.v1
-
-### TODOs
- * Always check case of attribute names, and that it exists
- * Make loading meta optional?
- 
-### Dones 
- * Implement remove relation
- * Filter helper for tab completion via object.  Take scriptblock or string
- * Always check case of assetType since get nothing if wrong
