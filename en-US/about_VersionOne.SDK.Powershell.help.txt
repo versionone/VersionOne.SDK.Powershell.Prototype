@@ -1,0 +1,18 @@
+TOPIC
+    VersionOne.SDK
+
+SHORT DESCRIPTION
+    The VersionOne PowerShell SDK module gives you an easy-to-use functions for using the VersionOne REST API
+
+LONG DESCRIPTION
+    The VersionOne PowerShell SDK module provides functions to query, add, update and delete data from VersionOne.  By using meta data about the model, functions can use tab completion to easily and accurately call the REST API.
+
+    Use PowerShell help and see the GitHub page for full details about this module.
+        https://github.com/versionone/VersionOne.SDK.Powershell.Prototype
+
+DETAILED DESCRIPTION
+    There are many functions and aliases that get loaded by the module, which can be listed with Get-Command -Module V1 -CommandType Alias,Function The following sections highlight the primary ones. As usual, use help <commandName> command to get details and examples.
+
+	All functions support pipelines when appropriate and the common PowerShell parameters such as -Verbose, -Debug, -ErrorAction, etc. Ones that make changes support the -WhatIf and -Confirm common parameters. (see help about_commonparameters)
+
+	(Some functions are mainly used by the SDK, but made public since a developer may find them useful):
