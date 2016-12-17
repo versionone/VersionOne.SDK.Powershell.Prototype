@@ -16,7 +16,7 @@ To get things rolling, clone the repo and load the module, then set your Uri and
 git clone https://github.com/versionone/VersionOne.SDK.Powershell.Prototype.git
 cd VersionOne.SDK.Powershell.Prototype
 
-Import-Module .\V1.psm1
+Import-Module .\VersionOneSdk.psm1
 
 # Use on of the following to set the Uri and credential and test the connection
 # It will return $true if successfully connected

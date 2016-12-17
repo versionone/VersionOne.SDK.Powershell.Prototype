@@ -96,6 +96,7 @@ Register-ArgumentCompleter -CommandName "Remove-V1Asset" -ParameterName "ID" -Sc
 
 # attribute for functions that take assetType
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Attribute" -ScriptBlock $attributeTabCompleteFull
+Register-ArgumentCompleter -CommandName "Get-V1Asset" -ParameterName "FindIn" -ScriptBlock $attributeTabCompleteFull
 Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Attribute" -ScriptBlock $attributeTabCompleteWriteable
 Register-ArgumentCompleter -CommandName "New-V1Asset" -ParameterName "Names" -ScriptBlock $attributeTabCompleteWriteable
 Register-ArgumentCompleter -CommandName "Get-V1Asset","Get-V1AssetPaged" -ParameterName "Sort" -ScriptBlock $attributeTabCompleteFull

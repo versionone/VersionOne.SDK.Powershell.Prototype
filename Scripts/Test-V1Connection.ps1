@@ -20,7 +20,9 @@ param()
 
     try 
     {
-        return ((InvokeApi  "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0") -ne $null)
+        $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0"
+        Write-Verbose "Testing $uri "
+        return ((InvokeApi  $uri) -ne $null)
     }
     catch
     {

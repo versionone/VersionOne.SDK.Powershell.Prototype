@@ -35,7 +35,7 @@ $Asset
 
 process
 {
-    saveRemoveRelation $Asset
+    saveAssetOrRelation $Asset
 }
 
 }

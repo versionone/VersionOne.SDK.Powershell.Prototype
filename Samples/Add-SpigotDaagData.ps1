@@ -31,7 +31,7 @@ $activityName = "Add Daag data"
 
 Write-Progress -Activity $activityName -Status "Initializing"
 
-Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
+Import-Module (Join-path $PSScriptRoot "..\VersionOneSdk.psm1") -Force
 if ( -not (Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test ))
 {
     throw "Can't connect to $baseUri with token"

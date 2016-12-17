@@ -26,6 +26,9 @@ $script:credential = $null
 .Parameter Token
 	V1 Application token
 
+.Parameter SkipTest
+	If set will not test the connection
+
 .Outputs
     Nothing, unless -test is set then will return its return
 
@@ -47,7 +50,7 @@ param(
 [System.Management.Automation.CredentialAttribute()]
 [PSCredential] $Credential,
 [string] $Token,
-[switch] $Test)
+[switch] $SkipTest)
 
     if ( -not $Token -and (-not $Credential))
     {
@@ -66,7 +69,7 @@ param(
     {
         $script:credential = $Credential    
     }
-    if ( $Test )
+    if ( -not $SkipTest )
     {
         return Test-V1Connection
     }

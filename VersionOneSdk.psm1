@@ -14,4 +14,5 @@ Export-ModuleMember -Function "*-V1*" -Alias "*"
 if ( -not $script:baseUri)
 {
     Write-Warning "V1 PowerShell API loaded.  Run Set-V1Connection to set Uri and credentials"
+    Write-Warning "If tab-completion doesn't work.  Run Get-V1Meta | Out-Null and check output."
 } 

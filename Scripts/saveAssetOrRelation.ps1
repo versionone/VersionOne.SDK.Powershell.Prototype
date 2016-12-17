@@ -1,9 +1,9 @@
 <#
 .Synopsis
 	Helper for save and remove relation since they are nearly identical
-	
+
 #>
-function saveRemoveRelation
+function saveAssetOrRelation
 {
 [CmdletBinding(SupportsShouldProcess)]
 param (
@@ -27,16 +27,14 @@ process
         }
     }
 
-    if ( -not (Get-Member -InputObject $Asset -Name "AssetType"))
-    {
-        throw "Must supply object with AssetType attribute"
-    }
+    testAsset $Asset
+
     $AssetType = Get-V1AssetTypeName $Asset.AssetType
 
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( ($Asset | Get-Member -Name "id") -and $Asset.id)
     {
-        # updating or removing 
+        # updating or removing
         $id = $Asset.id -split ":"
         if ( $id.Count -gt 1 )
         {
@@ -55,15 +53,15 @@ process
     $body = ConvertTo-V1Json $Asset -stripDotted -removeRelations:$RemovingRelation -Attribute $Attribute
     if ( $PSCmdlet.ShouldProcess("$uri", "$action of from type $AssetType"))
     {
-        try 
+        try
         {
             $result = InvokeApi -Uri $uri `
                     -Body $body `
                     -Method POST
         }
         catch
-        { 
-            throw "Exception $action for asset of type $AssetType with body of:`n$('='*80)`n$body`n$('='*80)`n$_" 
+        {
+            throw "Exception $action for asset of type $AssetType with body of:`n$('='*80)`n$body`n$('='*80)`n$_"
         }
         $result | ConvertFrom-V1Json
     }

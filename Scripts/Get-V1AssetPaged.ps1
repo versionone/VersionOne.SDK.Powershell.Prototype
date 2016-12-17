@@ -35,11 +35,11 @@ $s
 .Parameter Sort
 	Optional sort attributes. For details run Get-V1Help Sort  
 
-.Parameter StartPage
-	Optional starting page, first page is 0
+.Parameter Start
+	Optional starting item (NOT page number), defaults to first item of 0
 
-.Parameter pageSize
-	Optional pageSize, if startPage is used defaults to 1
+.Parameter PageSize
+	Optional pageSize, if Start is used defaults to 50
 
 .Parameter AsOf
 	Optional asOf DateTime to get an asset as of that time
@@ -54,7 +54,7 @@ $s
 	Object with Total and Assets (array of asset objects of the given type)
 
 .Example 
-    $ret = Get-V1AssetPaged Story -Attribute Name,Status -pageSize 10 -startPage 0
+    $ret = Get-V1AssetPaged Story -Attribute Name,Status -pageSize 10 -Start 0
     "Total is $($ret.total)" 
     $ret.Assets | ft
 
@@ -73,8 +73,8 @@ $ID,
 $Filter,
 [string] $Sort,
 [ValidateRange(0,[int]::MaxValue)]
-[int] $StartPage = 0,
-[ValidateRange(1,[int]::MaxValue)]
+[int] $Start = 0,
+[ValidateRange(-1,[int]::MaxValue)]
 [int] $PageSize = 50,
 [DateTime] $AsOf,
 [string] $Find,
@@ -85,6 +85,11 @@ process
 {
 
     Set-StrictMode -Version Latest
+
+    if ( $PageSize -le 0 )
+    {
+        $PageSize = [int]::MaxValue
+    }
 
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attribute: $Attribute ID: $ID" )
 
@@ -129,7 +134,7 @@ process
 
     if ( $PageSize -ne [int]::MaxValue )
     {
-        $uri = appendToUri $uri "page=${pageSize},$StartPage"
+        $uri = appendToUri $uri "page=${pageSize},$Start"
     }
 
     if ( $AsOf )

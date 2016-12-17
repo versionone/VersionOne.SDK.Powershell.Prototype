@@ -1,4 +1,4 @@
-Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
+Import-Module (Join-Path $PSScriptRoot ..\VersionOneSdk.psm1)
 
 Describe "New-V1Asset" {
 

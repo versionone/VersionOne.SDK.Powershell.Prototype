@@ -1,4 +1,4 @@
-Import-Module (Join-Path $PSScriptRoot ..\V1.psm1)
+Import-Module (Join-Path $PSScriptRoot ..\VersionOneSdk.psm1)
 
 Describe "Remove-V1Relation" {
 
@@ -15,7 +15,7 @@ Describe "Remove-V1Relation" {
         $story  | Should not be $null 
         $story.Status | Should not be $null 
 
-        Remove-V1Relation $story -Attribute Status | Should not be $null 
+        Remove-V1Relation $story -Attribute Status -ID $story.Status | Should not be $null 
 
         $story = Get-V1Asset Story -id $story.id -Attribute Status
         $story  | Should not be $null 
@@ -38,8 +38,8 @@ Describe "Remove-V1Relation" {
         $story.Owners | Should not be $null 
         @($story.Owners).Count | Should be 3 
 
-        $story.Owners = $story.Owners[0]
-        Remove-V1Relation $story -Attribute Status,Owners | Should not be $null 
+        Remove-V1Relation $story -Attribute Owners -ID $story.Owners[0] | Should not be $null 
+        Remove-V1Relation $story -Attribute Status -ID $story.Status | Should not be $null 
 
         $story = Get-V1Asset Story -id $story.id -Attribute Status,Owners
         $story  | Should not be $null 
@@ -63,8 +63,7 @@ Describe "Remove-V1Relation" {
         $story.Owners | Should not be $null 
         @($story.Owners).Count | Should be 3 
 
-        $story.Owners = $story.Owners[0]
-        Remove-V1Relation $story -Attribute Owners | Should not be $null 
+        Remove-V1Relation $story -Attribute Owners -ID $story.Owners[0] | Should not be $null 
 
         $story = Get-V1Asset Story -id $story.id -Attribute Status,Owners
         $story  | Should not be $null 

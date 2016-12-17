@@ -24,7 +24,7 @@ Set-StrictMode -Version Latest
 $error.Clear()
 
 
-Import-Module (Join-path $PSScriptRoot "..\V1.psm1") -Force
+Import-Module (Join-path $PSScriptRoot "..\VersionOneSdk.psm1") -Force
 $null = Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test
 $null = Get-V1Meta
 

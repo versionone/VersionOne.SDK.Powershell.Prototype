@@ -1,7 +1,7 @@
 <#
 .Synopsis
 	Convert an object to V1 JSON for sending to the REST API
-	
+
 .Parameter Asset
 	An asset created with New-V1Object or converted via ConvertFrom-V1Json, which is called from Get-V1Asset
 
@@ -27,11 +27,8 @@ param(
 process
 {
     Set-StrictMode -Version Latest
-    
-    if ( -not (Get-Member -InputObject $Asset -Name "AssetType"))
-    {
-        throw "Must supply object with AssetType attribute"
-    }
+
+    testAsset $Asset
 
     $AssetMeta =  Get-V1Meta -assetType $Asset.AssetType
 
@@ -48,7 +45,7 @@ process
         }
 
     }
-    else 
+    else
     {
         $addedKeys = @()
         $isInsert = $true
@@ -60,10 +57,10 @@ process
                 $isInsert = $false
                 continue
             }
-            
-            if ( ($StripDotted -and $name.Contains(".")) -or 
+
+            if ( ($StripDotted -and $name.Contains(".")) -or
                  ($Attribute -and $name -notin $Attribute) -or
-                 $AssetMeta.$name.IsReadOnly -or 
+                 $AssetMeta.$name.IsReadOnly -or
                  $Asset.$name -eq $null)
             {
                 continue
@@ -79,7 +76,7 @@ process
 
             if ( $AssetMeta.$name.AttributeType -eq "Relation" )
             {
-                if ( $AssetMeta[$name].IsMultivalue) 
+                if ( $AssetMeta[$name].IsMultivalue)
                 {
                     $action = "add"
                     if ( $RemoveRelations )
@@ -90,7 +87,7 @@ process
 
                     $v1Object.Attributes[$name]=@{name=$name;value=$values}
                 }
-                else 
+                else
                 {
                     if ( $RemoveRelations )
                     {
@@ -103,17 +100,17 @@ process
                     }
                 }
             }
-            elseif (-not $RemoveRelations) # simple type 
+            elseif (-not $RemoveRelations) # simple type
             {
                 $v1Object.Attributes[$name]=@{name=$name;value=$Asset.$name;act="set"}
             }
-        } 
+        }
 
         if ( -not $addedKeys )
         {
             Write-Warning "No attributes found when converting $($Asset.AssetType)"
         }
-        if ( $isInsert ) # if updating or removing don't check for missing 
+        if ( $isInsert ) # if updating or removing don't check for missing
         {
             $missingRequired =  $AssetMeta.Keys | Where-Object { $AssetMeta[$_].IsRequired } | Where-Object { $_ -notin $v1Object.Attributes.Keys }
             if ( $missingRequired )
@@ -122,7 +119,10 @@ process
             }
         }
     }
-    ConvertTo-Json $v1Object -Depth 100
+    $ret = ConvertTo-Json $v1Object -Depth 100
+    Write-Verbose $ret
+    $ret
+
 }
 
 }

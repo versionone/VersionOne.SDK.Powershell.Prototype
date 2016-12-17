@@ -16,13 +16,24 @@ function Remove-V1Asset
 [CmdletBinding(SupportsShouldProcess)]
 param(
 [Parameter(Mandatory,ValueFromPipeline)]  
-[String] $ID
+$ID
 )
 
 process
 {
     Set-StrictMode -Version Latest
 
+    if ( $ID -isnot "string")
+    {
+        if ( Get-Member -input $ID -Name "ID")
+        {
+            $ID = $ID.ID
+        }
+        else 
+        {
+            throw "Must supply string ID or object with ID property"    
+        }
+    }
     ($AssetType,$num) =  $ID -split ":"
 
     if ( -not $AssetType -or -not $num )

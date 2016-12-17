@@ -3,7 +3,7 @@
 	Remove one or more relations from an asset
 	
 .Description
-	Removes all the relations specified by name.  For multi-relations removes the relations currently on the object
+	Removes the relations specified by Attribute.
 
 .Parameter Asset
 	The asset to remove relations from.  Must have Oid
@@ -11,19 +11,26 @@
 .Parameter Attribute
 	Names of relations to remove
 
+.Parameter ID
+    ID or array of IDs of items to remove.  Can be strings (OIDs), or objects with ID.  
+
 .Outputs
 	Asset object
 
 .Example
-    $story.Owners = @("Member:123")
-    Remove-V1Relation $story -Attribute Owners
+    Remove-V1Relation $story -Attribute Owners -ID "Member:20"
 
-    Removes the Member with oid 123 from the Owners relations
+    Removes the Member with oid 20 from the Owners relations
 
 .Example
-    Remove-V1Relation $story -Attribute Status
+    Remove-V1Relation $story -Attribute Status -ID $story.Status
 
-    Clears out the single Status relationship on a story
+    Clears out the Status single relationship on a story
+
+.Example
+    Remove-V1Relation $story -Attribute Owners -ID $story.Owners
+
+    Clears out the Owner multi relationship on a story
 #>
 function Remove-V1Relation
 {
@@ -32,12 +39,21 @@ param (
 [Parameter(Mandatory,ValueFromPipeline)]
 $Asset,
 [Parameter(Mandatory)]
-[string[]] $Attribute
+[string] $Attribute,
+[Parameter(Mandatory)]
+$ID
 )
 
 process
 {
-    saveRemoveRelation $Asset $Attribute -RemovingRelation
+    testAsset $Asset -IdRequired
+
+    $Asset = [PSCustomObject]@{AssetType=$Asset.AssetType;ID=$Asset.ID;$Attribute=@()}
+    foreach ( $i in $ID )
+    {
+        $Asset.$Attribute += getOid $i
+    }
+    saveAssetOrRelation $Asset $Attribute -RemovingRelation
 }
 
 }

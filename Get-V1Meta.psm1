@@ -43,6 +43,7 @@ param(
 [switch] $NoLoad
 )
 
+$activityName = ""
 
 try 
 {
@@ -86,11 +87,12 @@ try
     }
 
     $activityName = "Processing meta (once per PowerShell session)"
+    $uri = "http://$(Get-V1BaseUri)/meta.v1"
+    $endProgress = $true
+    Write-Progress -Activity $activityName -PercentComplete 0 -CurrentOperation "Getting meta from $uri..." 
 
-    Write-Progress -Activity $activityName -PercentComplete 0 -CurrentOperation "Getting meta from server..." 
-
-    Write-Verbose "Loading meta from http://$(Get-V1BaseUri)/meta.v1"
-    $metaJson = Invoke-RestMethod -Uri "http://$(Get-V1BaseUri)/meta.v1" -Headers @{Accept="application/json"}
+    Write-Verbose "Loading meta from $uri"
+    $metaJson = Invoke-RestMethod -Uri $uri -Headers @{Accept="application/json"}
 
     $script:meta = @{}
     $i = 0
@@ -146,6 +148,13 @@ try
 catch 
 {
     Write-Error "Error:`n$_`n$($_.ScriptStackTrace)"
+}
+finally
+{
+    if ( $activityName )
+    {
+        Write-Progress -Activity $activityName -Completed 
+    }
 }
 
 }

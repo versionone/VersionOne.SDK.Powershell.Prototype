@@ -1,6 +1,6 @@
 <#
 .Synopsis
-	Get version assets from the server
+	Get assets from the server
 	
 .Parameter AssetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
@@ -25,6 +25,9 @@
 
 .Parameter FindIn
 	Attribute for Find.  Uses default attributes for type if not supplied
+
+.Parameter MaxToReturn
+	Maximum number of items to return.  Defaults to 50. -1 will return all of them
 
 .Outputs
 	Asset objects of the given type
@@ -79,17 +82,24 @@ $Filter,
 [string] $Sort,
 [DateTime] $AsOf,
 [string] $Find,
-[string[]] $FindIn
+[string[]] $FindIn,
+[ValidateRange(-1,[Int]::MaxValue)]
+[int] $MaxToReturn = 50
 )
 
 process
 {
     Set-StrictMode -Version Latest
+    $null = $PSBoundParameters.Remove("MaxToReturn")
 
-    $ret = (Get-V1AssetPaged  @PSBoundParameters -startPage 0).Assets 
-    if ( $ret )   # don't return $null if empty, don't return anything 
+    $ret = (Get-V1AssetPaged  @PSBoundParameters -Start 0 -pageSize $MaxToReturn) 
+    if ( $ret.Assets )   # don't return $null if empty, don't return anything 
     {
-        $ret 
+        if ( $MaxToReturn -gt 0 -and $ret.Total -gt $MaxToReturn )
+        {
+            Write-Warning "Only $MaxToReturn values returned of $($ret.Total).  Set -MaxToReturn higher to see more."
+        }
+        $ret.Assets 
     }
 }
 
