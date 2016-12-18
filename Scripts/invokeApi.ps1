@@ -1,7 +1,7 @@
 <#
     Helper to call the api, handling credentials, and not found exception
 #>
-$script:v1NetworkError = "nothing yet"
+$script:v1NetworkError = $null
 
 function InvokeApi
 {

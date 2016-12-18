@@ -63,7 +63,7 @@ try
     {
         if ( $script:meta  )
         {
-            Write-Verbose "Meta already loaded"
+            Write-Verbose "Meta already loaded in memory"
             return returnMeta $AssetType
         }
 
