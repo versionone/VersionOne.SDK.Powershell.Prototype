@@ -58,7 +58,7 @@ function attributeTabComplete {
 
     if ( $fakeBoundParameter.keys -contains "assetType")
     {
-        return tabCompleteForAssetAttributes $fakeBoundParameter["assetType"] $wordToComplete $commandAst $alsoReadOnly
+        return tabCompleteForAssetAttributes $fakeBoundParameter["assetType"] $wordToComplete $commandAst -alsoReadOnly $alsoReadOnly
     }
     else
     {
@@ -69,13 +69,13 @@ function attributeTabComplete {
 $attributeTabCompleteFull = {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
 
-    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter $true
+    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter -alsoReadOnly $true
 }
 
 $attributeTabCompleteWriteable = {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
 
-    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter $false
+    attributeTabComplete $commandName $parameterName $wordToComplete $commandAst $fakeBoundParameter -alsoReadOnly $false
 }
 
 $attributeTabCompleteForAsset = {

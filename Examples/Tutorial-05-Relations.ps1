@@ -1,6 +1,6 @@
-﻿# VersionOne PowerShell SDK Tutorial 8 -- Relationships
+﻿# VersionOne PowerShell SDK Tutorial -- Relationships
 
-# Prereq -- Run 01 to install and load the SDK
+# Prereqs -- Install and Save tutorials
 
 # Assets can have single or mult relationships with other assets this shows 
 # the relations first single then multi
@@ -15,6 +15,8 @@ $status = v1get Status -MaxToReturn 1;$status
 
 $story.Scope = $scope
 $story.Name = "PsSdkStory10"
+
+$story | fl
 
 #status is single relation
 v1set $story -Name Status -Value $status

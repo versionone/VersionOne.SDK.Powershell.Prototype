@@ -65,10 +65,6 @@ process
         }
         $result | ConvertFrom-V1Json
     }
-    else
-    {
-        Write-Verbose($body)
-    }
 
 }
 

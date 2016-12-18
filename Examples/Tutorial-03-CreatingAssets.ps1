@@ -1,6 +1,6 @@
-﻿# VersionOne PowerShell SDK Tutorial 5 -- Creating Assets
+﻿# VersionOne PowerShell SDK Tutorial -- Creating Assets
 
-# Prereq -- Run 01 to install and load the SDK
+# Prereqs -- Install and Save tutorials
 
 # To add a new asset, first create the asset with New-V1Asset
 # then update any values on it
@@ -18,7 +18,7 @@ $story
 $savedStory = Save-V1Asset $story;$savedStory 
 
 # view writable text attributes for story
-Get-V1MetaAssetType Story  | ? AttributeType -like '*text*' | sort Name | ft
+Get-V1MetaAssetType Story  | sort Name | ft
 
 # create a story with values
 $story = v1new Story -Attribute @{Name="PsSdkTestStory2";Scope=$story.Scope;Description="Something clever"};$story
@@ -34,19 +34,18 @@ $story = v1new Story -Attribute @{Name="PsSdkTestStory2"}
 # only set Name in the Attribute, but use -Required to create all required attributes
 $story = v1new Story -Attribute @{Name="PsSdkTestStory3"} -Required;$story
 Set-V1Value $story -Name Scope -Value (v1get Scope -ID 0).ID
-Set-V1Value $story -Name Description -Value "Test description"
-$story
+v1set $story -Name Description -Value "Test description"
 
 # or set all writeable attributes with -Full (it will send all of them to the server)
 $story = v1new Story -Attribute @{Name="PsSdkTestStory4"} -Full;$story
 
 # for bulk adding of test data, you can create a template, then use pipeline and -Name parameter
-$defaultEpicProps = @{Description="Added via PS";Scope="Scope:0"}
+$defaultProps = @{Description="Added via PS";Scope="Scope:0"}
 
-# add 20 epics using little helper to create 20 names
-$epics = New-V1TestName 20 -prefix "MyTestEpic" | New-V1Asset -assetType Epic -Name Name `
-            -DefaultAttribute $defaultEpicProps 
-$epics
+# add 20 stories using little helper to create 20 names
+$stories = New-V1TestName 20 -prefix "PsSdkTestStoryB" | New-V1Asset -assetType Story -Name Name `
+            -DefaultAttribute $defaultProps 
+$stories
 
-# add all the epics via pipeline
-$epics | Save-V1Asset -WhatIf
+# add all the stories via pipeline
+$stories | Save-V1Asset -WhatIf -Verbose

@@ -66,7 +66,6 @@ process
                 continue
             }
 
-
             if ( -not ( $AssetMeta.ContainsKey($name)))
             {
                 throw "Attribute name of $name not found on asset of type $($Asset.AssetType)"
