@@ -1,6 +1,13 @@
 ﻿function getXmlValue
 {
 [CmdletBinding()]
+[OutputType([DateTime])]
+[OutputType([Numeric])]
+[OutputType([string])]
+[OutputType([Decimal])]
+[OutputType([bool])]
+[OutputType([Guid])]
+[OutputType([Int64])]
 param(
 [Parameter(Mandatory)]
 [string] $AssetType,
@@ -69,6 +76,7 @@ param(
 function ConvertFrom-V1Xml
 {
 [CmdletBinding()]
+[OuputType()]
 param(
 [Parameter(Mandatory)]
 [ValidateScript({ (Get-Member -InputObject $_ -Name Asset) -and (Get-Member -InputObject $_.Asset -Name Attribute) -and (Get-Member -InputObject $_.Asset -Name Relation) })]

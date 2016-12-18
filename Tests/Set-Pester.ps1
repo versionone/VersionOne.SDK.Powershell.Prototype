@@ -2,8 +2,8 @@
 param(
 [ValidateNotNullOrEmpty()]
 [string] $BaseUri = "localhost/VersionOne.Web",
-[System.Management.Automation.CredentialAttribute()]
-[PSCredential] $Credential,
+[PSCredential] 
+[System.Management.Automation.Credential()] $Credential,
 [string] $Token
 )
 	if ( -not $Token -and (-not $Credential))

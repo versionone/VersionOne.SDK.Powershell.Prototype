@@ -5,8 +5,9 @@ Port of Valve's index.js file for loading Daag data
 param(
 [string] $testName = "PSTest", # name used for all names,
 [string] $baseUri = "localhost/VersionOne.Web",
-[System.Management.Automation.CredentialAttribute()]
-[PSCredential] $Credential,
+[PSCredential] 
+[System.Management.Automation.Credential()]
+$Credential,
 [string] $token
 )
 
@@ -59,10 +60,8 @@ $testScheme = "${testName}Scheme"
 $testScope = "${testName}Scope"
 
 # constants
-$OID_NULL = 'NULL'
 $ROOT_SCOPE = 'Scope:0'
 $DONE_STORY_STATUS = 'StoryStatus:135'
-$ADMIN_ROLE = 'Role:1'
 
 $scheme = $Schemes | Where-Object name -eq $testScheme | Select -first 1
 if ( -not $scheme )
@@ -179,8 +178,8 @@ Write-Progress -Activity $activityName -Status "Rogue Package"
 $ROGUE_PACKAGE = 'Rogue Package'
 
 $storyDefaults = @{Scope=$scope.id}
-$rogueStories = (1..10) | ForEach-Object { New-V1Asset "Story" -DefaultAttribute $storyDefaults -Attribute @{Name="${testName}_DoneStory$_"}} | Save-V1Asset
-$rogueChangeSets = (1..10) | ForEach-Object { New-V1Asset "ChangeSet" -Attribute @{Name="ChangeSet$_"}}  | Save-V1Asset
+$null = (1..10) | ForEach-Object { New-V1Asset "Story" -DefaultAttribute $storyDefaults -Attribute @{Name="${testName}_DoneStory$_"}} | Save-V1Asset
+$null = (1..10) | ForEach-Object { New-V1Asset "ChangeSet" -Attribute @{Name="ChangeSet$_"}}  | Save-V1Asset
 
 $null = New-V1Asset -assetType Bundle -Attribute @{Name="${testName}_RogueBundle";PackageReference=$ROGUE_PACKAGE;Phase=$developmentPhase;ChangeSets=$doneChangeSets[0..3]+$ongoingChangeSets[0]} -DefaultAttribute $defaultBundleValues | Save-V1Asset
 $null = New-V1Asset -assetType Bundle -Attribute @{Name="${testName}_RogueBundle";PackageReference=$ROGUE_PACKAGE;Phase=$testingPhase;ChangeSets=$doneChangeSets[0..3]+$ongoingChangeSets[0..2]} -DefaultAttribute $defaultBundleValues | Save-V1Asset

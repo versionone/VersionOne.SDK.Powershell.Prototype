@@ -4,6 +4,7 @@
 #>
 function New-V1TestName
 {
+[CmdletBinding(SupportsShouldProcess)]
 param(
 [Parameter(Mandatory)]
 [ValidateRange(1,[Int]::MaxValue)]

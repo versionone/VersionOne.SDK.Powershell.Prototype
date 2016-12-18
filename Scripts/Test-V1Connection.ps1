@@ -8,9 +8,10 @@
 .Outputs
     $true/$false
 #>
-function Test-V1Connection 
+function Test-V1Connection
 {
-[CmdletBinding()]    
+[OutputType([Bool])]
+[CmdletBinding()]
 param()
 
     if ( -not (Get-V1BaseUri) )
@@ -18,11 +19,11 @@ param()
         throw "Must call Set-V1Connection to do anything."
     }
 
-    try 
+    try
     {
         $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0"
         Write-Verbose "Testing $uri "
-        return ((InvokeApi  $uri) -ne $null)
+        return ($null -ne (InvokeApi  $uri))
     }
     catch
     {
@@ -31,4 +32,4 @@ param()
     }
 }
 
-New-Alias -Name v1test -Value Test-V1Connection 
+New-Alias -Name v1test -Value Test-V1Connection

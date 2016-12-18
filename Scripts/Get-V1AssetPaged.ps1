@@ -64,6 +64,7 @@ $s
 function Get-V1AssetPaged
 {
 [CmdletBinding()]
+[OutputType([HashTable])]
 param(
 [Parameter(Mandatory)]
 [string] $AssetType,
@@ -96,7 +97,7 @@ process
     $AssetType = Get-V1AssetTypeName $AssetType
     
     $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
-    if ( $ID -ne $null )
+    if ( $null -ne $ID )
     {
         if ( $ID -is "string" -and $ID.Contains(":") )
         {

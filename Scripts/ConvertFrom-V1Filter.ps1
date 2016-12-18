@@ -34,7 +34,7 @@ function ConvertFrom-V1Filter {
     $parseErrors = $null
     $prevPrevToken = $null;
 
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($Expression, [ref]$psTokens, [ref]$parseErrors)
+    $null = [System.Management.Automation.Language.Parser]::ParseInput($Expression, [ref]$psTokens, [ref]$parseErrors)
     if ( $parseErrors )
     {
         throw "Error parsing filter: $($parseErrors | out-string)"
@@ -42,8 +42,7 @@ function ConvertFrom-V1Filter {
 
     $tokens = @()
     $previousToken = $null
-    Write-Verbose $($psTokens | ft -a | out-string)
-
+    Write-Verbose $($psTokens | Format-Table -a | out-string)
 
     # tokenkind
     # https://msdn.microsoft.com/en-us/library/system.management.automation.language.tokenkind%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396

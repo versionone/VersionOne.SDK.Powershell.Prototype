@@ -34,6 +34,7 @@
 #>
 function Remove-V1Relation
 {
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSShouldProcess", "")] # saveAssetOrRelation does and it passes through
 [CmdletBinding(SupportsShouldProcess)]
 param (
 [Parameter(Mandatory,ValueFromPipeline)]
@@ -57,6 +58,5 @@ process
 }
 
 }
-
 
 Set-Alias -Name v1delrel Remove-V1Relation

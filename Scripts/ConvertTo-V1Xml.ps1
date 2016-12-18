@@ -62,7 +62,7 @@ process
                 throw "Attribute name of $name not found on asset of type $($Asset.AssetType)"
             }
 
-            if ($AssetMeta.$name.IsReadOnly -or $Asset.$name -eq $null)
+            if ($null -eq $AssetMeta.$name.IsReadOnly -or $Asset.$name)
             {
                 continue;
             }

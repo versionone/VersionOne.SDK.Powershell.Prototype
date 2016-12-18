@@ -7,7 +7,7 @@ $attributeMeta )
 
     Set-StrictMode -Version Latest
 
-    if ( $value -ne $null )
+    if ( $null -ne $value )
     {
         #TODO smarter conversion?
         switch ($attributeMeta.AttributeType)

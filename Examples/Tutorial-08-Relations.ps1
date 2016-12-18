@@ -1,17 +1,17 @@
-﻿# VersionOne PowerShell SDK Tutorial 7 -- Relationships
+﻿# VersionOne PowerShell SDK Tutorial 8 -- Relationships
 
 # Prereq -- Run 01 to install and load the SDK
 
 # Assets can have single or mult relationships with other assets this shows 
 # the relations first single then multi
-v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $false } | sort | ft
-v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $true } | sort | ft
+v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $false } | sort Name | ft -Property Name, RelatedNameRef, IsMultivalue
+v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $true } | sort Name | ft -Property Name, RelatedNameRef, IsMultivalue
 
 # Relationship values are IDs (OIDs)
 # Recall from creating stories, Scope is required, and single relationship.
 $story = v1new Story -Required; $story
 $scope = v1get Scope -ID 0;$scope
-$status = v1get Status -MaxToReturn 1
+$status = v1get Status -MaxToReturn 1;$status
 
 $story.Scope = $scope
 $story.Name = "PsSdkStory10"
@@ -23,7 +23,6 @@ v1set $story -Name Status -Value $status
 $owners = v1get Member -Attribute Name;$owners
 
 v1set $story Owners $owners[0]
-$story | fl
 
 # save the story, using Verbose to show what is sent to the server
 $story = v1save $story -Verbose
@@ -40,7 +39,7 @@ $story.Owners = $owners[2..3].ID+$story.Owners
 $story.Owners 
 
 # save and verify the members were added
-$story = v1save $story -Verbose
+$story = v1save $story
 $story = v1get Story -ID $story.ID -Attribute Owners,Name,Status;$story
 
 # now remove one of them and verify

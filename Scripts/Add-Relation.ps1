@@ -25,6 +25,7 @@
 #>
 function Add-V1Relation
 {
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSShouldProcess", "")] # saveAssetOrRelation does and it passes through
 [CmdletBinding(SupportsShouldProcess)]
 param (
 [Parameter(Mandatory,ValueFromPipeline)]

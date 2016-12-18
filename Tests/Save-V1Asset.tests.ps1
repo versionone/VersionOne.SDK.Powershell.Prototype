@@ -44,7 +44,7 @@ Describe "Save-V1Asset" {
 	}
 
     It "Updates a category" {
-        $epicCat = (Get-V1Asset EpicCategory -Attribute Name,Description) | Select -First 1
+        $epicCat = (Get-V1Asset EpicCategory -Attribute Name,Description) | Select-Object -First 1
         $epicCat | Should not be $null
 
         $now = (Get-Date).ToString()

@@ -37,7 +37,7 @@ Describe "Remove-V1Asset" {
         $stories | Should not be $null
         $stories.Count | Should be 5
 
-       $deletedStories = $stories | select -expandproperty id | Remove-V1Asset
+       $deletedStories = $stories | Select-Object -expandproperty id | Remove-V1Asset
        foreach ( $d in $deletedStories )
        {
             ($d -split ":").Count | Should be 3

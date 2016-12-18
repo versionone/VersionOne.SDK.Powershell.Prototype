@@ -20,6 +20,7 @@
 #>
 function Set-V1Value
 {
+[CmdletBinding(SupportsShouldProcess)]
 param( 
 [Parameter(Mandatory,ValueFromPipeline)]
 $Asset, 
@@ -43,7 +44,10 @@ process
             if ( -not (Get-Member -Input $Asset -name $Name ))
             {
                 $Value = ConvertTo-V1AssetValue $Value $AssetMeta
-                Add-Member -InputObject $Asset -MemberType NoteProperty -Name $Name -value $Value
+                if ( $PSCmdlet.ShouldProcess("$Name = $Value", "Set attribute on asset of type $($Asset.AssetType)"))
+                {
+                    Add-Member -InputObject $Asset -MemberType NoteProperty -Name $Name -value $Value
+                }
             }
             else
             {

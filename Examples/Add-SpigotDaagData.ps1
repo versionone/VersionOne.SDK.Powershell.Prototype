@@ -5,8 +5,8 @@ Port of data added in Spigot's delivery-at-a-glanc.json file
 param(
 [string] $testName = "PSTest", # name used for all names,
 [string] $baseUri = "localhost/VersionOne.Web",
-[System.Management.Automation.CredentialAttribute()]
-[PSCredential] $Credential,
+[PSCredential] 
+[System.Management.Automation.Credential()] $Credential,
 [string] $token
 )
 

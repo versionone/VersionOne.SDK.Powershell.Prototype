@@ -4,7 +4,7 @@ function getJsonValue($attributeType, $AssetValue)
     {   
         "Attribute" { return $AssetValue }
         "Relation" { 
-            if ( $AssetValue -eq $null ) 
+            if ( $null -eq $AssetValue ) 
             {
                  return $AssetValue 
             } 

@@ -9,7 +9,7 @@ foreach( $i in (Get-ChildItem (Join-Path $PSScriptRoot "Scripts\*.ps1") -File ))
     . $i
 }
 
-Export-ModuleMember -Function "*-V1*" -Alias "*"
+Export-ModuleMember -Function "*-V1*" -Alias "v1*" -Variable "v1NetworkError","v1DebuggingTab","v1DbuggingTempFile"
 
 if ( -not $script:baseUri)
 {

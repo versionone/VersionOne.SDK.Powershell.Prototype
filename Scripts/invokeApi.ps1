@@ -1,6 +1,8 @@
 <#
     Helper to call the api, handling credentials, and not found exception
 #>
+$script:v1NetworkError = "nothing yet"
+
 function InvokeApi
 {
 param(
@@ -41,7 +43,7 @@ $body = $null
     {
         $myError = $_
         
-        $Global:v1NetworkError = $myError
+        $script:v1NetworkError = $myError
         try 
         {
             if ($myError.exception.response.statusCode -eq [System.Net.HttpStatusCode]::NotFound )

@@ -1,7 +1,7 @@
 <#
 .Synopsis
 	Save (add or update) a V1 Asset
-	
+
 .Description
 	If the asset has an id, it will update it, otherwise it will create it
 
@@ -12,7 +12,7 @@
 	The created or updated asset, as returned from the REST API
 
 .Example
-    $savedStory = New-V1Asset Story -Attribute @{Name="Test";Scope="Scope:0"} | Save-V1Asset 
+    $savedStory = New-V1Asset Story -Attribute @{Name="Test";Scope="Scope:0"} | Save-V1Asset
 
     New up a story and save it to the server
 
@@ -22,15 +22,16 @@
     $bundles[0].ChangeSets = $changeSets[0].id
     Save-V1Asset $bundles[0]
 
-    Add a ChangeSet to a Bundle 
+    Add a ChangeSet to a Bundle
 
 #>
 function Save-V1Asset
 {
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSShouldProcess", "")] # saveAssetOrRelation does and it passes through
 [CmdletBinding(SupportsShouldProcess)]
 param(
-[Parameter(Mandatory,ValueFromPipeline)]  
-$Asset  
+[Parameter(Mandatory,ValueFromPipeline)]
+$Asset
 )
 
 process

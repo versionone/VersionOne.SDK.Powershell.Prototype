@@ -51,7 +51,7 @@ process
     }
 
     $body = ConvertTo-V1Json $Asset -stripDotted -removeRelations:$RemovingRelation -Attribute $Attribute
-    if ( $PSCmdlet.ShouldProcess("$uri", "$action of from type $AssetType"))
+    if ( $PSCmdlet.ShouldProcess("$uri", "$action of type $AssetType"))
     {
         try
         {

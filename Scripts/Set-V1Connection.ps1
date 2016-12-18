@@ -16,7 +16,7 @@ $script:credential = $null
 <#
 .Synopsis
 	Set the Uri and credentials to use for V1 API calls
-	
+
 .Parameter BaseUri
 	The base Uri to use, e.g. localhost/VersionOne.Web
 
@@ -40,38 +40,41 @@ $script:credential = $null
 .Example
     Set-V1Connection -baseUri "localhost/VersionOne.Web" -credential (Get-Credential)
 
-    Set the defaults with a credential object.  This will prompt you for credentials    
+    Set the defaults with a credential object.  This will prompt you for credentials
 #>
 function Set-V1Connection
 {
+[CmdletBinding(SupportsShouldProcess)]
 param(
 [ValidateNotNullOrEmpty()]
 [string] $BaseUri = "localhost/VersionOne.Web",
-[System.Management.Automation.CredentialAttribute()]
-[PSCredential] $Credential,
+[Parameter(ParameterSetName="Credential",Mandatory)]
+[PSCredential] 
+[System.Management.Automation.Credential()]
+$Credential,
+[Parameter(ParameterSetName="Token",Mandatory)]
 [string] $Token,
 [switch] $SkipTest)
 
-    if ( -not $Token -and (-not $Credential))
-    {
-        throw "Must supply Token or Credential"
-    }
-
     Set-StrictMode -Version Latest
 
-    $script:baseUri = $BaseUri
+    if ( $PSCmdlet.ShouldProcess("","Set `$script values"))
+    {
+        $script:baseUri = $BaseUri
 
-    if ( $Token )
-    {
-        $script:authorizationHeader = @{AUTHORIZATION="Bearer $Token"}
-    }
-    else 
-    {
-        $script:credential = $Credential    
-    }
-    if ( -not $SkipTest )
-    {
-        return Test-V1Connection
+        if ( $Token )
+        {
+            $script:authorizationHeader = @{AUTHORIZATION="Bearer $Token"}
+        }
+        else
+        {
+            $script:credential = $Credential
+        }
+
+        if ( -not $SkipTest )
+        {
+            return Test-V1Connection
+        }
     }
 }
 

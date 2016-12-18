@@ -13,8 +13,6 @@ $HelpType = "All"
 )
     if ( Get-V1BaseUri )
     {
-        $rest = "help/api/rest-1.html"
-
         switch ( $HelpType )
         {
             "Filter" { $rest = "help/api/rest-1.html#section.filter.syntax" }
@@ -22,7 +20,8 @@ $HelpType = "All"
             "Sort" { $rest = "help/api/rest-1.html#section.orderby.syntax" }
             "Find" { $rest = "help/api/rest-1.html#query.data.find" }
             "Meta" { $rest = "help/api/meta.html" }
-            "Localization" { $ret = "help/api/loc.html"}
+            "Localization" { $rest = "help/api/loc.html"}
+            default { $rest = "help/api/rest-1.html" }
         }
 
         Start-Process "http://$(Get-V1BaseUri)/$rest"

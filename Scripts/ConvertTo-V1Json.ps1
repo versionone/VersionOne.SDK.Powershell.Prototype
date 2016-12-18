@@ -61,7 +61,7 @@ process
             if ( ($StripDotted -and $name.Contains(".")) -or
                  ($Attribute -and $name -notin $Attribute) -or
                  $AssetMeta.$name.IsReadOnly -or
-                 $Asset.$name -eq $null)
+                 $null -eq $Asset.$name)
             {
                 continue
             }
@@ -91,7 +91,6 @@ process
                 {
                     if ( $RemoveRelations )
                     {
-                        $value = $null
                         $v1Object.Attributes[$name]=@{name=$name;act="set"}
                     }
                     else

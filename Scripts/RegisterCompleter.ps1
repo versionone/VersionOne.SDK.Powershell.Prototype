@@ -1,7 +1,8 @@
 <#
     Register all the tab completion script blocks for the SDK, this uses the PS V5 Register-ArgumentCompleter function
 #>
-$global:debuggingTabV1 = $false
+$script:v1DebuggingTab = $false
+$script:v1DbuggingTempFile = Join-Path ($env:APPDATA) "V1Api\logs\tabCompletion.txt"
 Set-StrictMode -Version Latest
 
 <#
@@ -10,7 +11,7 @@ Set-StrictMode -Version Latest
 $assetTypeTabComplete = {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
 
-    if ( $global:debuggingTabV1 )
+    if ( $script:v1DebuggingTab )
     {
         [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "commandName: $commandName parameterName: $parameterName wordToComplete: $wordToComplete commandAst: $($commandAst.gettype()) fakeBoundParameter $($fakeBoundParameter |out-string)`n")
     }
@@ -24,38 +25,38 @@ $assetTypeTabComplete = {
 #>
 function tabCompleteForAssetAttributes {
     param($assetType, $wordToComplete, $commandAst, $alsoReadOnly = $false)
-    
+
     $excludes = @()
-    
+
     if ( $commandAst.commandElements[-1].Extent )
     {
         $excludes = $commandAst.commandElements[-1].Extent -split ","
     }
 
-    if ( $global:debuggingTabV1 )
+    if ( $script:v1DebuggingTab )
     {
         [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "1 Found assetType parameter before this`n");
         [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "2 $(Get-V1Meta -assetType $assetType)`n");
-        [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "3 Last command element $($commandAst.commandElements[-1] | ft -fo | out-string))`n");
+        [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "3 Last command element $($commandAst.commandElements[-1] | Format-Table -fo | out-string))`n");
         [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "4 Excluding $excludes`n");
     }
-    
+
     return (Get-V1MetaAssetType -assetType $assetType -alsoReadOnly:$alsoReadOnly ).Name | Where-Object {$_ -like "$wordToComplete*" -and $_ -notin $excludes } | Sort-Object | ForEach-Object { [System.Management.Automation.CompletionResult]::new($_)}
 }
 
 function attributeTabComplete {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter, $alsoReadOnly )
 
-    if ( $global:debuggingTabV1 )
+    if ( $script:v1DebuggingTab )
     {
-        [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "0 commandName: $commandName parameterName: $parameterName wordToComplete: $wordToComplete commandAst: $($commandAst.commandElements | fl -fo | out-string) fakeBoundParameter $($fakeBoundParameter |out-string)`n")
+        [System.IO.File]::AppendAllText("c:\temp\registerCompleter.txt", "0 commandName: $commandName parameterName: $parameterName wordToComplete: $wordToComplete commandAst: $($commandAst.commandElements | Format-List -fo | out-string) fakeBoundParameter $($fakeBoundParameter |out-string)`n")
     }
 
     if ( $fakeBoundParameter.keys -contains "assetType")
     {
         return tabCompleteForAssetAttributes $fakeBoundParameter["assetType"] $wordToComplete $commandAst $alsoReadOnly
     }
-    else 
+    else
     {
         return $null
     }
@@ -78,9 +79,9 @@ $attributeTabCompleteForAsset = {
 
     if ( $fakeBoundParameter.keys -contains "Asset" -and (Get-Member -InputObject $fakeBoundParameter["Asset"] -Name "AssetType"))
     {
-         return tabCompleteForAssetAttributes $fakeBoundParameter["Asset"].AssetType $wordToComplete $commandAst 
+         return tabCompleteForAssetAttributes $fakeBoundParameter["Asset"].AssetType $wordToComplete $commandAst
     }
-    else 
+    else
     {
         return $null
     }

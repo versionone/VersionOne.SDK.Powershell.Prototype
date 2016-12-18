@@ -4,7 +4,7 @@
 
 .Description
     The Name/Value parameter set is useful when exploring since tab completion can be used for names.
-	
+
 .Parameter AssetType
 	The type of the asset, use (Get-V1Meta).Keys | sort to see all valid values
 
@@ -26,7 +26,7 @@
 .Parameter Full
 	if set will populate the object with all the possible writable attributes for the asset
 
-.Example 
+.Example
     $epic = New-V1Asset Epic -Attribute @{Name="Test";Scope="Scope:0"} -default @{PlannedStart=$plannedStart;RequestedBy="YoMama"}
 
     Create a new Epic using hash table
@@ -47,7 +47,8 @@
 #>
 function New-V1Asset
 {
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess)]
+[OutputType([PSCustomObject])]
 param(
 [Parameter(Mandatory,Position=0)]
 [string] $AssetType,
@@ -80,7 +81,7 @@ process
     {
         $Attribute.Keys | ForEach-Object { $ht[$_] = $Attribute[$_] } # += will barf if duplicate key
     }
-    else 
+    else
     {
         if ( $Name.Count -ne $Value.Count )
         {
@@ -90,14 +91,14 @@ process
     }
 
     $ret = [PSCustomObject]$ht
-    
+
     if ( $Full )
     {
         $missingWritable = $assetMeta.Keys | Where-Object { -not $assetMeta[$_].IsReadOnly } | Where-Object { $_ -notin $ht.Keys }
         $missingWritable | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
     }
     else
-    {    
+    {
         $missingRequired =  $assetMeta.Keys | Where-Object { $assetMeta[$_].IsRequired } | Where-Object { $_ -notin $ht.Keys }
 
         if ( $missingRequired )
@@ -107,13 +108,13 @@ process
                 $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
                 Write-Warning "For asset of type $($AssetType), added missing attributes: $($missingRequired -join ", ")"
             }
-            else 
+            else
             {
                 throw "Asset of type $($AssetType) requires missing attributes: $($missingRequired -join ", ")"
             }
         }
     }
-     
+
     return $ret
 }
 

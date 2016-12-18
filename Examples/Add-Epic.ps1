@@ -5,8 +5,9 @@ Add a scope, schemes and Epics
 param(
 [string] $testName = "PSTest", # name used for all names,
 [string] $baseUri = "localhost/VersionOne.Web",
-[System.Management.Automation.CredentialAttribute()]
-[PSCredential] $Credential,
+[PSCredential] 
+[System.Management.Automation.Credential()]
+$Credential,
 [string] $token,
 [int] $epicCount = 10
 )
@@ -31,7 +32,7 @@ $null = Get-V1Meta
 # load common base assets
 $scopes = Get-V1Asset -assetType "Scope" -Attribute "Name"
 $schemes = Get-V1Asset -assetType "Scheme" -Attribute "Name"
-$epicCategories = Get-V1Asset -assetType "EpicCategory" -Attribute "Name"
+$null = Get-V1Asset -assetType "EpicCategory" -Attribute "Name"
 $epics = Get-V1Asset -assetType "Epic"
 
 # add scheme if not exists
