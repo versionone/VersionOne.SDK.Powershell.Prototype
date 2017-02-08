@@ -61,6 +61,10 @@ $Credential,
     if ( $PSCmdlet.ShouldProcess("","Set `$script values"))
     {
         $script:baseUri = $BaseUri
+        if ( $script:baseUri -notlike "http*" ) 
+        {
+            $script:baseUri = "http://$script:baseUri"
+        }
 
         if ( $Token )
         {

@@ -6,7 +6,7 @@
 # Get-V1Meta* functions are used by the SDK to validate object
 # and provide tab completion.  You can use them to explore
 # meta from PowerShell.  You can also view all the meta from
-Start-Process http://$(Get-V1BaseUri)/meta.v1?xsl=api.xsl
+Start-Process $(Get-V1BaseUri)/meta.v1?xsl=api.xsl
 
 # Get all the meta data as nested hash tables.  This is used internally
 Get-V1Meta
@@ -15,5 +15,5 @@ Get-V1Meta
 Get-V1MetaName
 
 # Get all the attributes for a story
-Get-V1MetaAssetType Story | Sort Name | Format-Table
+Get-V1MetaAssetType Story | Sort-Object Name | Format-Table
 

@@ -118,7 +118,7 @@ process
             }
     }
 "@            
-    $uri = "http://$(Get-V1BaseUri)/$relativeUrl"
+    $uri = "$(Get-V1BaseUri)/$relativeUrl"
 
     $null = InvokeApi -uri $uri -method POST -body $payloadJson
     Write-Information "Added user $MemberName"

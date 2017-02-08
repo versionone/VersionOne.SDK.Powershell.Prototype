@@ -24,7 +24,7 @@ $HelpType = "All"
             default { $rest = "help/api/rest-1.html" }
         }
 
-        Start-Process "http://$(Get-V1BaseUri)/$rest"
+        Start-Process "$(Get-V1BaseUri)/$rest"
     }
     else
     {

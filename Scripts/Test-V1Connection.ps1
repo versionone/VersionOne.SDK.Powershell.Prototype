@@ -21,7 +21,7 @@ param()
 
     try
     {
-        $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0"
+        $uri = "$(Get-V1BaseUri)/rest-1.v1/Data/Scope/0"
         Write-Verbose "Testing $uri "
         return ($null -ne (InvokeApi  $uri))
     }

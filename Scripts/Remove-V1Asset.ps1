@@ -42,7 +42,7 @@ process
     }
     $AssetType = Get-V1AssetTypeName $AssetType
 
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType/${num}?op=Delete"
+    $uri = "$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType/${num}?op=Delete"
     if ( $PSCmdlet.ShouldProcess("$uri", "Remove-V1Asset of type $($AssetType)"))
     {
         try 

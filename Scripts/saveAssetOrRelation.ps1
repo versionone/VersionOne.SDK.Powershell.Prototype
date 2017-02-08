@@ -31,7 +31,7 @@ process
 
     $AssetType = Get-V1AssetTypeName $Asset.AssetType
 
-    $uri = "http://$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
+    $uri = "$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( ($Asset | Get-Member -Name "id") -and $Asset.id)
     {
         # updating or removing
