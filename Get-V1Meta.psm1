@@ -87,7 +87,7 @@ try
     }
 
     $activityName = "Processing meta (once per PowerShell session)"
-    $uri = "http://$(Get-V1BaseUri)/meta.v1"
+    $uri = "$(Get-V1BaseUri)/meta.v1"
 
     Write-Progress -Activity $activityName -PercentComplete 0 -CurrentOperation "Getting meta from $uri..." 
 
