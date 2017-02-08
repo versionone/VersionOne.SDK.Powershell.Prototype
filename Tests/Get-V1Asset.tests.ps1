@@ -3,10 +3,9 @@ Import-Module (Join-Path $PSScriptRoot ..\VersionOneSdk.psm1)
 Describe "Get-V1Asset" {
 
 	It "Gets all Scopes" {
-
-         $c = Get-V1Asset Scope
+         $c = @(Get-V1Asset Scope)
 		 $c | Should not be $null
-		 ($c.Count -gt 1) | Should be $true
+		 ($c.Count -ge 1) | Should be $true
 	}
 
 	It "Gets Scope 0 by ID" {
