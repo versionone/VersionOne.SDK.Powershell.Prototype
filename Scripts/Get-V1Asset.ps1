@@ -29,6 +29,9 @@
 .Parameter MaxToReturn
 	Maximum number of items to return.  Defaults to 50. -1 will return all of them
 
+.Parameter NoWarningForMax
+	Suppress the warning about more results available
+
 .Outputs
 	Asset objects of the given type
 
@@ -84,22 +87,24 @@ $Filter,
 [string] $Find,
 [string[]] $FindIn,
 [ValidateRange(-1,[Int]::MaxValue)]
-[int] $MaxToReturn = 50
+[int] $MaxToReturn = 50,
+[switch] $NoWarningForMax
 )
 
 process
 {
     Set-StrictMode -Version Latest
     $null = $PSBoundParameters.Remove("MaxToReturn")
+    $null = $PSBoundParameters.Remove("NoWarningForMax")
 
     $ret = (Get-V1AssetPaged  @PSBoundParameters -Start 0 -pageSize $MaxToReturn) 
     if ( $ret.Assets )   # don't return $null if empty, don't return anything 
     {
-        if ( $MaxToReturn -gt 0 -and $ret.Total -gt $MaxToReturn )
+        $ret.Assets 
+        if ( -not $NoWarningForMax -and $MaxToReturn -gt 0 -and $ret.Total -gt $MaxToReturn )
         {
             Write-Warning "Only $MaxToReturn values returned of $($ret.Total).  Set -MaxToReturn higher to see more."
         }
-        $ret.Assets 
     }
 }
 

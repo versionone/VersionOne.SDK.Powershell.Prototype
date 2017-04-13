@@ -1,13 +1,22 @@
 <#
     Register all the tab completion script blocks for the SDK, this uses the PS V5 Register-ArgumentCompleter function
 #>
-[bool] $script:v1DebuggingTab = $false
-$script:v1DbuggingTempFile = Join-Path ($env:APPDATA) "V1Api\logs\tabCompletion.txt"
-if ( -not (Test-Path (Split-Path $script:v1DbuggingTempFile -Parent) -PathType Container ))
-{
-    New-Item  -Path (Split-Path $script:v1DbuggingTempFile -Parent) -ItemType Directory
-} 
 Set-StrictMode -Version Latest
+
+[bool] $script:v1DebuggingTab = $false
+if ( -not (Test-Path variable:isWindows) -or $isWindows ) # on PS 6, *nix systems have $isWindows, etc.
+{
+    $script:v1DebuggingTempFile = Join-Path ($env:APPDATA) "V1Api\logs\tabCompletion.txt"
+}
+else
+{
+    $script:v1DebuggingTempFile = Join-Path $env:HOME "V1Api/logs/tabCompletion.txt"
+}
+
+if ( -not (Test-Path (Split-Path $script:v1DebuggingTempFile -Parent) -PathType Container ))
+{
+    New-Item  -Path (Split-Path $script:v1DebuggingTempFile -Parent) -ItemType Directory
+}
 
 <#
     Tab completion for asset type

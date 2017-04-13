@@ -2,7 +2,6 @@
 {
 [CmdletBinding()]
 [OutputType([DateTime])]
-[OutputType([Numeric])]
 [OutputType([string])]
 [OutputType([Decimal])]
 [OutputType([bool])]
@@ -70,13 +69,13 @@ param(
 	The XML returned from Invoke-RestMethod 
 
 .Outputs
-	An object hydrated from JSON
+	An object hydrated from XML
 
 #>
 function ConvertFrom-V1Xml
 {
 [CmdletBinding()]
-[OuputType()]
+[OutputType([PSCustomObject])]
 param(
 [Parameter(Mandatory)]
 [ValidateScript({ (Get-Member -InputObject $_ -Name Asset) -and (Get-Member -InputObject $_.Asset -Name Attribute) -and (Get-Member -InputObject $_.Asset -Name Relation) })]

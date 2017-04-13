@@ -1,11 +1,11 @@
-function appendToUri 
+function appendToUri
 {
 param(
-[Parameter(Mandatory)]    
+[Parameter(Mandatory)]
 $uri,
-[Parameter(Mandatory)]    
+[Parameter(Mandatory)]
 $s
-)    
+)
     if ( $uri.Contains("?"))
     {
         return "${uri}&$s"
@@ -19,7 +19,7 @@ $s
 <#
 .Synopsis
 	Get V1 assets from the server, in a paged manner.  See Get-V1Asset for non-paged and more examples
-	
+
 .Parameter AssetType
 	Asset type.  To see valid values (Get-V1Meta).keys | sort
 
@@ -30,10 +30,10 @@ $s
 	Optional list of attributes to return, otherwise it returns default set
 
 .Parameter Filter
-	Optional filter (where clause) for limiting results. May be a string or script block. 
+	Optional filter (where clause) for limiting results. May be a string or script block.
 
 .Parameter Sort
-	Optional sort attributes. For details run Get-V1Help Sort  
+	Optional sort attributes. For details run Get-V1Help Sort
 
 .Parameter Start
 	Optional starting item (NOT page number), defaults to first item of 0
@@ -50,12 +50,15 @@ $s
 .Parameter FindIn
 	Attribute for Find.  Uses default attributes for type if not supplied
 
+.Parameter Raw
+	Return the raw JSON instead of converting it to objects
+
 .Outputs
 	Object with Total and Assets (array of asset objects of the given type)
 
-.Example 
+.Example
     $ret = Get-V1AssetPaged Story -Attribute Name,Status -pageSize 10 -Start 0
-    "Total is $($ret.total)" 
+    "Total is $($ret.total)"
     $ret.Assets | ft
 
     Get name and status of first 10 Stories
@@ -79,7 +82,8 @@ $Filter,
 [int] $PageSize = 50,
 [DateTime] $AsOf,
 [string] $Find,
-[string[]] $FindIn
+[string[]] $FindIn,
+[switch] $Raw
 )
 
 process
@@ -95,7 +99,7 @@ process
     Write-Verbose( "BaseUri: $(Get-V1BaseUri) AssetType: $AssetType Attribute: $Attribute ID: $ID" )
 
     $AssetType = Get-V1AssetTypeName $AssetType
-    
+
     $uri = "$(Get-V1BaseUri)/rest-1.v1/Data/$AssetType"
     if ( $null -ne $ID )
     {
@@ -113,7 +117,7 @@ process
 
     if ( $Attribute )
     {
-        $uri = appendToUri $uri "sel=$($Attribute -join ",")" 
+        $uri = appendToUri $uri "sel=$($Attribute -join ",")"
     }
 
     if ( $Filter )
@@ -126,12 +130,12 @@ process
         {
             $uri = appendToUri $uri "where=$(ConvertFrom-V1Filter $Filter)"
         }
-    }   
+    }
 
     if ( $Sort )
     {
         $uri = appendToUri $uri "sort=$Sort"
-    }   
+    }
 
     if ( $PageSize -ne [int]::MaxValue )
     {
@@ -158,6 +162,11 @@ process
 
     $result =  InvokeApi -Uri $uri
 
+    if ( $Raw )
+    {
+        return $result
+    }
+
     $ret = @{Total=0;Assets = $null}
 
     if ( $result )
@@ -177,7 +186,7 @@ process
         }
         if ( -not $ret.Assets -is "array")
         {
-            $ret.Assets = ,$ret.Assets 
+            $ret.Assets = ,$ret.Assets
         }
     }
     $ret

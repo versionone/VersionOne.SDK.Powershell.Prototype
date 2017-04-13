@@ -5,8 +5,10 @@ Describe "Remove-V1Relation" {
     Get-V1BaseUri | Should not be $null
     $script:deleteMe = @()
 
-	It "Removea a single relation" {
+	It "Removes a single relation" {
 
+        $status = Get-V1Asset StoryStatus -Filter "Name='Future'"
+        $status | Should not be $null
         $story = New-V1Asset Story -Attribute @{Name="DeleteMe$(Get-Date)";Scope="Scope:0";Status="StoryStatus:133"} | Save-V1Asset
         $story | Should not be $null
         $script:deleteMe += $story

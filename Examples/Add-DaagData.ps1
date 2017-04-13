@@ -22,7 +22,7 @@ $ErrorActionPreference = "Stop"
 $InformationPreference = "Continue"
 
 Import-Module (Join-path $PSScriptRoot "..\VersionOneSdk.psm1") -Force
-Set-V1Connection -baseUri $baseUri -token $token -cred $Credential -test
+Set-V1Connection -baseUri $baseUri -token $token 
 $null = Get-V1Meta
 
 $activityName = "Add Daag data"

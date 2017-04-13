@@ -17,3 +17,5 @@ function Get-V1BaseUri
     }
 
 }
+
+New-Alias -Name v1base -Value Get-V1BaseUri
