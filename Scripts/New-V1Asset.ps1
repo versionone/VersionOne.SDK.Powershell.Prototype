@@ -106,7 +106,7 @@ process
             if ( -not $Attribute -or $Required )
             {
                 $missingRequired | ForEach-Object { Set-V1Value $ret -Name $_ -Value $null } | Out-Null
-                Write-Warning "For asset of type $($AssetType), added missing attributes: $($missingRequired -join ", ")"
+                Write-Warning "For asset of type $($AssetType), automatically added missing attributes: $($missingRequired -join ", ")"
             }
             else
             {

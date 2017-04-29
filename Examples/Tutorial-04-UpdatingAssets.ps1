@@ -1,7 +1,8 @@
 ﻿# VersionOne PowerShell SDK Tutorial -- Updating Assets
 
-# Prereqs -- Install and Save tutorials
+# Prereqs -- Install and Create tutorials
 
+# get the stories previously added
 $stories = v1get Story -Find "PsSdkTestStory*" -FindIn Name -Attribute Name,Description
 $stories | select id,name,description | ft
 
@@ -15,11 +16,10 @@ $stories | select id,name,description | ft
 
 # Note! Many assets have an Order attribute that if you don't intend on changing, don't update.
 
-
-# can delete by passing in IDs or object with ID.  It returns the Oid with the moment  
-$stories[0].ID | Remove-V1Asset
+# delete assets by passing in IDs or object with ID.  It returns the Oid with the moment  
+$stories[0].ID | Remove-V1Asset 
 $stories[1..($stories.Count-1)] | v1del 
 
-
+# All samples should be gone now
 v1get Story -Find "PsSdkTestStory*" -FindIn Name -Attribute Name,Description 
 

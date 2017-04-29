@@ -9,7 +9,7 @@ else
 }
 if ( $script:authorizationHeader -or $script:baseUri )
 {
-    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI ($env:V1_BASE_URI) and `$env:V1_API_TOKEN ($env:V1_API_TOKEN).  Call Set-V1Connection to change them."
+    Write-Warning "Using existing V1 API values from `$env:V1_BASE_URI ($env:V1_BASE_URI) and `$env:V1_API_TOKEN ($env:V1_API_TOKEN).`nCall Set-V1Connection to change them."
 }
 $script:credential = $null
 

@@ -1,9 +1,9 @@
 ﻿# VersionOne PowerShell SDK Tutorial -- Relationships
 
-# Prereqs -- Install and Save tutorials
+# Prereqs -- Install tutorial
 
-# Assets can have single or mult relationships with other assets this shows 
-# the relations first single then multi
+# Assets can have single or mult relationships with other assets
+# This shows the relations for story, first single then multi
 v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $false } | sort Name | ft -Property Name, RelatedNameRef, IsMultivalue
 v1asset story | ? { $_.AttributeType -eq "Relation" -and $_.IsMultivalue -eq $true } | sort Name | ft -Property Name, RelatedNameRef, IsMultivalue
 
@@ -18,7 +18,7 @@ $story.Name = "PsSdkStory10"
 
 $story | fl
 
-#status is single relation
+# status is single relation
 v1set $story -Name Status -Value $status
 
 # owners is a multi relation
@@ -58,7 +58,7 @@ $story = v1get Story -ID $story.ID -Attribute Owners,Name,Status;$story
 
 # in addition to adding relation via save, you can add with a function
 Add-V1Relation $story -Attribute Owners -ID $owners[0]
-v1addrel $story -Attribute Owners -ID $owners[1]
+v1addrel $story -Attribute Owners -ID $owners[0]
 $story = v1get Story -ID $story.ID -Attribute Owners,Name,Status;$story
 
 # clean up

@@ -1,6 +1,6 @@
 ﻿# VersionOne PowerShell SDK Tutorial -- Creating Assets
 
-# Prereqs -- Install and Save tutorials
+# Prereqs -- Install tutorial
 
 # To add a new asset, first create the asset with New-V1Asset
 # then update any values on it
@@ -17,8 +17,8 @@ $story
 # save the story.  Now it has an id
 $savedStory = Save-V1Asset $story;$savedStory 
 
-# view writable text attributes for story
-Get-V1MetaAssetType Story  | sort Name | ft
+# view writable text attributes for story by getting its meta data (-AlsoReadOnly gets all attributes)
+Get-V1MetaAssetType Story | sort Name | ft
 
 # create a story with values
 $story = v1new Story -Attribute @{Name="PsSdkTestStory2";Scope=$story.Scope;Description="Something clever"};$story
@@ -28,24 +28,25 @@ $savedStory = Save-V1Asset $story;$savedStory
 # it will tell you what's missing
 $story = v1new Story -Attribute @{Name="PsSdkTestStory2"}
 
-# You ask, "No tab-completion for setting attributes?" Use Set-V1Value
-# use tab to cycle through all writable attributes on an asset
+# You ask, "No tab-completion for setting attributes?" 
+# Use Set-V1Value $story -Name <tab> 
+# Using tab will cycle through all writable attributes on the asset
 
-# only set Name in the Attribute, but use -Required to create all required attributes
+# only set Name in the Attribute, but use -Required to create all other required attributes
 $story = v1new Story -Attribute @{Name="PsSdkTestStory3"} -Required;$story
 Set-V1Value $story -Name Scope -Value (v1get Scope -ID 0).ID
 v1set $story -Name Description -Value "Test description"
 
-# or set all writeable attributes with -Full (it will send all of them to the server)
+# or set all writeable attributes (required and not required) with -Full (it will send all of them to the server)
 $story = v1new Story -Attribute @{Name="PsSdkTestStory4"} -Full;$story
 
 # for bulk adding of test data, you can create a template, then use pipeline and -Name parameter
 $defaultProps = @{Description="Added via PS";Scope="Scope:0"}
 
-# add 20 stories using little helper to create 20 names
+# add 20 stories using New-V1TestName helper to create 20 names
 $stories = New-V1TestName 20 -prefix "PsSdkTestStoryB" | New-V1Asset -assetType Story -Name Name `
             -DefaultAttribute $defaultProps 
 $stories
 
-# add all the stories via pipeline
+# add all the stories via pipeline.  -WhatIf will not actually add the item
 $stories | Save-V1Asset -WhatIf -Verbose

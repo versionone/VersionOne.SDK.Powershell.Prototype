@@ -1,4 +1,8 @@
 ﻿# VersionOne PowerShell SDK Tutorial -- Installation and SDK Overview
+# Run the lines in this Tutorial a few at a time.
+# In ISE, select lines and press F8 to run
+
+# INSTALLATION AND LOADING
 
 # Find the module 
 Find-Module VersionOne.*
@@ -9,7 +13,7 @@ Install-Module VersionOne.Sdk.PowerShell
 Get-Module VersionOne* -ListAvailable
 
 # import the module to use it
-# you can set the V1Token and BaseUri in the environment before loading
+# To set credentials, you can set the V1Token and BaseUri in the environment before loading
 # or call Set-V1Connection as described below
 $env:V1_API_TOKEN = "myV1ApiToken..."
 $env:V1_BASE_URI = "localhost/VersionOne.Web"
@@ -22,6 +26,9 @@ Set-V1Connection -BaseUri "localhost/VersionOne.Web" -Credential (Get-Credential
 # -or-
 Set-V1Connection -BaseUri "localhost/VersionOne.Web" -Token "myV1ApiToken..."
 
+
+# EXPLORING THE SDK
+
 # List all the commands in the SDK
 Get-Command -Module VersionOne.SDK.PowerShell | select name
 
@@ -29,24 +36,29 @@ Get-Command -Module VersionOne.SDK.PowerShell | select name
 Get-Alias -Name v1*
 
 # All commands have help most with examples
-help v1asset -ShowWindow
+help v1get -ShowWindow
 
 # To view online help for the V1 API
 Show-V1Help -HelpType Meta
 
+
+# TAB COMPLETION
+
 # To make the SDK easy-to-use, tab completion is available for 
 # asset types and attributes in most cases.  This works from the
-# command line or within ISE or VSCode, if you load the module
+# command line or within ISE or VSCode, if you load the module.
+# It relies on loading meta data from the server. First time load
+# will take a minute, after that it is cached.
 
-$Null = Get-V1Meta -Force
+$Null = Get-V1Meta -Force # -Force avoid using cache
 
-# for asset types
+# for all asset types, press tab after command
 Get-V1Asset 
 
-# for asset types starting with S
-Get-V1Asset S
+# for asset types starting with S, press tab after S
+Get-V1Asset s
 
-# for attributes
+# for attributes of the Scope type, press tab after -Attributes
 Get-V1Asset Scope -Attribute 
 
 # Common parameters are available for all commands like -Verbose 
